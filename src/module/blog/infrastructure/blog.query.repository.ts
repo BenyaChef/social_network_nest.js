@@ -3,8 +3,8 @@ import { BlogQueryPaginationDto } from '../dto/blog.query.pagination.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../schema/blog.schema';
 import { FilterQuery, Model } from 'mongoose';
-import { PaginationViewModel } from '../../helpers/pagination.view.mapper';
 import { BlogViewModel } from '../model/blog.view.model';
+import { PaginationViewModel } from "../../../helpers/pagination.view.mapper";
 
 @Injectable()
 export class BlogQueryRepository {

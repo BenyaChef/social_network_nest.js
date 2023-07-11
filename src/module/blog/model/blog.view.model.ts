@@ -9,7 +9,7 @@ export class BlogViewModel {
   isMembership: boolean;
 
   constructor(blogModel: BlogDocument) {
-    this.id = blogModel._id.toString();
+    this.id = blogModel.id;
     this.name = blogModel.name;
     this.description = blogModel.description;
     this.websiteUrl = blogModel.websiteUrl;

@@ -13,6 +13,7 @@ import { BlogQueryRepository } from '../infrastructure/blog.query.repository';
 import { BlogQueryPaginationDto } from '../dto/blog.query.pagination.dto';
 import { CreateBlogDto } from '../dto/create.blog.dto';
 import { UpdateBlogDto } from '../dto/update.blog.dto';
+import { BlogViewModel } from "../model/blog.view.model";
 
 @Controller('blogs')
 export class BlogController {
@@ -23,7 +24,7 @@ export class BlogController {
 
   @Get(':blogId')
   async getBlogById(@Param('blogId') blogId: string) {
-    const blog = await this.blogQueryRepository.getBlogById(blogId);
+    const blog: BlogViewModel | null = await this.blogQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
     return blog;
   }
@@ -42,7 +43,7 @@ export class BlogController {
   @Put(':blogId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(@Body() body: UpdateBlogDto, @Param('blogId') blogId: string) {
-    const blog = await this.blogQueryRepository.getBlogById(blogId);
+    const blog: BlogViewModel | null = await this.blogQueryRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
     return this.blogService.updateBlog(body, blogId)
   }

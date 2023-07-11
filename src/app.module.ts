@@ -1,23 +1,37 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlogController } from './blog/api/blog.controller';
-import { BlogService } from './blog/application/blog.service';
-import { BlogRepository } from './blog/infrastructure/blog.repository';
-import { BlogQueryRepository } from './blog/infrastructure/blog.query.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './blog/schema/blog.schema';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { MongooseConfig } from './config/mongoose.config';
+import { Blog, BlogSchema } from "./module/blog/schema/blog.schema";
+import { BlogController } from "./module/blog/api/blog.controller";
+import { BlogService } from "./module/blog/application/blog.service";
+import { BlogRepository } from "./module/blog/infrastructure/blog.repository";
+import { BlogQueryRepository } from "./module/blog/infrastructure/blog.query.repository";
+import { Post, PostSchema } from "./module/post/schema/post.schema";
+import { PostController } from "./module/post/api/post.controller";
+import { PostService } from "./module/post/application/post.service";
+import { PostQueryRepository } from "./module/post/infrastructure/post.query.repository";
+import { PostRepository } from "./module/post/infrastructure/post.repository";
+
+const controllers = [AppController, BlogController, PostController]
+const services = [AppService, BlogService, PostService,
+BlogRepository, BlogQueryRepository, PostQueryRepository, PostRepository]
+
+const mongooseModule = [
+  {name: Blog.name, schema: BlogSchema},
+  {name: Post.name, schema: PostSchema},
+]
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     MongooseModule.forRootAsync({ useClass: MongooseConfig }),
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+    MongooseModule.forFeature(mongooseModule),
   ],
-  controllers: [AppController, BlogController],
-  providers: [AppService, BlogService, BlogRepository, BlogQueryRepository],
+  controllers: controllers,
+  providers: services,
 })
 export class AppModule {}
