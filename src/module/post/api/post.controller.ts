@@ -1,9 +1,10 @@
-import { Body, Controller, Get, NotFoundException, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, NotFoundException, Param, Post, Put } from "@nestjs/common";
 import { PostService } from '../application/post.service';
 import { PostQueryRepository } from '../infrastructure/post.query.repository';
 import { PostQueryPaginationDto } from "../dto/post.query.pagination.dto";
 import { PostViewModel } from "../model/post.view.model";
 import { CreatePostDto } from "../dto/create.post.dto";
+import { UpdatePostDto } from "../dto/update.post.dto";
 
 @Controller('posts')
 export class PostController {
@@ -28,5 +29,10 @@ export class PostController {
   async createPost(@Body() body: CreatePostDto) {
     const postId = await this.postService.createPost(body)
     return this.postQueryRepository.getPostById(postId)
+  }
+
+  @Put('postId')
+  async updatePost(@Body() body: UpdatePostDto) {
+
   }
 }
