@@ -19,7 +19,7 @@ export class BlogService {
   }
 
   async updateBlog(body: UpdateBlogDto, blogId: string) {
-    const blog = await this.blogRepository.getBlogById(blogId);
+    const blog: BlogDocument | null = await this.blogRepository.getBlogById(blogId);
     if (!blog) return null;
     blog.name = body.name;
     blog.description = body.description;

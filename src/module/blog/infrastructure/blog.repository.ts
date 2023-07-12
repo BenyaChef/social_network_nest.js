@@ -19,4 +19,6 @@ export class BlogRepository {
     const resultDelete = await this.blogModel.deleteOne({ _id: blogId });
     return resultDelete.deletedCount === 1;
   }
+
+
 }

@@ -45,7 +45,7 @@ export class BlogController {
   async createBlog(
     @Body() createDto: CreateBlogDto,
   ): Promise<BlogViewModel | null> {
-    const blogId = await this.blogService.createBlog(createDto);
+    const blogId: string = await this.blogService.createBlog(createDto);
     return this.blogQueryRepository.getBlogById(blogId);
   }
 
@@ -64,7 +64,7 @@ export class BlogController {
   @Delete(':blogId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(@Param('blogId') blogId: string) {
-    const isDeleted = await this.blogService.deleteBlog(blogId);
+    const isDeleted : boolean = await this.blogService.deleteBlog(blogId);
     if (!isDeleted) throw new NotFoundException();
   }
 }
