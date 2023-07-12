@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../schema/blog.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { BlogViewModel } from '../model/blog.view.model';
-import { PaginationViewModel } from "../../../helpers/pagination.view.mapper";
+import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 
 @Injectable()
 export class BlogQueryRepository {
@@ -16,7 +16,9 @@ export class BlogQueryRepository {
     return new BlogViewModel(findBlog);
   }
 
-  async getAllBlogs(query: BlogQueryPaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async getAllBlogs(
+    query: BlogQueryPaginationDto,
+  ): Promise<PaginationViewModel<BlogViewModel[]>> {
     const pagination = new BlogQueryPaginationDto(query);
     const filter = {
       name: { $regex: pagination.searchNameTerm ?? '', $options: 'ix' },
