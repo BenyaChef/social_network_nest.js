@@ -1,10 +1,11 @@
 import {PostQueryPaginationDto} from '../dto/post.query.pagination.dto';
 import {InjectModel} from '@nestjs/mongoose';
-import {Model} from 'mongoose';
+import {Model, Query} from 'mongoose';
 import {Post, PostDocument} from '../schema/post.schema';
 import {PaginationViewModel} from '../../../helpers/pagination.view.mapper';
 import {PostViewModel} from '../model/post.view.model';
-
+import {Injectable} from "@nestjs/common";
+@Injectable()
 export class PostQueryRepository {
     constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {
     }
@@ -21,9 +22,7 @@ export class PostQueryRepository {
         return this.findPostsByFilterAndPagination(pagination);
     }
 
-    private async findPostsByFilterAndPagination(
-        query: PostQueryPaginationDto,
-    ): Promise<PaginationViewModel<PostViewModel[]>> {
+    private async findPostsByFilterAndPagination(query: PostQueryPaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
         const posts: PostDocument[] = await this.postModel
             .find({})
             .sort({[query.sortBy]: query.sortDirection })
@@ -35,7 +34,7 @@ export class PostQueryRepository {
             totalCount,
             query.pageNumber,
             query.pageSize,
-            posts.map((post) => new PostViewModel(post)),
+            posts.map((post: PostDocument) => new PostViewModel(post))
         );
     }
 }

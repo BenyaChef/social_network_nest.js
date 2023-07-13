@@ -46,7 +46,7 @@ const mongooseModule = [
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
-    MongooseModule.forRootAsync({ useClass: MongooseConfig }),
+    MongooseModule.forRootAsync({imports: [ConfigModule], useClass: MongooseConfig }),
     MongooseModule.forFeature(mongooseModule),
   ],
   controllers: controllers,

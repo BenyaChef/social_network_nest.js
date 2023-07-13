@@ -6,7 +6,9 @@ import {PostRepository} from '../infrastructure/post.repository';
 import {BlogRepository} from '../../blog/infrastructure/blog.repository';
 import {UpdatePostDto} from "../dto/update.post.dto";
 import {BlogDocument} from "../../blog/schema/blog.schema";
+import {Injectable} from "@nestjs/common";
 
+@Injectable()
 export class PostService {
     constructor(
         @InjectModel(Post.name) private postModel: Model<PostDocument>,
@@ -34,5 +36,9 @@ export class PostService {
         findPost.shortDescription = inputUpdateDto.shortDescription
         findPost.content = inputUpdateDto.shortDescription
         return this.postRepository.save(findPost)
+    }
+
+    async deletePost(postId: string) {
+        return this.postRepository.deletePost(postId)
     }
 }

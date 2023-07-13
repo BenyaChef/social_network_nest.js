@@ -1,6 +1,6 @@
 import {
     Body,
-    Controller,
+    Controller, Delete,
     Get, HttpCode, HttpStatus,
     NotFoundException,
     Param,
@@ -29,7 +29,7 @@ export class PostController {
     }
 
     @Get(':postId')
-    async getPostById(@Param('postId') postId: string) : Promise<PostViewModel> {
+    async getPostById(@Param('postId') postId: string): Promise<PostViewModel> {
         const post: PostViewModel | null =
             await this.postQueryRepository.getPostById(postId);
         if (!post) throw new NotFoundException();
@@ -48,5 +48,12 @@ export class PostController {
     async updatePost(@Body() inputUpdateDto: UpdatePostDto, @Param('postId') postId: string) {
         const resultUpdate: string | null = await this.postService.postUpdate(inputUpdateDto, postId)
         if (!resultUpdate) throw new NotFoundException()
+    }
+
+    @Delete('postId')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deletePost(@Param('postId') postId: string) {
+        const isDeleted: boolean = await this.postService.deletePost(postId)
+        if (!isDeleted) throw new NotFoundException()
     }
 }
