@@ -27,13 +27,13 @@ export class Blog {
         this.websiteUrl = updateDto.websiteUrl
     }
 
-    static createBlog(blogModel: BlogsModel, createDto: CreateBlogDto): BlogDocument {
+    static createBlog(blogModel: BlogModel, createDto: CreateBlogDto): BlogDocument {
         return new blogModel(createDto)
     }
 }
 
 interface BlogStatic {
-    createBlog(blogModel: BlogsModel, createDto: CreateBlogDto): BlogDocument
+    createBlog(blogModel: BlogModel, createDto: CreateBlogDto): BlogDocument
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
@@ -42,5 +42,5 @@ BlogSchema.statics.createBlog = Blog.createBlog
 
 
 export type BlogDocument = HydratedDocument<Blog>;
-export type BlogsModel = Model<BlogDocument> & BlogStatic
+export type BlogModel = Model<BlogDocument> & BlogStatic
 

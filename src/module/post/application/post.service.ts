@@ -30,11 +30,7 @@ export class PostService {
         if (!findPost) return null
         const findBlog: BlogDocument | null = await this.blogRepository.getBlogById(inputUpdateDto.blogId)
         if (!findBlog) return null
-        findPost.blogName = findBlog.name
-        findPost.blogId = findBlog.id
-        findPost.title = inputUpdateDto.title
-        findPost.shortDescription = inputUpdateDto.shortDescription
-        findPost.content = inputUpdateDto.shortDescription
+        findPost.update(inputUpdateDto, findBlog)
         return this.postRepository.save(findPost)
     }
 

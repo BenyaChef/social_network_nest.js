@@ -22,6 +22,4 @@ export class BlogRepository {
         const resultDelete: BlogDocument | null = await this.blogModel.findOneAndDelete({_id: blogId}).exec()
         return resultDelete !== null
     }
-
-
 }
