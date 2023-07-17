@@ -12,8 +12,13 @@ export class PostRepository {
         return this.postModel.findById(postId)
     }
 
-    async save(newPost: PostDocument): Promise<string> {
-        const result: PostDocument = await newPost.save();
+    async createPost(newPost: Post): Promise<string> {
+        const result = await this.postModel.create(newPost)
+        return result.id
+    }
+
+    async save(updatePost: PostDocument): Promise<string> {
+        const result: PostDocument = await updatePost.save();
         return result.id;
     }
 

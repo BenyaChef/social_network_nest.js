@@ -5,7 +5,7 @@ import {
     NotFoundException,
     Param,
     Post,
-    Put
+    Put, Query
 } from "@nestjs/common";
 import {PostService} from '../application/post.service';
 import {PostQueryRepository} from '../infrastructure/post.query.repository';
@@ -24,7 +24,7 @@ export class PostController {
     }
 
     @Get()
-    async getAllPosts(query: PostQueryPaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
+    async getAllPosts(@Query() query: PostQueryPaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
         return this.postQueryRepository.getAllPosts(query);
     }
 
@@ -38,7 +38,8 @@ export class PostController {
 
     @Post()
     async createPost(@Body() inputCreateDto: CreatePostDto): Promise<PostViewModel | null> {
-        const postId: string | null = await this.postService.createPost(inputCreateDto);
+        const blogId = inputCreateDto.blogId
+        const postId: string | null = await this.postService.createPost(inputCreateDto, blogId);
         if (!postId) throw new NotFoundException()
         return this.postQueryRepository.getPostById(postId);
     }

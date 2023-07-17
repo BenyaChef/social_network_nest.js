@@ -9,7 +9,7 @@ export class PostViewModel {
   blogName: string;
   createdAt: string;
   constructor(postModel: PostDocument) {
-    this.id = postModel.id;
+    this.id = postModel._id.toString();
     this.title = postModel.title;
     this.shortDescription = postModel.shortDescription;
     this.content = postModel.content;

@@ -1,8 +1,8 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {HydratedDocument} from 'mongoose';
+import {HydratedDocument, Model} from 'mongoose';
 import {UpdatePostDto} from "../dto/update.post.dto";
 import {BlogDocument} from "../../blog/schema/blog.schema";
-
+import {CreatePostDto} from "../dto/create.post.dto";
 
 @Schema()
 export class Post {
@@ -32,9 +32,21 @@ export class Post {
         this.blogName = blog.name
     }
 
+    static createPost(createDto: CreatePostDto, blogInfo: BlogDocument): Post {
+        const newPost = new Post()
+        newPost.blogName = blogInfo.name
+        newPost.blogId = blogInfo.id
+        newPost.title = createDto.title
+        newPost.content = createDto.content
+        newPost.shortDescription = createDto.shortDescription
+        newPost.createdAt = new Date().toISOString()
+        return newPost
+    }
+
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
-
 PostSchema.methods.update = Post.prototype.update
+PostSchema.statics.createPost = Post.createPost
+
 export type PostDocument = HydratedDocument<Post>;

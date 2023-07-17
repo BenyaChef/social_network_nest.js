@@ -1,28 +1,25 @@
 import {CreatePostDto} from '../dto/create.post.dto';
-import {InjectModel} from '@nestjs/mongoose';
 import {Post, PostDocument} from '../schema/post.schema';
-import {Model} from 'mongoose';
 import {PostRepository} from '../infrastructure/post.repository';
 import {BlogRepository} from '../../blog/infrastructure/blog.repository';
 import {UpdatePostDto} from "../dto/update.post.dto";
 import {BlogDocument} from "../../blog/schema/blog.schema";
 import {Injectable} from "@nestjs/common";
 
+
 @Injectable()
 export class PostService {
     constructor(
-        @InjectModel(Post.name) private postModel: Model<PostDocument>,
         protected postRepository: PostRepository,
         protected blogRepository: BlogRepository,
     ) {
     }
 
-    async createPost(inputCreateDto: CreatePostDto): Promise<string | null> {
-        const findBlog: BlogDocument | null = await this.blogRepository.getBlogById(inputCreateDto.blogId);
+    async createPost(inputCreateDto: CreatePostDto, blogId: string): Promise<string | null> {
+        const findBlog: BlogDocument | null = await this.blogRepository.getBlogById(blogId);
         if (!findBlog) return null;
-        const newPost: PostDocument = new this.postModel(inputCreateDto);
-        newPost.blogName = findBlog.name;
-        return this.postRepository.save(newPost);
+        const newPost: Post = Post.createPost(inputCreateDto, findBlog)
+        return this.postRepository.createPost(newPost);
     }
 
     async postUpdate(inputUpdateDto: UpdatePostDto, postId: string): Promise<string | null> {
