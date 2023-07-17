@@ -22,7 +22,6 @@ import {PostService} from "../../post/application/post.service";
 import {PostQueryRepository} from "../../post/infrastructure/post.query.repository";
 import {CreatePostDto} from "../../post/dto/create.post.dto";
 import {PostViewModel} from "../../post/model/post.view.model";
-import {isValidObjectId} from "mongoose";
 import {PostQueryPaginationDto} from "../../post/dto/post.query.pagination.dto";
 
 
@@ -46,7 +45,9 @@ export class BlogController {
 
     @Get(':blogId/posts')
     async getAllPostByBlogID(@Param('blogId') blogId: string, @Query() query: PostQueryPaginationDto) {
-        return this.postQueryRepository.getAllPosts(query, blogId)
+        const findPosts = await this.postQueryRepository.getAllPosts(query, blogId)
+        if(findPosts.items.length <= 0) throw new NotFoundException()
+        return findPosts
     }
 
     @Get()

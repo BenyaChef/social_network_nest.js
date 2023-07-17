@@ -21,7 +21,6 @@ export class PostQueryRepository {
     async getAllPosts(query: PostQueryPaginationDto, blogId: string | null = null): Promise<PaginationViewModel<PostViewModel[]>> {
         const filter = blogId !== null ? {blogId: blogId} : {}
         const pagination: PostQueryPaginationDto = new PostQueryPaginationDto(query);
-        console.log(pagination)
 
         return this.findPostsByFilterAndPagination(filter, pagination);
     }

@@ -44,14 +44,14 @@ export class PostController {
         return this.postQueryRepository.getPostById(postId);
     }
 
-    @Put('postId')
+    @Put(':postId')
     @HttpCode(HttpStatus.NO_CONTENT)
     async updatePost(@Body() inputUpdateDto: UpdatePostDto, @Param('postId') postId: string) {
         const resultUpdate: string | null = await this.postService.postUpdate(inputUpdateDto, postId)
         if (!resultUpdate) throw new NotFoundException()
     }
 
-    @Delete('postId')
+    @Delete(':postId')
     @HttpCode(HttpStatus.NO_CONTENT)
     async deletePost(@Param('postId') postId: string) {
         const isDeleted: boolean = await this.postService.deletePost(postId)
