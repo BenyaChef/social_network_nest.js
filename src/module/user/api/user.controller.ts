@@ -29,6 +29,7 @@ export class UserController {
     }
 
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     async createUser(@Body() createDto: CreateUserDto): Promise<UserViewModel | null> {
         const newUserId: string = await this.userService.createUser(createDto)
         return this.userQueryRepository.getUserByID(newUserId)
