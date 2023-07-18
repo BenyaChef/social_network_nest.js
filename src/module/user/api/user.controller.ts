@@ -1,4 +1,15 @@
-import {Body, Controller, Delete, Get, NotFoundException, Param, Post, Query} from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    NotFoundException,
+    Param,
+    Post,
+    Query
+} from "@nestjs/common";
 import {UserQueryPaginationDto} from "../dto/user.query.pagination.dto";
 import {UserQueryRepository} from "../infrastructure/user.query.repository";
 import {UserService} from "../application/user.service";
@@ -24,6 +35,7 @@ export class UserController {
     }
 
     @Delete(':userId')
+    @HttpCode(HttpStatus.NO_CONTENT)
     async deleteUser(@Param('userId') userId: string) {
         const isDeleted = await this.userService.deleteUser(userId)
         if(!isDeleted) throw new NotFoundException()

@@ -12,7 +12,7 @@ export class UserQueryRepository {
     }
 
     async getUserByID(userId: string): Promise<UserViewModel | null> {
-        const user = await this.userModel.findById(userId)
+        const user = await this.userModel.findOne({_id: userId})
         if (!user) return null
         return new UserViewModel(user)
     }
