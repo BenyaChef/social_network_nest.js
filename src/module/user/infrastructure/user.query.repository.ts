@@ -1,11 +1,45 @@
 import {Injectable} from "@nestjs/common";
 import {UserQueryPaginationDto} from "../dto/user.query.pagination.dto";
+import {InjectModel} from "@nestjs/mongoose";
+import {User, UserDocument} from "../schema/user.schema";
+import {FilterQuery, Model} from "mongoose";
+import {UserViewModel} from "../model/user.view.model";
+import {PaginationViewModel} from "../../../helpers/pagination.view.mapper";
 
-@Injectable
+@Injectable()
 export class UserQueryRepository {
+    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
+    }
 
-    async getAllUsers(query: UserQueryPaginationDto) {
+    async getUserByID(userId: string): Promise<UserViewModel | null> {
+        const user = await this.userModel.findById(userId)
+        if (!user) return null
+        return new UserViewModel(user)
+    }
 
+    async getAllUsers(query: UserQueryPaginationDto): Promise<PaginationViewModel<UserViewModel[]>> {
+        const pagination = new UserQueryPaginationDto(query)
+        const filter = {
+            login: {$regex: pagination.searchLoginTerm ?? '', $options: 'ix'},
+            email: {$regex: pagination.searchEmailTerm ?? '', $options: 'ix'},
+        }
+        return this.findPostsByFilterAndPagination(filter, pagination)
+    }
+
+    private async findPostsByFilterAndPagination(filter: FilterQuery<User>, query: UserQueryPaginationDto): Promise<PaginationViewModel<UserViewModel[]>> {
+        const posts: UserDocument[] = await this.userModel
+            .find(filter)
+            .sort({[query.sortBy]: query.sortDirection})
+            .skip((query.pageNumber - 1) * query.pageSize)
+            .limit(query.pageSize)
+            .lean();
+        const totalCount = await this.userModel.countDocuments(filter);
+        return new PaginationViewModel<UserViewModel[]>(
+            totalCount,
+            query.pageNumber,
+            query.pageSize,
+            posts.map((user: UserDocument) => new UserViewModel(user))
+        );
     }
 
 }

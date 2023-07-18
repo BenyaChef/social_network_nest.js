@@ -21,7 +21,7 @@ export class Post {
     @Prop()
     blogName: string;
 
-    @Prop({default: () => new Date().toISOString()})
+    @Prop()
     createdAt: string;
 
     update(updateDto: UpdatePostDto, blog: BlogDocument) {

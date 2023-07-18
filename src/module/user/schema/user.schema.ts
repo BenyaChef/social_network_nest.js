@@ -13,19 +13,20 @@ export class User {
     @Prop()
     email: string
 
-    @Prop({default: () => new Date().toISOString()})
-    createAt: string
+    @Prop()
+    createdAt: string
 
     static createUser(createDto: CreateUserDto, hash: string): User {
         const newUser = new User()
         newUser.passwordHash = hash
         newUser.login = createDto.login
         newUser.email = createDto.email
-        newUser.createAt = new Date().toISOString()
+        newUser.createdAt = new Date().toISOString()
         return newUser
     }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)
-
 export type UserDocument = HydratedDocument<User>
+
+UserSchema.statics.createUser = User.createUser
