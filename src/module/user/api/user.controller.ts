@@ -24,7 +24,6 @@ export class UserController {
     @Get()
     async getAllUsers(@Query() query: UserQueryPaginationDto) {
         const findUsers = await this.userQueryRepository.getAllUsers(query)
-        if(findUsers.items.length <= 0) throw new NotFoundException()
         return findUsers
     }
 
