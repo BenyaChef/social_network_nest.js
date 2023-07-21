@@ -8,7 +8,9 @@ async function bootstrap() {
     app.enableCors()
     app.use(cookieParser())
     app.useGlobalFilters()
-    app.useGlobalPipes(new ValidationPipe())
+    app.useGlobalPipes(new ValidationPipe({
+        transform: true
+    }))
     await app.listen(3003);
 }
 bootstrap();
