@@ -2,9 +2,10 @@ import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
-  HttpException,
-} from '@nestjs/common';
+  HttpException, HttpStatus
+} from "@nestjs/common";
 import { Request, Response } from 'express';
+import { ExceptionsResponseMessageType } from "./exception.type/error.message.type";
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -14,17 +15,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    if (status === 400) {
-      const errorResponse = {
-        errors: []
+    if (status === HttpStatus.BAD_REQUEST) {
+      const errorResponse: ExceptionsResponseMessageType = {
+        errorsMessages: []
       }
       const resBody: any = exception.getResponse()
 
-
-      // @ts-ignore
-      resBody.message.forEach((m) => errorResponse.errors.push({message: m, field: 'x'}))
-
+      resBody.message.forEach((m) => errorResponse.errorsMessages.push(m))
       response.status(status).json(errorResponse)
+
     } else {
       response.status(status).json({
         statusCode: status,
