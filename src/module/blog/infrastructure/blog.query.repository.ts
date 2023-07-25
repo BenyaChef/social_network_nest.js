@@ -19,11 +19,10 @@ export class BlogQueryRepository {
   async getAllBlogs(
     query: BlogQueryPaginationDto,
   ): Promise<PaginationViewModel<BlogViewModel[]>> {
-    const pagination = new BlogQueryPaginationDto(query);
     const filter = {
-      name: { $regex: pagination.searchNameTerm ?? '', $options: 'ix' },
+      name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
     };
-    return await this.findBlogsByFilterAndPagination(filter, pagination);
+    return await this.findBlogsByFilterAndPagination(filter, query);
   }
 
   private async findBlogsByFilterAndPagination(
@@ -32,7 +31,7 @@ export class BlogQueryRepository {
   ): Promise<PaginationViewModel<BlogViewModel[]>> {
     const blogs = await this.blogModel
       .find(filter)
-      .sort({ [query.sortBy]: query.sortDirection })
+      .sort({ [query.sortBy!]: query.sortDirection })
       .skip((query.pageNumber - 1) * query.pageSize)
       .limit(query.pageSize)
       .lean();
