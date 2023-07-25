@@ -14,7 +14,7 @@ async function bootstrap() {
     app.useGlobalFilters()
     app.useGlobalPipes(new ValidationPipe({
         transform: true,
-        stopAtFirstError: true,
+        stopAtFirstError: false,
         exceptionFactory: customExceptionFactory
     }))
     app.useGlobalFilters(new HttpExceptionFilter())

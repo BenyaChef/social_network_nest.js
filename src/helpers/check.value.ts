@@ -39,7 +39,11 @@ export const checkSortBy = (value: string): string => {
 };
 
 export const trimValue = (value: string): string | null => {
-
+  try {
     return value.trim();
+  } catch (e) {
+    return null
+  }
+
 
 };
