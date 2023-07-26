@@ -1,5 +1,4 @@
 import { FieldsEnum } from '../enum/fields.enum';
-import { BadRequestException } from '@nestjs/common';
 
 interface ToNumberOptions {
   default?: number;
@@ -7,10 +6,8 @@ interface ToNumberOptions {
   max?: number;
 }
 
-export const toNumber = (
-  value: string,
-  options: ToNumberOptions = {},
-): number => {
+export const toNumber = (value: string, options: ToNumberOptions = {}): number => {
+
   let newValue: number = Number.parseInt(value || String(options.default), 10);
 
   if (Number.isNaN(newValue)) {
@@ -38,12 +35,4 @@ export const checkSortBy = (value: string): string => {
   return !value ? FieldsEnum.createdAt : value;
 };
 
-export const trimValue = (value: string): string | null => {
-  try {
-    return value.trim();
-  } catch (e) {
-    return null
-  }
 
-
-};

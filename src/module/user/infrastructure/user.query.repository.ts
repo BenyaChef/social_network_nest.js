@@ -18,15 +18,14 @@ export class UserQueryRepository {
     }
 
     async getAllUsers(query: UserQueryPaginationDto): Promise<PaginationViewModel<UserViewModel[]>> {
-        const pagination = new UserQueryPaginationDto(query)
-        console.log(pagination);
+
         const filter = {$or: [
-                {login: {$regex: pagination.searchLoginTerm ?? '', $options: 'ix'}},
-                {email: {$regex: pagination.searchEmailTerm ?? '', $options: 'ix'}}
+                {login: {$regex: query.searchLoginTerm ?? '', $options: 'ix'}},
+                {email: {$regex: query.searchEmailTerm ?? '', $options: 'ix'}}
             ]
         }
 
-        return this.findPostsByFilterAndPagination(filter, pagination)
+        return this.findPostsByFilterAndPagination(filter, query)
     }
 
     private async findPostsByFilterAndPagination(filter: FilterQuery<User>, query: UserQueryPaginationDto): Promise<PaginationViewModel<UserViewModel[]>> {

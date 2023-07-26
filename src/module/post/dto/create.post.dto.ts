@@ -1,12 +1,25 @@
-import { Transform } from "class-transformer";
-import { trimValue } from "../../../helpers/check.value";
+
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { BlogExists } from '../../../decorators/blog.exist.decorator';
+import { Trim } from '../../../decorators/trim.decorator';
 
 export class CreatePostDto {
-  @Transform(({value}) => trimValue(value))
+  @IsString()
+  @Trim()
+  @MaxLength(30)
   title: string;
+
+  @IsString()
+  @Trim()
+  @MaxLength(100)
   shortDescription: string;
+
+  @IsString()
+  @Trim()
+  @MaxLength(1000)
   content: string;
 
-  // @Validate()
+  @IsNotEmpty()
+  @BlogExists()
   blogId: string;
 }

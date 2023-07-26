@@ -1,21 +1,15 @@
-import { IsNotEmpty, IsString, IsUrl, Length } from "class-validator";
-import { Transform } from "class-transformer";
-import { trimValue } from "../../../helpers/check.value";
+import { IsString, IsUrl, Length } from 'class-validator';
 
-
-
+import { Trim } from '../../../decorators/trim.decorator';
 
 export class CreateBlogDto {
-
-  @IsString({message: 'must by string'})
-  @IsNotEmpty({message: 'is not empty'})
-  @Transform(({value}) => trimValue(value))
+  @IsString()
+  @Trim()
   @Length(3, 15)
   name: string;
 
-
   @IsString()
-  @Transform(({value}) => trimValue(value))
+  @Trim()
   @Length(10, 500)
   description: string;
 
