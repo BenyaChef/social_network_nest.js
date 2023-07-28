@@ -11,7 +11,7 @@ export const toNumber = (value: string, options: ToNumberOptions = {}): number =
   let newValue: number = Number.parseInt(value || String(options.default), 10);
 
   if (Number.isNaN(newValue)) {
-    newValue = options.default ?? 1;
+    newValue = options.default ?? NaN;
   }
 
   if (options.min !== undefined && newValue < options.min) {

@@ -5,6 +5,9 @@ export default () => {
   const SECRET_KEY = process.env.SECRET_KEY;
   const EMAIL_SENDER = process.env.EMAIL_SENDER;
   const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+  const EXPIRATION_ACCESS = '600ms'
+  const EXPIRATION_REFRESH = '1200ms'
+
 
   return {
     MONGO_URI,
@@ -12,4 +15,5 @@ export default () => {
     EMAIL_SENDER,
     EMAIL_PASSWORD,
   };
+
 };

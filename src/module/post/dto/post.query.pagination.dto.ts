@@ -22,10 +22,10 @@ export class PostQueryPaginationDto {
   @IsOptional()
   @Transform(({ value }) => toNumber(value, { min: 1, default: 1 }))
   @IsNumber()
-  public pageNumber: number;
+  public pageNumber: number = 1;
 
   @IsOptional()
   @Transform(({ value }) => toNumber(value, { min: 1, default: 10 }))
   @IsNumber()
-  public pageSize: number;
+  public pageSize: number = 10;
 }
