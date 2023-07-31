@@ -32,7 +32,7 @@ export const checkSortDirection = (value: string): string => {
 };
 
 export const checkSortBy = (value: string): string => {
-  return !value ? FieldsEnum.createdAt : value;
+  return !value ?  FieldsEnum.createdAt : value;
 };
 
 

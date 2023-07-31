@@ -7,8 +7,8 @@ export class UserViewModel {
     createdAt: string
     constructor(user: UserDocument) {
         this.id = user._id.toString()
-        this.login = user.login
-        this.email =user.email
-        this.createdAt = user.createdAt
+        this.login = user.accountData.login
+        this.email = user.accountData.email
+        this.createdAt = user.accountData.createdAt
     }
 }

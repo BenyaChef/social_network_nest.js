@@ -25,14 +25,18 @@ import { UserQueryRepository } from './module/user/infrastructure/user.query.rep
 import { UserRepository } from './module/user/infrastructure/user.repository';
 import { BlogExistsValidation } from './validators/blog.exists.validator';
 import { TrimValidator } from './validators/trim.validator';
-import { AuthController } from "./module/auth/api/auth.controller";
-import { AuthService } from "./module/auth/application/auth.service";
-import { JwtService } from "./module/auth/application/jwt.service";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-import { APP_GUARD } from "@nestjs/core";
-import { Session, SessionSchema } from "./module/sessions/schema/session.schema";
-import { SessionService } from "./module/sessions/application/session.service";
-import { SessionRepository } from "./module/sessions/infrastructure/session.repository";
+import { AuthController } from './module/auth/api/auth.controller';
+import { AuthService } from './module/auth/application/auth.service';
+import { JwtService } from './module/auth/application/jwt.service';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import {
+  Session,
+  SessionSchema,
+} from './module/sessions/schema/session.schema';
+import { SessionService } from './module/sessions/application/session.service';
+import { SessionRepository } from './module/sessions/infrastructure/session.repository';
+import { MailerModule, MailerService } from "@nestjs-modules/mailer";
 
 const controllers = [
   AppController,
@@ -40,11 +44,11 @@ const controllers = [
   PostController,
   UserController,
   TestingController,
-  AuthController
+  AuthController,
 ];
 
 const validators = [BlogExistsValidation, TrimValidator];
-const guards =[ { provide: APP_GUARD, useClass: ThrottlerGuard }]
+const guards = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
 
 const services = [
   AuthService,
@@ -62,25 +66,26 @@ const services = [
   TestingService,
   TestingRepository,
   SessionService,
-  SessionRepository
+  SessionRepository,
 ];
 
 const mongooseModule = [
   { name: Blog.name, schema: BlogSchema },
   { name: Post.name, schema: PostSchema },
   { name: User.name, schema: UserSchema },
-  {name: Session.name, schema: SessionSchema}
+  { name: Session.name, schema: SessionSchema },
 ];
 
-
+const foo = (a) => a
 @Module({
   imports: [
+    MailerModule.forRootAsync({useFactory: foo}),
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
-    MongooseModule.forRootAsync({ imports: [ConfigModule], useClass: MongooseConfig}),
+    MongooseModule.forRootAsync({ imports: [ConfigModule], useClass: MongooseConfig, }),
     MongooseModule.forFeature(mongooseModule),
-    ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
+    // ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...guards],
+  providers: [...services, ...validators],
 })
 export class AppModule {}

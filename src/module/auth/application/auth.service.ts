@@ -6,6 +6,7 @@ import { randomUUID } from 'crypto';
 import {  UserDocument } from "../../user/schema/user.schema";
 import { SessionService } from "../../sessions/application/session.service";
 import { Session } from "../../sessions/schema/session.schema";
+import { RegistrationDto } from "../dto/registration.dto";
 
 @Injectable()
 export class AuthService {
@@ -33,5 +34,9 @@ export class AuthService {
     await this.sessionService.createSession(newSession)
     return {accessToken, refreshToken}
 
+  }
+
+  async registrationUser(registrationDto: RegistrationDto) {
+    const newUser = await this.userService.registrationUser(registrationDto)
   }
 }

@@ -9,7 +9,7 @@ export class UserRepository {
     }
 
     async createUser(newUser: User): Promise<string> {
-        const result = await this.userModel.create(newUser)
+        const result = await this.userModel.create(newUser);
         return result.id
     }
 

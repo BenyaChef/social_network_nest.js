@@ -5,6 +5,7 @@ import { User, UserDocument } from '../schema/user.schema';
 import { UserRepository } from '../infrastructure/user.repository';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
 import { LoginDto } from '../../auth/dto/login.dto';
+import { RegistrationDto } from "../../auth/dto/registration.dto";
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,15 @@ export class UserService {
 
   async createUser(createDto: CreateUserDto) {
     const passwordHash = await this.generatorHash(createDto.password);
-    const newUser = User.createUser(createDto, passwordHash);
+    const newUser = await User.createUser(createDto, passwordHash);
+    newUser.emailInfo.isConfirmed = true;
+    newUser.emailInfo.confirmationCode = null;
+    return this.userRepository.createUser(newUser);
+  }
+
+  async registrationUser(createDto: RegistrationDto) {
+    const passwordHash = await this.generatorHash(createDto.password);
+    const newUser = await User.createUser(createDto, passwordHash);
     return this.userRepository.createUser(newUser);
   }
 
@@ -23,12 +32,14 @@ export class UserService {
     return this.userRepository.deleteUser(userId);
   }
 
-  async checkCredentials(
-    loginDto: LoginDto,
-  ): Promise<UserDocument | null> {
-    const user: UserDocument | null = await this.userQueryRepository.findUserLoginOrEmail(loginDto);
+  async checkCredentials(loginDto: LoginDto): Promise<UserDocument | null> {
+    const user: UserDocument | null =
+      await this.userQueryRepository.findUserLoginOrEmail(loginDto);
     if (!user) return null;
-    const encodingUser = await bcrypt.compare(loginDto.password, user.passwordHash);
+    const encodingUser = await bcrypt.compare(
+      loginDto.password,
+      user.accountData.passwordHash,
+    );
     if (!encodingUser) return null;
     return user;
   }
@@ -37,6 +48,4 @@ export class UserService {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(password, salt);
   }
-
-
 }

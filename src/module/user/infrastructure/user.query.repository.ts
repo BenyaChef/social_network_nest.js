@@ -13,7 +13,7 @@ export class UserQueryRepository {
 
   async findUserLoginOrEmail(loginDto: LoginDto): Promise<UserDocument | null> {
     return this.userModel.findOne({
-      $or: [{ login: loginDto.loginOrEmail }, { email: loginDto.loginOrEmail }],
+      $or: [{ 'accountData.login': loginDto.loginOrEmail }, {'accountData.email': loginDto.loginOrEmail }],
     });
   }
 
@@ -28,10 +28,11 @@ export class UserQueryRepository {
   ): Promise<PaginationViewModel<UserViewModel[]>> {
     const filter = {
       $or: [
-        { login: { $regex: query.searchLoginTerm ?? '', $options: 'ix' } },
-        { email: { $regex: query.searchEmailTerm ?? '', $options: 'ix' } },
+        { 'accountData.login': { $regex: query.searchLoginTerm ?? '', $options: 'ix' } },
+        { 'accountData.email': { $regex: query.searchEmailTerm ?? '', $options: 'ix' } },
       ],
     };
+    console.log(filter.$or);
 
     return this.findPostsByFilterAndPagination(filter, query);
   }
@@ -42,7 +43,7 @@ export class UserQueryRepository {
   ): Promise<PaginationViewModel<UserViewModel[]>> {
     const posts: UserDocument[] = await this.userModel
       .find(filter)
-      .sort({ [query.sortBy]: query.sortDirection })
+      .sort({[`accountData.${query.sortBy}`]: query.sortDirection })
       .skip((query.pageNumber - 1) * query.pageSize)
       .limit(query.pageSize)
       .lean();
