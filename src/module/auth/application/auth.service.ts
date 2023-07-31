@@ -7,13 +7,15 @@ import {  UserDocument } from "../../user/schema/user.schema";
 import { SessionService } from "../../sessions/application/session.service";
 import { Session } from "../../sessions/schema/session.schema";
 import { RegistrationDto } from "../dto/registration.dto";
+import { MailAdapter } from "../../email/mail.adapter";
 
 @Injectable()
 export class AuthService {
   constructor(
     protected userService: UserService,
     protected jwtService: JwtService,
-    protected sessionService: SessionService
+    protected sessionService: SessionService,
+    protected mailAdapter: MailAdapter
   ) {}
 
   async loginUser(loginDto: LoginDto, ip: string, userAgent: string) {
@@ -38,5 +40,6 @@ export class AuthService {
 
   async registrationUser(registrationDto: RegistrationDto) {
     const newUser = await this.userService.registrationUser(registrationDto)
+    await this.mailAdapter.sendUserConfirmation(newUser, newUser.emailInfo.confirmationCode!)
   }
 }

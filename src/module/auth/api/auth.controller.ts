@@ -1,18 +1,9 @@
-import {
-  Body,
-  Controller, HttpCode, HttpStatus,
-  Ip,
-  Post,
-  Res,
-  UnauthorizedException
-} from "@nestjs/common";
-import { PasswordRecoveryDto } from '../dto/password.recovery.dto';
-import { LoginDto } from '../dto/login.dto';
-import { AuthService } from '../application/auth.service';
-import { Response } from 'express';
-import { UserAgent } from '../../../decorators/user.agent.decorator';
-import { SkipThrottle } from "@nestjs/throttler";
-import { CreateUserDto } from "../../user/dto/create.user.dto";
+import { Body, Controller, HttpCode, HttpStatus, Ip, Post, Res, UnauthorizedException } from "@nestjs/common";
+import { PasswordRecoveryDto } from "../dto/password.recovery.dto";
+import { LoginDto } from "../dto/login.dto";
+import { AuthService } from "../application/auth.service";
+import { Response } from "express";
+import { UserAgent } from "../../../decorators/user.agent.decorator";
 import { RegistrationDto } from "../dto/registration.dto";
 
 // @SkipThrottle()
@@ -38,7 +29,7 @@ export class AuthController {
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() registrationDto: RegistrationDto) {
-    const resultRegistration = await this.authService.registrationUser(registrationDto)
+    return await this.authService.registrationUser(registrationDto);
   }
 
   @Post('password-recovery')

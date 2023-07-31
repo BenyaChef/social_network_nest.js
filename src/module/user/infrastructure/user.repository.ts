@@ -8,9 +8,9 @@ export class UserRepository {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
     }
 
-    async createUser(newUser: User): Promise<string> {
+    async createUser(newUser: User): Promise<UserDocument> {
         const result = await this.userModel.create(newUser);
-        return result.id
+        return result
     }
 
     async deleteUser(userId: string): Promise<boolean> {

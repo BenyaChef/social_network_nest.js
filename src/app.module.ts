@@ -37,6 +37,8 @@ import {
 import { SessionService } from './module/sessions/application/session.service';
 import { SessionRepository } from './module/sessions/infrastructure/session.repository';
 import { MailerModule, MailerService } from "@nestjs-modules/mailer";
+import { MailModule } from "./module/email/mail.module";
+import { MailAdapter } from "./module/email/mail.adapter";
 
 const controllers = [
   AppController,
@@ -76,16 +78,16 @@ const mongooseModule = [
   { name: Session.name, schema: SessionSchema },
 ];
 
-const foo = (a) => a
+
 @Module({
   imports: [
-    MailerModule.forRootAsync({useFactory: foo}),
+    MailModule,
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     MongooseModule.forRootAsync({ imports: [ConfigModule], useClass: MongooseConfig, }),
     MongooseModule.forFeature(mongooseModule),
     // ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
   ],
   controllers: controllers,
-  providers: [...services, ...validators],
+  providers: [...services, ...validators, MailAdapter],
 })
 export class AppModule {}
