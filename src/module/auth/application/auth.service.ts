@@ -10,9 +10,6 @@ import { RegistrationDto } from "../dto/registration.dto";
 import { MailAdapter } from "../../email/mail.adapter";
 import { UserQueryRepository } from "../../user/infrastructure/user.query.repository";
 import { UserRepository } from "../../user/infrastructure/user.repository";
-import { exceptionHandler } from "../../../exception/exception.handler";
-import { ExceptionMessageEnum } from "../../../enum/exception.message.enum";
-import { FieldsEnum } from "../../../enum/fields.enum";
 
 @Injectable()
 export class AuthService {
@@ -52,8 +49,8 @@ export class AuthService {
 
   async registrationResendingEmail(email: string) {
     const user = await this.userQueryRepository.findUserByEmail(email)
-    if(!user) throw new BadRequestException(exceptionHandler(ExceptionMessageEnum.emailExists, FieldsEnum.email))
-    if(user.emailInfo.isConfirmed) throw new BadRequestException(exceptionHandler(ExceptionMessageEnum.emailAlreadyConfirm, FieldsEnum.email))
+    if(!user) throw new BadRequestException('emailIsNotExists')
+    if(user.emailInfo.isConfirmed) throw new BadRequestException('emailAlreadyIsConfirm')
     const newConfirmedCode = randomUUID()
     await this.userRepository.updateEmailConfirmationCode(user.id, newConfirmedCode)
     await this.mailAdapter.sendUserConfirmation(user, newConfirmedCode)

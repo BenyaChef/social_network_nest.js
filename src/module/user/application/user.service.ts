@@ -6,9 +6,6 @@ import { UserRepository } from '../infrastructure/user.repository';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
 import { LoginDto } from '../../auth/dto/login.dto';
 import { RegistrationDto } from "../../auth/dto/registration.dto";
-import { exceptionHandler } from "../../../exception/exception.handler";
-import { FieldsEnum } from "../../../enum/fields.enum";
-import { ExceptionMessageEnum } from "../../../enum/exception.message.enum";
 
 @Injectable()
 export class UserService {
@@ -33,8 +30,8 @@ export class UserService {
 
   async confirmationUserEmail(code: string) {
     const user = await this.userQueryRepository.findUserByCode(code)
-    if(!user) throw new BadRequestException(exceptionHandler(ExceptionMessageEnum.codeNotExists, FieldsEnum.code))
-    if(user.emailInfo.isConfirmed) throw new BadRequestException(exceptionHandler(ExceptionMessageEnum.codeAlreadyConfirm, FieldsEnum.code))
+    if(!user) throw new BadRequestException('codeIsNotExists')
+    if(user.emailInfo.isConfirmed) throw new BadRequestException('codeAlreadyIsConfirm')
     await this.userRepository.updateConfirmationStatus(user.id)
   }
 

@@ -21,25 +21,37 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // }
 
     if (status === HttpStatus.BAD_REQUEST) {
+      const errorResponse: ExceptionsResponseMessageType = {
+        errorsMessages: [],
+      };
+      const resBody: any = exception.getResponse();
      try {
-        const errorResponse: ExceptionsResponseMessageType = {
-          errorsMessages: [],
-        };
-        const resBody: any = exception.getResponse();
+       resBody.message.forEach((m) => errorResponse.errorsMessages.push(m));
 
-        resBody.message.forEach((m) => errorResponse.errorsMessages.push(m));
-        response.status(status).json(errorResponse);
+       return response.status(status).json(errorResponse);
       } catch (e) {
-       const resBody: any = exception.getResponse()
-       response.status(status).json(resBody)
+       switch (resBody.message) {
+         case 'codeIsNotExists':
+           return response.status(400).send({
+             errorsMessages: [{ message: 'invalid code', field: 'code' }],
+           });
+         case 'codeAlreadyIsConfirm':
+           return response.status(400).send({
+             errorsMessages: [{ message: 'code is confirm', field: 'code' }],
+           });
+         case 'emailIsNotExists':
+           return response.status(400).send({
+             errorsMessages: [{ message: 'user is not exists', field: 'email' }],
+           });
+         case 'emailAlreadyIsConfirm':
+           return response.status(400).send({
+             errorsMessages: [{ message: 'email is confirm', field: 'email' }],
+           });
+       }
      }
 
     } else {
-      response.status(status).json({
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
+      response.sendStatus(status)
     }
   }
 }

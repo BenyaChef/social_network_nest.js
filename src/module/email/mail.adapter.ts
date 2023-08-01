@@ -11,10 +11,10 @@ export class MailAdapter {
 
     await this.mailerService.sendMail({
       to: user.accountData.email,
-      subject: 'Welcome to Nice App! Confirm your Email',
+      subject: 'Registration confirmation',
       template: './confirmation',
       context: {
-        name: user.accountData.login,
+        login: user.accountData.login,
         url,
       },
     });
@@ -28,7 +28,7 @@ export class MailAdapter {
       subject: 'Recovery password',
       template: './recovery.password',
       context: {
-        name: user.accountData.login,
+        login: user.accountData.login,
         url,
       },
     });
