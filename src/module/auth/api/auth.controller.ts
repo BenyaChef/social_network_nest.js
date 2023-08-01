@@ -1,10 +1,22 @@
-import { Body, Controller, HttpCode, HttpStatus, Ip, Post, Res, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Ip,
+  Post,
+  Res,
+  UnauthorizedException
+} from "@nestjs/common";
 import { PasswordRecoveryDto } from "../dto/password.recovery.dto";
 import { LoginDto } from "../dto/login.dto";
 import { AuthService } from "../application/auth.service";
 import { Response } from "express";
 import { UserAgent } from "../../../decorators/user.agent.decorator";
 import { RegistrationDto } from "../dto/registration.dto";
+import { RegistrationEmailResendingDto } from "../dto/registration.email.resending.dto";
+import { ConfirmationCodeDto } from "../dto/confirmation.code.dto";
 
 // @SkipThrottle()
 @Controller('auth')
@@ -32,6 +44,21 @@ export class AuthController {
     return await this.authService.registrationUser(registrationDto);
   }
 
+  @Post('registration-email-resending')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async registrationEmailResending(@Body() resendingEmailDto: RegistrationEmailResendingDto) {
+    //TODO разобраться с эксепшеном, почему падает при бэдЭксепшен?
+   return this.authService.registrationResendingEmail(resendingEmailDto.email);
+  }
+
+  @Post('registration-confirmation')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async confirmationRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
+    return this.authService.confirmationRegistration(confirmationCodeDto.code)
+  }
+
   @Post('password-recovery')
-  async passwordRecovery(@Body() recoveryDto: PasswordRecoveryDto) {}
+  async passwordRecovery(@Body() recoveryDto: PasswordRecoveryDto) {
+    return true
+  }
 }

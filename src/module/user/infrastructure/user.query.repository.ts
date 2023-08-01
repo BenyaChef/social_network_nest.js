@@ -11,6 +11,18 @@ import { LoginDto } from '../../auth/dto/login.dto';
 export class UserQueryRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
+  async findUserByCode(code: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({'emailInfo.confirmationCode': code})
+  }
+
+  async findUserByLogin(login: string): Promise<UserDocument | null> {
+      return this.userModel.findOne({'accountData.login': login})
+  }
+
+  async findUserByEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({'accountData.email': email})
+  }
+
   async findUserLoginOrEmail(loginDto: LoginDto): Promise<UserDocument | null> {
     return this.userModel.findOne({
       $or: [{ 'accountData.login': loginDto.loginOrEmail }, {'accountData.email': loginDto.loginOrEmail }],
@@ -32,7 +44,6 @@ export class UserQueryRepository {
         { 'accountData.email': { $regex: query.searchEmailTerm ?? '', $options: 'ix' } },
       ],
     };
-    console.log(filter.$or);
 
     return this.findPostsByFilterAndPagination(filter, query);
   }

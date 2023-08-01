@@ -9,7 +9,7 @@ import {
     Param,
     Post,
     Put,
-    Query, UseGuards
+    Query
 } from "@nestjs/common";
 import {BlogService} from '../application/blog.service';
 import {BlogQueryRepository} from '../infrastructure/blog.query.repository';
@@ -23,7 +23,7 @@ import {PostQueryRepository} from "../../post/infrastructure/post.query.reposito
 import {CreatePostDto} from "../../post/dto/create.post.dto";
 import {PostViewModel} from "../../post/model/post.view.model";
 import {PostQueryPaginationDto} from "../../post/dto/post.query.pagination.dto";
-import { BasicAuthGuard } from "../../../guards/auth.guard";
+
 
 
 @Controller('blogs')

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from '../dto/create.user.dto';
 import bcrypt from 'bcrypt';
 import { User, UserDocument } from '../schema/user.schema';
@@ -25,7 +25,15 @@ export class UserService {
   async registrationUser(createDto: RegistrationDto) {
     const passwordHash = await this.generatorHash(createDto.password);
     const newUser = await User.createUser(createDto, passwordHash);
+    console.log(newUser.emailInfo.isConfirmed);
     return this.userRepository.createUser(newUser);
+  }
+
+  async confirmationUserEmail(code: string) {
+    const user = await this.userQueryRepository.findUserByCode(code)
+    if(!user) throw new BadRequestException('userIsNotExist(code)')
+    if(user.emailInfo.isConfirmed) throw new BadRequestException('emailAlreadyIsConfirmed')
+    await this.userRepository.updateConfirmationStatus(user.id)
   }
 
   async deleteUser(userId: string): Promise<boolean> {

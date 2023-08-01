@@ -4,7 +4,7 @@ import { Request } from "express";
 
 
 @Injectable()
-export class BasicAuthGuard implements CanActivate {
+export class BasicAuth implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

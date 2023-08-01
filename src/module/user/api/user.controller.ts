@@ -8,13 +8,15 @@ import {
     NotFoundException,
     Param,
     Post,
-    Query
+    Query, UseGuards
 } from "@nestjs/common";
 import {UserQueryPaginationDto} from "../dto/user.query.pagination.dto";
 import {UserQueryRepository} from "../infrastructure/user.query.repository";
 import {UserService} from "../application/user.service";
 import {CreateUserDto} from "../dto/create.user.dto";
 import {UserViewModel} from "../model/user.view.model";
+import { BasicAuth } from "../../../guards/auth.guard";
+
 
 @Controller('users')
 export class UserController {
@@ -28,6 +30,7 @@ export class UserController {
     }
 
     @Post()
+    @UseGuards(BasicAuth)
     @HttpCode(HttpStatus.CREATED)
     async createUser(@Body() createDto: CreateUserDto): Promise<UserViewModel | null> {
         const newUserId = await this.userService.createUser(createDto)
@@ -35,6 +38,7 @@ export class UserController {
     }
 
     @Delete(':userId')
+    @UseGuards(BasicAuth)
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteUser(@Param('userId') userId: string) {
         const isDeleted = await this.userService.deleteUser(userId)

@@ -21,13 +21,18 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // }
 
     if (status === HttpStatus.BAD_REQUEST) {
-      const errorResponse: ExceptionsResponseMessageType = {
-        errorsMessages: []
-      }
-      const resBody: any = exception.getResponse()
+     try {
+        const errorResponse: ExceptionsResponseMessageType = {
+          errorsMessages: [],
+        };
+        const resBody: any = exception.getResponse();
 
-      resBody.message.forEach((m) => errorResponse.errorsMessages.push(m))
-      response.status(status).json(errorResponse)
+        resBody.message.forEach((m) => errorResponse.errorsMessages.push(m));
+        response.status(status).json(errorResponse);
+      } catch (e) {
+       const resBody: any = exception.getResponse()
+       response.status(status).json(resBody.message)
+     }
 
     } else {
       response.status(status).json({

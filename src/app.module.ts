@@ -28,17 +28,16 @@ import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
 import { AuthService } from './module/auth/application/auth.service';
 import { JwtService } from './module/auth/application/jwt.service';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import {
-  Session,
-  SessionSchema,
-} from './module/sessions/schema/session.schema';
+import { Session, SessionSchema } from './module/sessions/schema/session.schema';
 import { SessionService } from './module/sessions/application/session.service';
 import { SessionRepository } from './module/sessions/infrastructure/session.repository';
-import { MailerModule, MailerService } from "@nestjs-modules/mailer";
-import { MailModule } from "./module/email/mail.module";
-import { MailAdapter } from "./module/email/mail.adapter";
+import { MailModule } from './module/email/mail.module';
+import { MailAdapter } from './module/email/mail.adapter';
+import { LoginExistsValidation } from './validators/login.exists.validator';
+import { EmailExistsValidation } from './validators/email.exists.validator';
+import { BasicAuth } from "./guards/auth.guard";
 
 const controllers = [
   AppController,
@@ -49,8 +48,14 @@ const controllers = [
   AuthController,
 ];
 
-const validators = [BlogExistsValidation, TrimValidator];
-const guards = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
+const validators = [
+  BlogExistsValidation,
+  TrimValidator,
+  LoginExistsValidation,
+  EmailExistsValidation,
+];
+// const guards = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
+// const guards = [{ provide: APP_GUARD, useClass: BasicAuth}]
 
 const services = [
   AuthService,
@@ -78,16 +83,18 @@ const mongooseModule = [
   { name: Session.name, schema: SessionSchema },
 ];
 
-
 @Module({
   imports: [
     MailModule,
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
-    MongooseModule.forRootAsync({ imports: [ConfigModule], useClass: MongooseConfig, }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useClass: MongooseConfig,
+    }),
     MongooseModule.forFeature(mongooseModule),
     // ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
   ],
   controllers: controllers,
-  providers: [...services, ...validators, MailAdapter],
+  providers: [...services, ...validators, MailAdapter ],
 })
 export class AppModule {}
