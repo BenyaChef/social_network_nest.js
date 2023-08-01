@@ -6,6 +6,9 @@ import { UserRepository } from '../infrastructure/user.repository';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
 import { LoginDto } from '../../auth/dto/login.dto';
 import { RegistrationDto } from "../../auth/dto/registration.dto";
+import { exceptionHandler } from "../../../exception/exception.handler";
+import { FieldsEnum } from "../../../enum/fields.enum";
+import { ExceptionMessageEnum } from "../../../enum/exception.message.enum";
 
 @Injectable()
 export class UserService {
@@ -25,14 +28,13 @@ export class UserService {
   async registrationUser(createDto: RegistrationDto) {
     const passwordHash = await this.generatorHash(createDto.password);
     const newUser = await User.createUser(createDto, passwordHash);
-    console.log(newUser.emailInfo.isConfirmed);
     return this.userRepository.createUser(newUser);
   }
 
   async confirmationUserEmail(code: string) {
     const user = await this.userQueryRepository.findUserByCode(code)
-    if(!user) throw new BadRequestException('userIsNotExist(code)')
-    if(user.emailInfo.isConfirmed) throw new BadRequestException('emailAlreadyIsConfirmed')
+    if(!user) throw new BadRequestException(exceptionHandler(ExceptionMessageEnum.codeNotExists, FieldsEnum.code))
+    if(user.emailInfo.isConfirmed) throw new BadRequestException(exceptionHandler(ExceptionMessageEnum.codeAlreadyConfirm, FieldsEnum.code))
     await this.userRepository.updateConfirmationStatus(user.id)
   }
 

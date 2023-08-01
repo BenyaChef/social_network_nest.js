@@ -31,7 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         response.status(status).json(errorResponse);
       } catch (e) {
        const resBody: any = exception.getResponse()
-       response.status(status).json(resBody.message)
+       response.status(status).json(resBody)
      }
 
     } else {

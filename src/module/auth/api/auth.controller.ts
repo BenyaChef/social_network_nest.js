@@ -47,7 +47,6 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(@Body() resendingEmailDto: RegistrationEmailResendingDto) {
-    //TODO разобраться с эксепшеном, почему падает при бэдЭксепшен?
    return this.authService.registrationResendingEmail(resendingEmailDto.email);
   }
 
