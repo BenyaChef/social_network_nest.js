@@ -30,14 +30,21 @@ import { AuthService } from './module/auth/application/auth.service';
 import { JwtService } from './module/auth/application/jwt.service';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { Session, SessionSchema } from './module/sessions/schema/session.schema';
+import {
+  Session,
+  SessionSchema,
+} from './module/sessions/schema/session.schema';
 import { SessionService } from './module/sessions/application/session.service';
 import { SessionRepository } from './module/sessions/infrastructure/session.repository';
 import { MailModule } from './module/email/mail.module';
 import { MailAdapter } from './module/email/mail.adapter';
 import { LoginExistsValidation } from './validators/login.exists.validator';
 import { EmailExistsValidation } from './validators/email.exists.validator';
-import { BasicAuth } from "./guards/auth.guard";
+import { Comment, CommentSchema } from './module/comment/schema/comment.schema';
+import { CommentService } from "./module/comment/application/comment.service";
+import { CommentController } from "./module/comment/api/comment.controller";
+import { CommentRepository } from "./module/comment/infrastructure/comment.repository";
+import { CommentQueryRepository } from "./module/comment/infrastructure/comment.query.repository";
 
 const controllers = [
   AppController,
@@ -46,6 +53,7 @@ const controllers = [
   UserController,
   TestingController,
   AuthController,
+  CommentController
 ];
 
 const validators = [
@@ -58,22 +66,25 @@ const validators = [
 // const guards = [{ provide: APP_GUARD, useClass: BasicAuth}]
 
 const services = [
+  CommentService,
   AuthService,
   JwtService,
   AppService,
   BlogService,
   PostService,
+  UserService,
   BlogRepository,
   BlogQueryRepository,
   PostQueryRepository,
   PostRepository,
-  UserService,
   UserQueryRepository,
   UserRepository,
   TestingService,
   TestingRepository,
   SessionService,
   SessionRepository,
+  CommentRepository,
+  CommentQueryRepository
 ];
 
 const mongooseModule = [
@@ -81,6 +92,7 @@ const mongooseModule = [
   { name: Post.name, schema: PostSchema },
   { name: User.name, schema: UserSchema },
   { name: Session.name, schema: SessionSchema },
+  { name: Comment.name, schema: CommentSchema },
 ];
 
 @Module({
@@ -95,6 +107,6 @@ const mongooseModule = [
     // ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
   ],
   controllers: controllers,
-  providers: [...services, ...validators, MailAdapter ],
+  providers: [...services, ...validators, MailAdapter],
 })
 export class AppModule {}

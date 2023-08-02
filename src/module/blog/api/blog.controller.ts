@@ -9,7 +9,7 @@ import {
     Param,
     Post,
     Put,
-    Query
+    Query, UseGuards
 } from "@nestjs/common";
 import {BlogService} from '../application/blog.service';
 import {BlogQueryRepository} from '../infrastructure/blog.query.repository';
@@ -23,6 +23,7 @@ import {PostQueryRepository} from "../../post/infrastructure/post.query.reposito
 import {CreatePostDto} from "../../post/dto/create.post.dto";
 import {PostViewModel} from "../../post/model/post.view.model";
 import {PostQueryPaginationDto} from "../../post/dto/post.query.pagination.dto";
+import { BasicAuth } from "../../../guards/auth.guard";
 
 
 
@@ -59,6 +60,7 @@ export class BlogController {
     }
 
     @Post()
+    @UseGuards(BasicAuth)
     async createBlog(
         @Body() createDto: CreateBlogDto,
     ): Promise<BlogViewModel | null> {
@@ -67,6 +69,7 @@ export class BlogController {
     }
 
     @Post(':blogId/posts')
+    @UseGuards(BasicAuth)
     async createNewPostForBlog(@Body() createDto: CreatePostDto, @Param('blogId') blogId: string): Promise<PostViewModel | null> {
         const newBlogId: string | null = await this.postService.createPost(createDto, blogId)
         if (!newBlogId) throw new NotFoundException()
@@ -74,6 +77,7 @@ export class BlogController {
     }
 
     @Put(':blogId')
+    @UseGuards(BasicAuth)
     @HttpCode(HttpStatus.NO_CONTENT)
     async updateBlog(
         @Body() updateDto: UpdateBlogDto,
@@ -86,6 +90,7 @@ export class BlogController {
     }
 
     @Delete(':blogId')
+    @UseGuards(BasicAuth)
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteBlog(@Param('blogId') blogId: string) {
         const isDeleted: boolean = await this.blogService.deleteBlog(blogId);
