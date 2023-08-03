@@ -23,7 +23,7 @@ import {PostQueryRepository} from "../../post/infrastructure/post.query.reposito
 import {CreatePostDto} from "../../post/dto/create.post.dto";
 import {PostViewModel} from "../../post/model/post.view.model";
 import {PostQueryPaginationDto} from "../../post/dto/post.query.pagination.dto";
-import { BasicAuth } from "../../../guards/auth.guard";
+import { BasicAuth } from "../../../guards/basic.auth.guard";
 
 
 

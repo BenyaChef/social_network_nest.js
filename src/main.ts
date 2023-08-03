@@ -12,8 +12,7 @@ async function bootstrap() {
 
     app.enableCors()
     app.use(cookieParser())
-    app.useGlobalPipes(
-      new ValidationPipe({
+    app.useGlobalPipes(new ValidationPipe({
         transform: true,
         stopAtFirstError: true,
         exceptionFactory: customExceptionFactory,

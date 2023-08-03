@@ -15,7 +15,7 @@ import {UserQueryRepository} from "../infrastructure/user.query.repository";
 import {UserService} from "../application/user.service";
 import {CreateUserDto} from "../dto/create.user.dto";
 import {UserViewModel} from "../model/user.view.model";
-import { BasicAuth } from "../../../guards/auth.guard";
+import { BasicAuth } from "../../../guards/basic.auth.guard";
 
 
 @Controller('users')

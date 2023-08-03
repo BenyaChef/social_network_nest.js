@@ -45,6 +45,7 @@ import { CommentService } from "./module/comment/application/comment.service";
 import { CommentController } from "./module/comment/api/comment.controller";
 import { CommentRepository } from "./module/comment/infrastructure/comment.repository";
 import { CommentQueryRepository } from "./module/comment/infrastructure/comment.query.repository";
+import { BasicAuth } from "./guards/basic.auth.guard";
 
 const controllers = [
   AppController,
@@ -62,6 +63,7 @@ const validators = [
   LoginExistsValidation,
   EmailExistsValidation,
 ];
+
 // const guards = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
 // const guards = [{ provide: APP_GUARD, useClass: BasicAuth}]
 
