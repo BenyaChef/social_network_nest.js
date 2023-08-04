@@ -1,34 +1,35 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { UserService } from '../../user/application/user.service';
 import { LoginDto } from '../dto/login.dto';
-import { JwtService } from './jwt.service';
 import { randomUUID } from 'crypto';
-import {  UserDocument } from "../../user/schema/user.schema";
+import { UserDocument } from "../../user/schema/user.schema";
 import { SessionService } from "../../sessions/application/session.service";
 import { Session } from "../../sessions/schema/session.schema";
 import { RegistrationDto } from "../dto/registration.dto";
 import { MailAdapter } from "../../email/mail.adapter";
 import { UserQueryRepository } from "../../user/infrastructure/user.query.repository";
 import { UserRepository } from "../../user/infrastructure/user.repository";
+import { TokenService } from "./jwt.service";
+
 
 @Injectable()
 export class AuthService {
   constructor(
     protected userService: UserService,
-    protected jwtService: JwtService,
+    protected tokenService: TokenService,
     protected sessionService: SessionService,
     protected mailAdapter: MailAdapter,
     protected userRepository: UserRepository,
     protected userQueryRepository: UserQueryRepository
   ) {}
 
-  async loginUser(loginDto: LoginDto, ip: string, userAgent: string) {
-    const user: UserDocument | null = await this.userService.checkCredentials(loginDto)
-    if(!user) return null
+  async loginUser(ip: string, userAgent: string, user: UserDocument) {
+    // const user: UserDocument | null = await this.userService.checkCredentials(loginDto)
+    // if(!user) return null
 
     const deviceId = randomUUID()
-    const {accessToken, refreshToken} = await this.jwtService.createJwt(user.id, deviceId)
-    const lastActiveDate = await this.jwtService.getIssuedAtFromRefreshToken(refreshToken)
+    const {accessToken, refreshToken} = await this.tokenService.createJwt(user.id, deviceId)
+    const lastActiveDate: any = await this.tokenService.getLastActiveDate(refreshToken)
 
     const newSession: Session = {
       ip,

@@ -1,37 +1,44 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   HttpCode,
   HttpStatus,
   Ip,
-  Post,
+  Post, Req,
   Res,
-  UnauthorizedException
+  UnauthorizedException, UseGuards
 } from "@nestjs/common";
 import { PasswordRecoveryDto } from "../dto/password.recovery.dto";
 import { LoginDto } from "../dto/login.dto";
 import { AuthService } from "../application/auth.service";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { UserAgent } from "../../../decorators/user.agent.decorator";
 import { RegistrationDto } from "../dto/registration.dto";
 import { RegistrationEmailResendingDto } from "../dto/registration.email.resending.dto";
 import { ConfirmationCodeDto } from "../dto/confirmation.code.dto";
+import { ThrottlerGuard } from "@nestjs/throttler";
+import { LocalAuthGuard } from "../../../guards/auth.local.guard";
+import { UserDocument } from "../../user/schema/user.schema";
 
-// @SkipThrottle()
+
+
 @Controller('auth')
 export class AuthController {
   constructor(protected authService: AuthService) {}
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
+  @UseGuards(ThrottlerGuard)
   @HttpCode(HttpStatus.OK)
   async loginUser(
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
     @UserAgent() userAgent: string,
     @Res({ passthrough: true }) res: Response,
+    @Req() req: Request
   ) {
-    const result = await this.authService.loginUser(loginDto, ip, userAgent);
+    console.log(req.user);
+    const result = await this.authService.loginUser(ip, userAgent, req.user as UserDocument);
     if (!result) throw new UnauthorizedException();
 
     res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: true, });

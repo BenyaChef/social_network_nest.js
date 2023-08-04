@@ -38,7 +38,7 @@ class PasswordRecoveryInfo {
 const PasswordRecoveryInfoSchema =
   SchemaFactory.createForClass(PasswordRecoveryInfo);
 
-@Schema()
+@Schema({id: true})
 export class User {
   @Prop({ required: true, type: AccountDataSchema })
   accountData: AccountData;

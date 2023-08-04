@@ -27,8 +27,8 @@ import { BlogExistsValidation } from './validators/blog.exists.validator';
 import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
 import { AuthService } from './module/auth/application/auth.service';
-import { JwtService } from './module/auth/application/jwt.service';
-import { ThrottlerGuard } from '@nestjs/throttler';
+
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { APP_GUARD } from '@nestjs/core';
 import {
   Session,
@@ -45,7 +45,10 @@ import { CommentService } from "./module/comment/application/comment.service";
 import { CommentController } from "./module/comment/api/comment.controller";
 import { CommentRepository } from "./module/comment/infrastructure/comment.repository";
 import { CommentQueryRepository } from "./module/comment/infrastructure/comment.query.repository";
-import { BasicAuth } from "./guards/basic.auth.guard";
+import { JwtService } from "@nestjs/jwt";
+import { TokenService } from "./module/auth/application/jwt.service";
+import { LocalStrategy } from "./strategy/auth.local.strategy";
+import { PassportModule } from "@nestjs/passport";
 
 const controllers = [
   AppController,
@@ -64,11 +67,9 @@ const validators = [
   EmailExistsValidation,
 ];
 
-// const guards = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
-// const guards = [{ provide: APP_GUARD, useClass: BasicAuth}]
-
 const services = [
   CommentService,
+  TokenService,
   AuthService,
   JwtService,
   AppService,
@@ -99,6 +100,7 @@ const mongooseModule = [
 
 @Module({
   imports: [
+    PassportModule,
     MailModule,
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     MongooseModule.forRootAsync({
@@ -106,9 +108,9 @@ const mongooseModule = [
       useClass: MongooseConfig,
     }),
     MongooseModule.forFeature(mongooseModule),
-    // ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
+    ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
   ],
   controllers: controllers,
-  providers: [...services, ...validators, MailAdapter],
+  providers: [...services, ...validators, MailAdapter, LocalStrategy],
 })
 export class AppModule {}

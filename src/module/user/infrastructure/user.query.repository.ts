@@ -23,10 +23,10 @@ export class UserQueryRepository {
     return this.userModel.findOne({'accountData.email': email})
   }
 
-  async findUserLoginOrEmail(loginDto: LoginDto): Promise<UserDocument | null> {
+  async findUserLoginOrEmail(loginOrEmail: string): Promise<UserDocument | null> {
     return this.userModel.findOne({
-      $or: [{ 'accountData.login': loginDto.loginOrEmail }, {'accountData.email': loginDto.loginOrEmail }],
-    });
+      $or: [{ 'accountData.login': loginOrEmail }, {'accountData.email': loginOrEmail }],
+    })
   }
 
   async getUserByID(userId: string): Promise<UserViewModel | null> {

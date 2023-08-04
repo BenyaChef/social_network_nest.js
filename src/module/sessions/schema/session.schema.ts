@@ -10,7 +10,7 @@ export class Session {
   userId: string;
   @Prop({ required: true, type: String })
   deviceId: string;
-  @Prop({ required: true, type: String })
+  @Prop({ required: false, type: String })
   lastActiveDate: string;
   @Prop({ required: true, type: String })
   title: string;
