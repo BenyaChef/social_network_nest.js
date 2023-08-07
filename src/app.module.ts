@@ -28,8 +28,7 @@ import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
 import { AuthService } from './module/auth/application/auth.service';
 
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from "@nestjs/throttler";
 import {
   Session,
   SessionSchema,
@@ -47,8 +46,11 @@ import { CommentRepository } from "./module/comment/infrastructure/comment.repos
 import { CommentQueryRepository } from "./module/comment/infrastructure/comment.query.repository";
 import { JwtService } from "@nestjs/jwt";
 import { TokenService } from "./module/auth/application/jwt.service";
-import { LocalStrategy } from "./strategy/auth.local.strategy";
+import { LocalStrategy } from "./strategy/auth-local.strategy";
 import { PassportModule } from "@nestjs/passport";
+import { JwtAccessStrategy } from "./strategy/auth.access.jwt.strategy";
+import { JwtRefreshStrategy } from "./strategy/auth.refresh.jwt.strategy";
+
 
 const controllers = [
   AppController,
@@ -66,6 +68,8 @@ const validators = [
   LoginExistsValidation,
   EmailExistsValidation,
 ];
+
+const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy]
 
 const services = [
   CommentService,
@@ -111,6 +115,6 @@ const mongooseModule = [
     ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
   ],
   controllers: controllers,
-  providers: [...services, ...validators, MailAdapter, LocalStrategy],
+  providers: [...services, ...validators, ...strategy, MailAdapter],
 })
 export class AppModule {}

@@ -12,9 +12,10 @@ export class TokenService {
   private expireAccessToken = this.configService.get<string>('EXPIRATION_ACCESS')
   private expireRefreshToken = this.configService.get<string>('EXPIRATION_REFRESH')
 
+
   async createJwt(userId: string, deviceId: string) {
-    const accessToken = this.jwtService.sign({ userId: userId }, {secret: this.secretKey, expiresIn: this.expireAccessToken})
-    const refreshToken = this.jwtService.sign({ userId: userId, deviceId: deviceId }, {secret: this.secretKey,expiresIn: this.expireRefreshToken})
+    const accessToken = this.jwtService.sign({ sub: userId }, {secret: this.secretKey, expiresIn: this.expireAccessToken})
+    const refreshToken = this.jwtService.sign({ sub: userId, deviceId: deviceId }, {secret: this.secretKey, expiresIn: this.expireRefreshToken})
     return {
       accessToken: accessToken,
       refreshToken: refreshToken

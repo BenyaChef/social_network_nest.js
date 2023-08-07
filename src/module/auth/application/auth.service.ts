@@ -10,7 +10,7 @@ import { MailAdapter } from "../../email/mail.adapter";
 import { UserQueryRepository } from "../../user/infrastructure/user.query.repository";
 import { UserRepository } from "../../user/infrastructure/user.repository";
 import { TokenService } from "./jwt.service";
-
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -23,12 +23,10 @@ export class AuthService {
     protected userQueryRepository: UserQueryRepository
   ) {}
 
-  async loginUser(ip: string, userAgent: string, user: UserDocument) {
-    // const user: UserDocument | null = await this.userService.checkCredentials(loginDto)
-    // if(!user) return null
+  async loginUser(ip: string, userAgent: string, userId: string) {
 
     const deviceId = randomUUID()
-    const {accessToken, refreshToken} = await this.tokenService.createJwt(user.id, deviceId)
+    const {accessToken, refreshToken} = await this.tokenService.createJwt(userId, deviceId)
     const lastActiveDate: any = await this.tokenService.getLastActiveDate(refreshToken)
 
     const newSession: Session = {
@@ -36,7 +34,7 @@ export class AuthService {
       title: userAgent,
       lastActiveDate,
       deviceId,
-      userId: user.id
+      userId: userId
     }
     await this.sessionService.createSession(newSession)
     return {accessToken, refreshToken}
@@ -60,5 +58,13 @@ export class AuthService {
 
   async confirmationRegistration(code: string) {
       return this.userService.confirmationUserEmail(code)
+  }
+
+  async validateUser(loginOrEmail: string, password: string): Promise<UserDocument | null> {
+    const user: UserDocument | null = await this.userQueryRepository.findUserLoginOrEmail(loginOrEmail);
+    if (!user) return null;
+    const encodingUser = await bcrypt.compare(password, user.accountData.passwordHash);
+    if (!encodingUser) return null;
+    return user;
   }
 }

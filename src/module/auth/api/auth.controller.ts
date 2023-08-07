@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Get,
   HttpCode,
   HttpStatus,
   Ip,
@@ -11,34 +11,40 @@ import {
 import { PasswordRecoveryDto } from "../dto/password.recovery.dto";
 import { LoginDto } from "../dto/login.dto";
 import { AuthService } from "../application/auth.service";
-import { Request, Response } from "express";
+import {  Response } from "express";
 import { UserAgent } from "../../../decorators/user.agent.decorator";
 import { RegistrationDto } from "../dto/registration.dto";
 import { RegistrationEmailResendingDto } from "../dto/registration.email.resending.dto";
 import { ConfirmationCodeDto } from "../dto/confirmation.code.dto";
 import { ThrottlerGuard } from "@nestjs/throttler";
-import { LocalAuthGuard } from "../../../guards/auth.local.guard";
-import { UserDocument } from "../../user/schema/user.schema";
+import { LocalAuthGuard } from "../../../guards/auth-local.guard";
+
+import { CurrentUser } from "../../../decorators/current-user.decorator";
+import { AuthAccessJwtGuard } from "../../../guards/auth-access.jwt.guard";
+import { UserQueryRepository } from "../../user/infrastructure/user.query.repository";
+import { RefreshToken } from "../../../decorators/refresh-token.decorator";
+import { AuthRefreshJwtGuard } from "../../../guards/auth-refresh.jwt.guard";
 
 
 
 @Controller('auth')
 export class AuthController {
-  constructor(protected authService: AuthService) {}
+  constructor(protected authService: AuthService,
+              protected userQueryRepository: UserQueryRepository) {}
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
   @UseGuards(ThrottlerGuard)
+  @Post('login')
   @HttpCode(HttpStatus.OK)
   async loginUser(
     @Body() loginDto: LoginDto,
     @Ip() ip: string,
     @UserAgent() userAgent: string,
     @Res({ passthrough: true }) res: Response,
-    @Req() req: Request
+    @CurrentUser() userId: string
   ) {
-    console.log(req.user);
-    const result = await this.authService.loginUser(ip, userAgent, req.user as UserDocument);
+
+    const result = await this.authService.loginUser(ip, userAgent, userId);
     if (!result) throw new UnauthorizedException();
 
     res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: true, });
@@ -66,5 +72,17 @@ export class AuthController {
   @Post('password-recovery')
   async passwordRecovery(@Body() recoveryDto: PasswordRecoveryDto) {
     return true
+  }
+
+  @UseGuards(AuthAccessJwtGuard)
+  @Get('me')
+  async getProfile(@CurrentUser() userId: string){
+    const user = await this.userQueryRepository.getUserByID(userId)
+    if(!user) throw new UnauthorizedException()
+    return {
+      email: user.email,
+      login: user.login,
+      userId: user.id
+    }
   }
 }
