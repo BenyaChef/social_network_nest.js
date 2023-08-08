@@ -24,6 +24,8 @@ import {CreatePostDto} from "../../post/dto/create.post.dto";
 import {PostViewModel} from "../../post/model/post.view.model";
 import {PostQueryPaginationDto} from "../../post/dto/post.query.pagination.dto";
 import { BasicAuth } from "../../../guards/basic.auth.guard";
+import { ObjectIdGuard } from "../../../guards/objectid.validation.guard";
+
 
 
 
@@ -46,6 +48,7 @@ export class BlogController {
     }
 
     @Get(':blogId/posts')
+    @UseGuards(ObjectIdGuard)
     async getAllPostByBlogID(@Param('blogId') blogId: string, @Query() query: PostQueryPaginationDto) {
         const findPosts = await this.postQueryRepository.getAllPosts(query, blogId)
         if(findPosts.items.length <= 0) throw new NotFoundException()
@@ -69,6 +72,7 @@ export class BlogController {
     }
 
     @Post(':blogId/posts')
+    @UseGuards(ObjectIdGuard)
     @UseGuards(BasicAuth)
     async createNewPostForBlog(@Body() createDto: CreatePostDto, @Param('blogId') blogId: string): Promise<PostViewModel | null> {
         const newBlogId: string | null = await this.postService.createPost(createDto, blogId)
@@ -78,6 +82,7 @@ export class BlogController {
 
     @Put(':blogId')
     @UseGuards(BasicAuth)
+    @UseGuards(ObjectIdGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
     async updateBlog(
         @Body() updateDto: UpdateBlogDto,
@@ -91,6 +96,7 @@ export class BlogController {
 
     @Delete(':blogId')
     @UseGuards(BasicAuth)
+    @UseGuards(ObjectIdGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteBlog(@Param('blogId') blogId: string) {
         const isDeleted: boolean = await this.blogService.deleteBlog(blogId);

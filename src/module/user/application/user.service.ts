@@ -1,10 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateUserDto } from '../dto/create.user.dto';
 import bcrypt from 'bcrypt';
-import { User, UserDocument } from '../schema/user.schema';
+import { User } from '../schema/user.schema';
 import { UserRepository } from '../infrastructure/user.repository';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
-import { LoginDto } from '../../auth/dto/login.dto';
 import { RegistrationDto } from "../../auth/dto/registration.dto";
 
 @Injectable()

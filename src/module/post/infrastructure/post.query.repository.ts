@@ -1,11 +1,10 @@
 import {PostQueryPaginationDto} from '../dto/post.query.pagination.dto';
 import {InjectModel} from '@nestjs/mongoose';
-import {FilterQuery, Model, Query} from 'mongoose';
+import {FilterQuery, Model } from 'mongoose';
 import {Post, PostDocument} from '../schema/post.schema';
 import {PaginationViewModel} from '../../../helpers/pagination.view.mapper';
 import {PostViewModel} from '../model/post.view.model';
 import {Injectable} from "@nestjs/common";
-import {Blog} from "../../blog/schema/blog.schema";
 
 @Injectable()
 export class PostQueryRepository {

@@ -1,28 +1,59 @@
-import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {HydratedDocument, Model} from 'mongoose';
-import {UpdatePostDto} from "../dto/update.post.dto";
-import {BlogDocument} from "../../blog/schema/blog.schema";
-import {CreatePostDto} from "../dto/create.post.dto";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
+import { UpdatePostDto } from "../dto/update.post.dto";
+import { BlogDocument } from "../../blog/schema/blog.schema";
+import { CreatePostDto } from "../dto/create.post.dto";
+import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
+
+@Schema({ _id: false, versionKey: false })
+class NewestLikes {
+  @Prop({ required: true, type: String })
+  addedAt: string;
+  @Prop({ required: true, type: String })
+  userId: string;
+  @Prop({ required: true, type: String })
+  login: string;
+}
+
+export const NewestLikesSchema = SchemaFactory.createForClass(NewestLikes);
+
+@Schema({ _id: false, versionKey: false })
+export class ExtendedLikesInfo {
+    @Prop({ required: true, type: Number })
+    likesCount: number;
+    @Prop({ required: true, type: Number })
+    dislikesCount: number;
+    @Prop({ required: true, type: String, enum: ReactionStatusEnum })
+    myStatus: ReactionStatusEnum;
+    @Prop({ required: true, type: [NewestLikesSchema] })
+    newestLikes: NewestLikes[];
+}
+
+export const ExtendedLikesInfoSchema =
+  SchemaFactory.createForClass(ExtendedLikesInfo);
 
 @Schema()
 export class Post {
-    @Prop()
+    @Prop({ required: true, type: String })
     title: string;
 
-    @Prop()
+    @Prop({ required: true, type: String })
     shortDescription: string;
 
-    @Prop()
+    @Prop({ required: true, type: String })
     content: string;
 
-    @Prop()
+    @Prop({ required: true, type: String })
     blogId: string;
 
-    @Prop()
+    @Prop({ required: true, type: String })
     blogName: string;
 
-    @Prop()
+    @Prop({ required: true, type: String })
     createdAt: string;
+
+    @Prop({ required: true, type: ExtendedLikesInfoSchema })
+    extendedLikesInfo: ExtendedLikesInfo
 
     update(updateDto: UpdatePostDto, blog: BlogDocument) {
         this.title = updateDto.title
@@ -40,6 +71,12 @@ export class Post {
         newPost.content = createDto.content
         newPost.shortDescription = createDto.shortDescription
         newPost.createdAt = new Date().toISOString()
+        newPost.extendedLikesInfo = {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: ReactionStatusEnum.None,
+            newestLikes: []
+        }
         return newPost
     }
 

@@ -18,14 +18,10 @@ export class PostViewModel {
     this.blogName = postModel.blogName;
     this.createdAt = postModel.createdAt;
     this.extendedLikesInfo = {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: 'None',
-      newestLikes: [{
-        addedAt: 'string',
-        userId: 'string',
-        login: 'string'
-      }]
+      likesCount: postModel.extendedLikesInfo.likesCount,
+      dislikesCount: postModel.extendedLikesInfo.dislikesCount,
+      myStatus: postModel.extendedLikesInfo.myStatus,
+      newestLikes: postModel.extendedLikesInfo.newestLikes
     }
   }
 }

@@ -1,5 +1,5 @@
 export const cookieExtractor = function(req) {
-  var token = null;
+ let token = null;
   if (req && req.cookies) {
     token = req.cookies.refreshToken;
   }

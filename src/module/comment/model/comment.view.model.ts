@@ -1,23 +1,27 @@
-import { CommentDocument, LikesInfo } from "../schema/comment.schema";
-import { UserDocument } from "../../user/schema/user.schema";
+import { CommentDocument, LikesInfo } from '../schema/comment.schema';
+import { ReactionStatusEnum } from '../../../enum/reaction.status.enum';
 
 export class CommentViewModel {
-  id: string
-  content: string
+  id: string;
+  content: string;
   commentatorInfo: {
-    userId: string
-    userLogin: string
-  }
-  createdAt: string
-  likesInfo: LikesInfo
-  constructor(comment: CommentDocument, user: UserDocument, likesInfo: LikesInfo) {
-    this.id = comment.id
-    this.content = comment.content
-    this.commentatorInfo.userId = user.id
-    this.commentatorInfo.userLogin = user.accountData.login
-    this.createdAt = comment.createdAt
-    this.likesInfo.likesCount = likesInfo.likesCount
-    this.likesInfo.dislikesCount = likesInfo.dislikesCount
-    this.likesInfo.myStatus = likesInfo.myStatus
+    userId: string;
+    userLogin: string;
+  };
+  createdAt: string;
+  likesInfo: LikesInfo;
+  constructor(comment: CommentDocument) {
+    this.id = comment.id;
+    this.content = comment.content;
+    this.commentatorInfo = {
+      userId: comment.userId,
+      userLogin: comment.userLogin,
+    };
+    this.createdAt = comment.createdAt;
+    this.likesInfo = {
+      likesCount: comment.likesInfo.likesCount,
+      dislikesCount: comment.likesInfo.dislikesCount,
+      myStatus: ReactionStatusEnum.None || comment.likesInfo.myStatus,
+    };
   }
 }

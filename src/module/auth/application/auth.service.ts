@@ -38,7 +38,6 @@ export class AuthService {
     }
     await this.sessionService.createSession(newSession)
     return {accessToken, refreshToken}
-
   }
 
   async registrationUser(registrationDto: RegistrationDto) {

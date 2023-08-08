@@ -7,6 +7,10 @@ import { Model } from 'mongoose';
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
+  async getUserById(userId: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({_id: userId})
+  }
+
   async createUser(newUser: User): Promise<UserDocument> {
     const result = await this.userModel.create(newUser);
     return result;
