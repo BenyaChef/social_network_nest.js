@@ -23,7 +23,9 @@ import { CreateCommentDto } from '../../comment/dto/create.comment.dto';
 import { AuthAccessJwtGuard } from '../../../guards/auth-access.jwt.guard';
 import { CurrentUser } from '../../../decorators/current-user.decorator';
 import { CommentService } from '../../comment/application/comment.service';
-import { CommentQueryRepository } from "../../comment/infrastructure/comment.query.repository";
+import { CommentQueryRepository } from '../../comment/infrastructure/comment.query.repository';
+import { ReactionStatusDto } from "../../comment/dto/reaction.status.dto";
+import { exceptionHandler } from "../../../exception/exception.handler";
 
 @Controller('posts')
 export class PostController {
@@ -31,7 +33,7 @@ export class PostController {
     protected postService: PostService,
     protected postQueryRepository: PostQueryRepository,
     protected commentService: CommentService,
-    protected commentQueryRepository: CommentQueryRepository
+    protected commentQueryRepository: CommentQueryRepository,
   ) {}
 
   @Get()
@@ -69,9 +71,27 @@ export class PostController {
     @Param('postId') postId: string,
     @CurrentUser() userId: string,
   ) {
-    const commentId = await this.commentService.createComment(createCommentDto.content, postId, userId);
+    const post = await this.postQueryRepository.getPostById(postId);
+    if (!post) throw new NotFoundException();
+    const commentId = await this.commentService.createComment(
+      createCommentDto.content,
+      postId,
+      userId,
+    );
     if (!commentId) throw new NotFoundException();
-    return this.commentQueryRepository.getCommentById(commentId)
+    return this.commentQueryRepository.getCommentById(commentId);
+  }
+
+  @UseGuards(AuthAccessJwtGuard)
+  @Put(':postId/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changeReactionForPost(
+    @Param('postId') postId: string,
+    @Body() reactionStatus: ReactionStatusDto,
+    @CurrentUser() userId: string
+  ) {
+    const result = await this.postService.changeReactionForPost(postId, userId, reactionStatus.likeStatus)
+    return exceptionHandler(result)
   }
 
   @Put(':postId')

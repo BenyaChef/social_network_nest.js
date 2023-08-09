@@ -14,10 +14,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
-    //
-    // if(status === 500) {
-    //   return  response.status(400).json('Something went wrong')
-    // }
 
     if (status === HttpStatus.BAD_REQUEST) {
       const errorResponse: ExceptionsResponseMessageType = {

@@ -11,6 +11,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, 'accessToken')
       ignoreExpiration: false,
       secretOrKey: config.get<string>('SECRET_KEY')
     });
+
   }
 
   async validate(payload: any) {

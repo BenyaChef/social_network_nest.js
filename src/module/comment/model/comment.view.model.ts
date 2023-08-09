@@ -1,5 +1,4 @@
 import { CommentDocument, LikesInfo } from '../schema/comment.schema';
-import { ReactionStatusEnum } from '../../../enum/reaction.status.enum';
 
 export class CommentViewModel {
   id: string;
@@ -10,7 +9,7 @@ export class CommentViewModel {
   };
   createdAt: string;
   likesInfo: LikesInfo;
-  constructor(comment: CommentDocument) {
+  constructor(comment: CommentDocument, likesInfoCount: LikesInfo) {
     this.id = comment.id;
     this.content = comment.content;
     this.commentatorInfo = {
@@ -19,9 +18,9 @@ export class CommentViewModel {
     };
     this.createdAt = comment.createdAt;
     this.likesInfo = {
-      likesCount: comment.likesInfo.likesCount,
-      dislikesCount: comment.likesInfo.dislikesCount,
-      myStatus: ReactionStatusEnum.None || comment.likesInfo.myStatus,
+      likesCount: likesInfoCount.likesCount,
+      dislikesCount: likesInfoCount.dislikesCount,
+      myStatus: likesInfoCount.myStatus
     };
   }
 }

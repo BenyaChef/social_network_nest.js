@@ -28,7 +28,7 @@ import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
 import { AuthService } from './module/auth/application/auth.service';
 
-import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerModule } from '@nestjs/throttler';
 import {
   Session,
   SessionSchema,
@@ -40,17 +40,22 @@ import { MailAdapter } from './module/email/mail.adapter';
 import { LoginExistsValidation } from './validators/login.exists.validator';
 import { EmailExistsValidation } from './validators/email.exists.validator';
 import { Comment, CommentSchema } from './module/comment/schema/comment.schema';
-import { CommentService } from "./module/comment/application/comment.service";
-import { CommentController } from "./module/comment/api/comment.controller";
-import { CommentRepository } from "./module/comment/infrastructure/comment.repository";
-import { CommentQueryRepository } from "./module/comment/infrastructure/comment.query.repository";
-import { JwtService } from "@nestjs/jwt";
-import { TokenService } from "./module/auth/application/jwt.service";
-import { LocalStrategy } from "./strategy/auth-local.strategy";
-import { PassportModule } from "@nestjs/passport";
-import { JwtAccessStrategy } from "./strategy/auth.access.jwt.strategy";
-import { JwtRefreshStrategy } from "./strategy/auth.refresh.jwt.strategy";
-
+import { CommentService } from './module/comment/application/comment.service';
+import { CommentController } from './module/comment/api/comment.controller';
+import { CommentRepository } from './module/comment/infrastructure/comment.repository';
+import { CommentQueryRepository } from './module/comment/infrastructure/comment.query.repository';
+import { JwtService } from '@nestjs/jwt';
+import { TokenService } from './module/auth/application/jwt.service';
+import { LocalStrategy } from './strategy/auth-local.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { JwtAccessStrategy } from './strategy/auth.access.jwt.strategy';
+import { JwtRefreshStrategy } from './strategy/auth.refresh.jwt.strategy';
+import {
+  Reaction,
+  ReactionSchema,
+} from './module/reaction/schema/reaction.schema';
+import { ReactionService } from "./module/reaction/application/reaction.service";
+import { ReactionRepository } from "./module/reaction/infrastructure/reaction.repository";
 
 const controllers = [
   AppController,
@@ -59,7 +64,7 @@ const controllers = [
   UserController,
   TestingController,
   AuthController,
-  CommentController
+  CommentController,
 ];
 
 const validators = [
@@ -69,10 +74,11 @@ const validators = [
   EmailExistsValidation,
 ];
 
-const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy]
+const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
 
 const services = [
   CommentService,
+  ReactionService,
   TokenService,
   AuthService,
   JwtService,
@@ -91,7 +97,8 @@ const services = [
   SessionService,
   SessionRepository,
   CommentRepository,
-  CommentQueryRepository
+  CommentQueryRepository,
+  ReactionRepository
 ];
 
 const mongooseModule = [
@@ -100,6 +107,7 @@ const mongooseModule = [
   { name: User.name, schema: UserSchema },
   { name: Session.name, schema: SessionSchema },
   { name: Comment.name, schema: CommentSchema },
+  { name: Reaction.name, schema: ReactionSchema },
 ];
 
 @Module({
@@ -112,7 +120,7 @@ const mongooseModule = [
       useClass: MongooseConfig,
     }),
     MongooseModule.forFeature(mongooseModule),
-    ThrottlerModule.forRoot({ ttl: 10, limit: 5 })
+    ThrottlerModule.forRoot({ ttl: 10, limit: 5 }),
   ],
   controllers: controllers,
   providers: [...services, ...validators, ...strategy, MailAdapter],

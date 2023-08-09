@@ -1,12 +1,12 @@
 import {
   Body,
-  Controller,
-  Get,
+  Controller, Delete,
+  Get, HttpCode, HttpStatus,
   NotFoundException,
   Param,
   Put,
-  UseGuards,
-} from '@nestjs/common';
+  UseGuards
+} from "@nestjs/common";
 import { CommentService } from '../application/comment.service';
 import { CommentQueryRepository } from '../infrastructure/comment.query.repository';
 import { CurrentUserId } from '../../../decorators/current-user-id.decorator';
@@ -15,6 +15,9 @@ import { ObjectIdGuard } from '../../../guards/objectid.validation.guard';
 import { AuthAccessJwtGuard } from '../../../guards/auth-access.jwt.guard';
 import { UpdateCommentDto } from '../dto/update.comment.dto';
 import { CurrentUser } from "../../../decorators/current-user.decorator";
+import { exceptionHandler } from "../../../exception/exception.handler";
+import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
+import { ReactionStatusDto } from "../dto/reaction.status.dto";
 
 @Controller('comments')
 export class CommentController {
@@ -24,15 +27,12 @@ export class CommentController {
   ) {}
 
   @UseGuards(NonBlockingAuthGuard)
-  @UseGuards(ObjectIdGuard)
   @Get(':commentId')
   async getCommentById(
     @Param('commentId') commentId: string,
     @CurrentUserId() userId: string,
   ) {
-    const comment = await this.commentQueryRepository.getCommentById(
-      commentId,
-      userId,
+    const comment = await this.commentQueryRepository.getCommentById(commentId, userId,
     );
     if (!comment) throw new NotFoundException();
     return comment;
@@ -40,14 +40,37 @@ export class CommentController {
 
   @UseGuards(AuthAccessJwtGuard)
   @Put(':commentId')
-  @UseGuards(ObjectIdGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updateComment(
     @Param('commentId') commentId: string,
     @CurrentUser() userId: string,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    console.log(userId);
     const resultUpdate = await this.commentService.update(updateCommentDto.content, userId, commentId)
-    return resultUpdate
+    return exceptionHandler(resultUpdate)
+  }
+
+  @UseGuards(AuthAccessJwtGuard)
+  @Delete(':commentId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteComment(
+    @Param('commentId') commentId: string,
+    @CurrentUser() userId: string
+  ) {
+    const resultDelete = await this.commentService.deleteComment(userId, commentId)
+    return exceptionHandler(resultDelete)
+  }
+
+  @UseGuards(AuthAccessJwtGuard)
+  @Put(':commentId/like-status')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changeReactionForComment(
+    @Param('commentId') commentId: string,
+    @CurrentUser() userId: string,
+    @Body() reactionDto: ReactionStatusDto
+  ) {
+    const result = await this.commentService.changeReactionForComment(commentId, userId, reactionDto.likeStatus)
+
+    return exceptionHandler(result)
   }
 }

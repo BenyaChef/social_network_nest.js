@@ -1,10 +1,22 @@
-import { ErrorMessageType } from "./exception.type/error.message.type";
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
+import { ResultCode } from "../enum/result-code.enum";
 
-export const exceptionHandler = (message: string, field: string) => {
-    return {
-      errorsMessages: [{
-        message: message,
-        field: field
-      }]
+export const exceptionHandler = (code: ResultCode) => {
+
+  switch (code) {
+    case ResultCode.BadRequest: {
+      throw new BadRequestException();
     }
-}
+    case ResultCode.NotFound: {
+      throw new NotFoundException();
+    }
+    case ResultCode.Forbidden: {
+      throw new ForbiddenException();
+    }
+    default: return true
+  }
+};

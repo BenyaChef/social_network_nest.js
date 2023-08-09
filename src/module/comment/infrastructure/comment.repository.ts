@@ -7,7 +7,7 @@ import { Model } from "mongoose";
 export class CommentRepository {
   constructor(@InjectModel(Comment.name) private commentModel: Model<CommentDocument>) {}
 
-  async getCommentById(commentId: string): Promise<CommentDocument | null> {
+  async getCommentById(commentId: string, userId?: string): Promise<CommentDocument | null> {
     return this.commentModel.findOne({_id: commentId})
   }
 
@@ -17,8 +17,12 @@ export class CommentRepository {
   }
 
   async update(comment: CommentDocument) {
-    console.log(comment);
     return await comment.save()
+  }
+
+  async delete(commentId: string): Promise<boolean> {
+    const resultDelete = await this.commentModel.deleteOne({_id: commentId})
+    return resultDelete.deletedCount === 1
   }
 
 }
