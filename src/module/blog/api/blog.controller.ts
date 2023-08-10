@@ -49,7 +49,7 @@ export class BlogController {
     @Get(':blogId/posts')
 
     async getAllPostByBlogID(@Param('blogId') blogId: string, @Query() query: PostQueryPaginationDto) {
-        const findPosts = await this.postQueryRepository.getAllPosts(query, blogId)
+        const findPosts = await this.postQueryRepository.getAllPostsForBlogId(query, blogId)
         if(findPosts.items.length <= 0) throw new NotFoundException()
         return findPosts
     }

@@ -9,7 +9,7 @@ export class PostRepository {
     }
 
     async getPostById(postId: string): Promise<PostDocument | null> {
-        return this.postModel.findById(postId)
+        return this.postModel.findOne({id: postId})
     }
 
     async createPost(newPost: Post): Promise<string> {
@@ -23,7 +23,7 @@ export class PostRepository {
     }
 
     async deletePost(postId: string): Promise<boolean> {
-        const result: PostDocument | null = await this.postModel.findOneAndDelete({_id: postId})
+        const result: PostDocument | null = await this.postModel.findOneAndDelete({ id: postId})
         return result !== null
     }
 }

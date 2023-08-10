@@ -26,6 +26,10 @@ import { CommentService } from '../../comment/application/comment.service';
 import { CommentQueryRepository } from '../../comment/infrastructure/comment.query.repository';
 import { ReactionStatusDto } from "../../comment/dto/reaction.status.dto";
 import { exceptionHandler } from "../../../exception/exception.handler";
+import { NonBlockingAuthGuard } from "../../../guards/non-blocking.auth.guard";
+import { CurrentUserId } from "../../../decorators/current-user-id.decorator";
+import { CommentViewModel } from "../../comment/model/comment.view.model";
+import { BasicAuth } from "../../../guards/basic.auth.guard";
 
 @Controller('posts')
 export class PostController {
@@ -36,25 +40,35 @@ export class PostController {
     protected commentQueryRepository: CommentQueryRepository,
   ) {}
 
+  @UseGuards(NonBlockingAuthGuard)
   @Get()
   async getAllPosts(
-    @Query() query: PostQueryPaginationDto,
+    @Query() query: PostQueryPaginationDto, @CurrentUserId() userId: string
   ): Promise<PaginationViewModel<PostViewModel[]>> {
-    return this.postQueryRepository.getAllPosts(query);
+    return this.postQueryRepository.getAllPosts(query, userId);
   }
 
+  @UseGuards(NonBlockingAuthGuard)
   @Get(':postId')
-  async getPostById(@Param('postId') postId: string): Promise<PostViewModel> {
+  async getPostById(@Param('postId') postId: string, @CurrentUserId() userId: string): Promise<PostViewModel> {
     const post: PostViewModel | null =
-      await this.postQueryRepository.getPostById(postId);
+      await this.postQueryRepository.getPostById(postId, userId);
     if (!post) throw new NotFoundException();
     return post;
   }
 
+  @UseGuards(NonBlockingAuthGuard)
+  @Get(':postId/comments')
+  async getCommentByPostId(@Param('postId') postId: string, @CurrentUserId() userId: string): Promise<CommentViewModel> {
+    const comments: CommentViewModel | null =
+      await this.commentQueryRepository.getCommentByParentId(postId, userId)
+    if (!comments) throw new NotFoundException();
+    return comments;
+  }
+
+  @UseGuards(BasicAuth)
   @Post()
-  async createPost(
-    @Body() inputCreateDto: CreatePostDto,
-  ): Promise<PostViewModel | null> {
+  async createPost(@Body() inputCreateDto: CreatePostDto): Promise<PostViewModel | null> {
     const blogId = inputCreateDto.blogId;
     const postId: string | null = await this.postService.createPost(
       inputCreateDto,
@@ -94,6 +108,7 @@ export class PostController {
     return exceptionHandler(result)
   }
 
+  @UseGuards(BasicAuth)
   @Put(':postId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePost(
@@ -107,6 +122,7 @@ export class PostController {
     if (!resultUpdate) throw new NotFoundException();
   }
 
+  @UseGuards(BasicAuth)
   @Delete(':postId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePost(@Param('postId') postId: string) {

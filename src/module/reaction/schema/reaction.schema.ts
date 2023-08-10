@@ -4,7 +4,7 @@ import { HydratedDocument } from "mongoose";
 
 export type ReactionDocument = HydratedDocument<Reaction>
 
-@Schema({versionKey: false})
+@Schema()
 export class Reaction {
   @Prop({required: true, type: String})
   parentId: string
@@ -21,9 +21,9 @@ export class Reaction {
   @Prop({required: true, type: String})
   addedAt: string
 
-  static newReaction(parenId: string, status: ReactionStatusEnum, userId: string, userLogin: string): Reaction {
+  static newReaction(parentId: string, status: ReactionStatusEnum, userId: string, userLogin: string): Reaction {
     const newReaction = new Reaction()
-    newReaction.parentId = parenId
+    newReaction.parentId = parentId
     newReaction.userId = userId
     newReaction.userLogin = userLogin
     newReaction.addedAt = new Date().toISOString()

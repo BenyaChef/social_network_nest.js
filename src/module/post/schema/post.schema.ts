@@ -4,6 +4,7 @@ import { UpdatePostDto } from "../dto/update.post.dto";
 import { BlogDocument } from "../../blog/schema/blog.schema";
 import { CreatePostDto } from "../dto/create.post.dto";
 import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
+import { randomUUID } from "crypto";
 
 @Schema({ _id: false, versionKey: false })
 class NewestLikes {
@@ -17,7 +18,7 @@ class NewestLikes {
 
 export const NewestLikesSchema = SchemaFactory.createForClass(NewestLikes);
 
-@Schema({ _id: false, versionKey: false })
+@Schema({ _id: false, versionKey: false})
 export class ExtendedLikesInfo {
     @Prop({ required: true, type: Number })
     likesCount: number;
@@ -32,54 +33,57 @@ export class ExtendedLikesInfo {
 export const ExtendedLikesInfoSchema =
   SchemaFactory.createForClass(ExtendedLikesInfo);
 
-@Schema()
+@Schema({ id: false, versionKey: false })
 export class Post {
-    @Prop({ required: true, type: String })
-    title: string;
+  @Prop({ required: true, type: String, unique: true})
+  id: string;
 
-    @Prop({ required: true, type: String })
-    shortDescription: string;
+  @Prop({ required: true, type: String })
+  title: string;
 
-    @Prop({ required: true, type: String })
-    content: string;
+  @Prop({ required: true, type: String })
+  shortDescription: string;
 
-    @Prop({ required: true, type: String })
-    blogId: string;
+  @Prop({ required: true, type: String })
+  content: string;
 
-    @Prop({ required: true, type: String })
-    blogName: string;
+  @Prop({ required: true, type: String })
+  blogId: string;
 
-    @Prop({ required: true, type: String })
-    createdAt: string;
+  @Prop({ required: true, type: String })
+  blogName: string;
 
-    @Prop({ required: true, type: ExtendedLikesInfoSchema })
-    extendedLikesInfo: ExtendedLikesInfo
+  @Prop({ required: true, type: String })
+  createdAt: string;
 
-    update(updateDto: UpdatePostDto, blog: BlogDocument) {
-        this.title = updateDto.title
-        this.shortDescription = updateDto.shortDescription
-        this.content = updateDto.content
-        this.blogId = blog.id
-        this.blogName = blog.name
-    }
+  @Prop({ required: true, type: ExtendedLikesInfoSchema })
+  extendedLikesInfo: ExtendedLikesInfo;
 
-    static createPost(createDto: CreatePostDto, blogInfo: BlogDocument): Post {
-        const newPost = new Post()
-        newPost.blogName = blogInfo.name
-        newPost.blogId = blogInfo.id
-        newPost.title = createDto.title
-        newPost.content = createDto.content
-        newPost.shortDescription = createDto.shortDescription
-        newPost.createdAt = new Date().toISOString()
-        newPost.extendedLikesInfo = {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: ReactionStatusEnum.None,
-            newestLikes: []
-        }
-        return newPost
-    }
+  update(updateDto: UpdatePostDto, blog: BlogDocument) {
+    this.title = updateDto.title;
+    this.shortDescription = updateDto.shortDescription;
+    this.content = updateDto.content;
+    this.blogId = blog.id;
+    this.blogName = blog.name;
+  }
 
+  static createPost(createDto: CreatePostDto, blogInfo: BlogDocument): Post {
+    const newPost = new Post();
+    newPost.id = randomUUID()
+    newPost.blogName = blogInfo.name;
+    newPost.blogId = blogInfo.id;
+    newPost.title = createDto.title;
+    newPost.content = createDto.content;
+    newPost.shortDescription = createDto.shortDescription;
+    newPost.createdAt = new Date().toISOString();
+    newPost.extendedLikesInfo = {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: ReactionStatusEnum.None,
+      newestLikes: [],
+    };
+    return newPost;
+  }
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

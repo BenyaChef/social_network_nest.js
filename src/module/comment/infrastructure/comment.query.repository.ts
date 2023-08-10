@@ -16,6 +16,14 @@ export class CommentQueryRepository {
     @InjectModel(Reaction.name) private reactionModel: Model<ReactionDocument>,
   ) {}
 
+  async getCommentByParentId(parentId: string, userId?: string | null): Promise<CommentViewModel | null> {
+    const comment: CommentDocument | any = await this.commentModel.find({ parentId: parentId, });
+    if (!comment) return null;
+    const likeCountAndStatus = await this.likesDataProcessing(parentId, userId);
+    console.log(comment);
+    return new CommentViewModel(comment, likeCountAndStatus);
+  }
+
   async getCommentById(commentId: string, userId?: string | null,): Promise<CommentViewModel | null> {
     const comment: CommentDocument | null = await this.commentModel.findOne({ _id: commentId, });
     if (!comment) return null;

@@ -10,7 +10,7 @@ export class PostViewModel {
   createdAt: string;
   extendedLikesInfo: any
   constructor(postModel: PostDocument) {
-    this.id = postModel._id.toString();
+    this.id = postModel.id;
     this.title = postModel.title;
     this.shortDescription = postModel.shortDescription;
     this.content = postModel.content;
