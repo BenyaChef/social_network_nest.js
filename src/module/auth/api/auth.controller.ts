@@ -22,9 +22,10 @@ import { LocalAuthGuard } from "../../../guards/auth-local.guard";
 import { CurrentUser } from "../../../decorators/current-user.decorator";
 import { AuthAccessJwtGuard } from "../../../guards/auth-access.jwt.guard";
 import { UserQueryRepository } from "../../user/infrastructure/user.query.repository";
-import { RefreshToken } from "../../../decorators/refresh-token.decorator";
+import { exceptionHandler } from "../../../exception/exception.handler";
+import { NewPasswordDto } from "../dto/new-password.dto";
 import { AuthRefreshJwtGuard } from "../../../guards/auth-refresh.jwt.guard";
-
+import { RefreshToken } from "../../../decorators/refresh-token.decorator";
 
 
 @Controller('auth')
@@ -51,27 +52,48 @@ export class AuthController {
     return { accessToken: result.accessToken };
   }
 
+  @UseGuards(ThrottlerGuard)
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() registrationDto: RegistrationDto) {
     return await this.authService.registrationUser(registrationDto);
   }
 
+  @UseGuards(ThrottlerGuard)
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(@Body() resendingEmailDto: RegistrationEmailResendingDto) {
    return this.authService.registrationResendingEmail(resendingEmailDto.email);
   }
 
+  @UseGuards(ThrottlerGuard)
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmationRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
     return this.authService.confirmationRegistration(confirmationCodeDto.code)
   }
 
+  @UseGuards(ThrottlerGuard)
   @Post('password-recovery')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(@Body() recoveryDto: PasswordRecoveryDto) {
-    return true
+    const resultRecovery = await this.authService.passwordRecovery(recoveryDto.email)
+    return exceptionHandler(resultRecovery)
+  }
+
+  @UseGuards(ThrottlerGuard)
+  @Post('new-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async assignNewPassword(@Body() newPasswordDto: NewPasswordDto) {
+    const result = await this.authService.assignNewPassword(newPasswordDto)
+    return exceptionHandler(result)
+  }
+
+  @UseGuards(AuthRefreshJwtGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(@RefreshToken() refreshToke) {
+
   }
 
   @UseGuards(AuthAccessJwtGuard)

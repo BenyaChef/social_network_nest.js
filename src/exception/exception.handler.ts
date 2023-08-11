@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { ResultCode } from "../enum/result-code.enum";
 
 export const exceptionHandler = (code: ResultCode) => {
@@ -17,6 +13,8 @@ export const exceptionHandler = (code: ResultCode) => {
     case ResultCode.Forbidden: {
       throw new ForbiddenException();
     }
-    default: return true
+    case ResultCode.Success: {
+      return true
+    }
   }
 };

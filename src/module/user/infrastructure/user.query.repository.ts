@@ -11,8 +11,12 @@ import { LoginDto } from '../../auth/dto/login.dto';
 export class UserQueryRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async findUserByCode(code: string): Promise<UserDocument | null> {
+  async findUserByEmailRecoveryCode(code: string): Promise<UserDocument | null> {
     return this.userModel.findOne({'emailInfo.confirmationCode': code})
+  }
+
+  async finUserByNewPasswordRecoveryCode(code: string) {
+    return this.userModel.findOne({'passwordRecoveryInfo.recoveryCode': code})
   }
 
   async findUserByLogin(login: string): Promise<UserDocument | null> {

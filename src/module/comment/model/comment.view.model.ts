@@ -10,7 +10,7 @@ export class CommentViewModel {
   createdAt: string;
   likesInfo: LikesInfo;
   constructor(comment: CommentDocument, likesInfoCount: LikesInfo) {
-    this.id = comment.id;
+    this.id = comment._id.toString();
     this.content = comment.content;
     this.commentatorInfo = {
       userId: comment.userId,

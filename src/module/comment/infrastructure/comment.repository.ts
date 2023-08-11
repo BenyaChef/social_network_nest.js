@@ -20,9 +20,7 @@ export class CommentRepository {
     return await comment.save()
   }
 
-  async delete(commentId: string): Promise<boolean> {
-    const resultDelete = await this.commentModel.deleteOne({_id: commentId})
-    return resultDelete.deletedCount === 1
+  async delete(commentId: string): Promise<boolean | null> {
+    return this.commentModel.findOneAndDelete({_id: commentId})
   }
-
 }

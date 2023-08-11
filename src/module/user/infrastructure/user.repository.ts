@@ -8,7 +8,7 @@ export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async getUserById(userId: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({_id: userId})
+    return this.userModel.findOne({ _id: userId });
   }
 
   async createUser(newUser: User): Promise<UserDocument> {
@@ -34,7 +34,29 @@ export class UserRepository {
   async updateConfirmationStatus(userId: string) {
     return this.userModel.updateOne(
       { _id: userId },
-      { $set: { 'emailInfo.isConfirmed': true, 'emailInfo.confirmationCode': null }},
-    );
+      { $set: {
+          'emailInfo.isConfirmed': true,
+          'emailInfo.confirmationCode': null,
+        }});
+  }
+
+  async assignNewPassword(userId: string, newPasswordHash: string) {
+    return this.userModel.updateOne(
+      { _id: userId },
+      { $set: {
+          'passwordRecoveryInfo.recoveryCode': null,
+          'passwordRecoveryInfo.isConfirmed': true,
+          'accountData.passwordHash': newPasswordHash,
+        }});
+  }
+
+  async recoveryPassword(userId: string, newRecoveryPassword: string) {
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $set: {
+          'passwordRecoveryInfo.recoveryCode': newRecoveryPassword,
+          'passwordRecoveryInfo.isConfirmed': false,
+        }});
+    return newRecoveryPassword;
   }
 }

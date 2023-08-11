@@ -30,6 +30,7 @@ import { NonBlockingAuthGuard } from "../../../guards/non-blocking.auth.guard";
 import { CurrentUserId } from "../../../decorators/current-user-id.decorator";
 import { CommentViewModel } from "../../comment/model/comment.view.model";
 import { BasicAuth } from "../../../guards/basic.auth.guard";
+import { CommentQueryPaginationDto } from "../../comment/dto/comment.query.pagination.dto";
 
 @Controller('posts')
 export class PostController {
@@ -59,9 +60,8 @@ export class PostController {
 
   @UseGuards(NonBlockingAuthGuard)
   @Get(':postId/comments')
-  async getCommentByPostId(@Param('postId') postId: string, @CurrentUserId() userId: string): Promise<CommentViewModel> {
-    const comments: CommentViewModel | null =
-      await this.commentQueryRepository.getCommentByParentId(postId, userId)
+  async getCommentByPostId(@Param('postId') postId: string, @CurrentUserId() userId: string, @Query() query: CommentQueryPaginationDto): Promise<PaginationViewModel<CommentViewModel[]>> {
+    const comments = await this.commentQueryRepository.getCommentByParentId(postId, query, userId)
     if (!comments) throw new NotFoundException();
     return comments;
   }
@@ -115,10 +115,7 @@ export class PostController {
     @Body() inputUpdateDto: UpdatePostDto,
     @Param('postId') postId: string,
   ) {
-    const resultUpdate: string | null = await this.postService.postUpdate(
-      inputUpdateDto,
-      postId,
-    );
+    const resultUpdate: string | null = await this.postService.postUpdate(inputUpdateDto, postId);
     if (!resultUpdate) throw new NotFoundException();
   }
 

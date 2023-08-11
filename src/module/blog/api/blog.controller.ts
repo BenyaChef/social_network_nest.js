@@ -24,6 +24,8 @@ import {CreatePostDto} from "../../post/dto/create.post.dto";
 import {PostViewModel} from "../../post/model/post.view.model";
 import {PostQueryPaginationDto} from "../../post/dto/post.query.pagination.dto";
 import { BasicAuth } from "../../../guards/basic.auth.guard";
+import { NonBlockingAuthGuard } from "../../../guards/non-blocking.auth.guard";
+import { CurrentUserId } from "../../../decorators/current-user-id.decorator";
 
 
 
@@ -46,10 +48,10 @@ export class BlogController {
         return blog;
     }
 
+    @UseGuards(NonBlockingAuthGuard)
     @Get(':blogId/posts')
-
-    async getAllPostByBlogID(@Param('blogId') blogId: string, @Query() query: PostQueryPaginationDto) {
-        const findPosts = await this.postQueryRepository.getAllPostsForBlogId(query, blogId)
+    async getAllPostByBlogID(@Param('blogId') blogId: string, @Query() query: PostQueryPaginationDto, @CurrentUserId() userId: string) {
+        const findPosts = await this.postQueryRepository.getAllPostsForBlogId(query, blogId, userId)
         if(findPosts.items.length <= 0) throw new NotFoundException()
         return findPosts
     }

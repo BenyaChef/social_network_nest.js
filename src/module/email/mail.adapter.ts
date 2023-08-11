@@ -26,7 +26,7 @@ export class MailAdapter {
     await this.mailerService.sendMail({
       to: user.accountData.email,
       subject: 'Recovery password',
-      template: './recovery.password',
+      template: './recovery',
       context: {
         login: user.accountData.login,
         url,

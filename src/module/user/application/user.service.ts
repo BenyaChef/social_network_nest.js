@@ -5,6 +5,7 @@ import { User } from '../schema/user.schema';
 import { UserRepository } from '../infrastructure/user.repository';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
 import { RegistrationDto } from "../../auth/dto/registration.dto";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class UserService {
@@ -28,10 +29,20 @@ export class UserService {
   }
 
   async confirmationUserEmail(code: string) {
-    const user = await this.userQueryRepository.findUserByCode(code)
+    const user = await this.userQueryRepository.findUserByEmailRecoveryCode(code)
     if(!user) throw new BadRequestException('codeIsNotExists')
     if(user.emailInfo.isConfirmed) throw new BadRequestException('codeAlreadyIsConfirm')
     await this.userRepository.updateConfirmationStatus(user.id)
+  }
+
+  async recoveryPassword(userId: string) {
+    const newRecoveryCode = randomUUID();
+    return this.userRepository.recoveryPassword(userId, newRecoveryCode);
+  }
+
+  async assignNewPassword(newPassword: string, userId: string) {
+    const newPasswordHash = await this.generatorHash(newPassword)
+    return this.userRepository.assignNewPassword(userId, newPasswordHash)
   }
 
   async deleteUser(userId: string): Promise<boolean> {

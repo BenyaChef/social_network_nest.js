@@ -10,6 +10,6 @@ export const RefreshToken = createParamDecorator(
     if (!request.cookies.refreshToken) {
       throw new UnauthorizedException('No JwtGuard Found');
     }
-    return request.cookies.refreshToken;
+    return request.cookies.refreshToken
   },
 );

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CommentRepository } from '../infrastructure/comment.repository';
 import { UserRepository } from '../../user/infrastructure/user.repository';
-import { PostRepository } from '../../post/infrastructure/post.repository';
 import { Comment } from '../schema/comment.schema';
 import { ResultCode } from '../../../enum/result-code.enum';
 import { CommentQueryRepository } from "../infrastructure/comment.query.repository";
@@ -34,9 +33,8 @@ export class CommentService {
     commentId: string,
   ): Promise<ResultCode> {
     const comment = await this.commentRepository.getCommentById(commentId);
-    if (!comment) return ResultCode.BadRequest;
+    if (!comment) return ResultCode.NotFound;
     if (userId !== comment.userId) return ResultCode.Forbidden;
-
     comment.update(content);
     await this.commentRepository.update(comment);
     return ResultCode.Success;
