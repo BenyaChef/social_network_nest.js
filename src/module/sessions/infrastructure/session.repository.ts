@@ -12,4 +12,8 @@ export class SessionRepository {
   async createSession(newSession: Session) {
     return this.sessionModel.create(newSession)
   }
+
+  async logout(lastActiveDate: string, userId: string, deviceId: string) {
+      return this.sessionModel.findOneAndDelete({lastActiveDate: lastActiveDate, deviceId: deviceId, userId: userId})
+  }
 }

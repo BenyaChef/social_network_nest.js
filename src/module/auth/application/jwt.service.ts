@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from "@nestjs/jwt";
+import { JwtPayload } from "jsonwebtoken";
 
 
 @Injectable()
@@ -25,5 +26,9 @@ export class TokenService {
   async getLastActiveDate(token: string): Promise<string> {
     const payload: any = await this.jwtService.decode(token);
     return new Date(payload.iat * 1000).toISOString();
+  }
+
+  async decode(token: string) {
+    return this.jwtService.decode(token) as JwtPayload
   }
 }

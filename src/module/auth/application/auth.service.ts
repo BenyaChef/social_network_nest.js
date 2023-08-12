@@ -12,6 +12,8 @@ import { TokenService } from './jwt.service';
 import bcrypt from 'bcrypt';
 import { ResultCode } from '../../../enum/result-code.enum';
 import { NewPasswordDto } from "../dto/new-password.dto";
+import { JwtService } from "@nestjs/jwt";
+import { JwtPayload } from "jsonwebtoken";
 
 @Injectable()
 export class AuthService {
@@ -86,6 +88,11 @@ export class AuthService {
     return ResultCode.Success
   }
 
+  async refreshToken(token: string) {
+    const jwtPayload: JwtPayload | null = await this.tokenService.decode(token)
+    if(!jwtPayload) return ResultCode.NotFound
+    const userID
+  }
   async validateUser(loginOrEmail: string, password: string,): Promise<UserDocument | null> {
     const user: UserDocument | null = await this.userQueryRepository.findUserLoginOrEmail(loginOrEmail);
     if (!user) return null;

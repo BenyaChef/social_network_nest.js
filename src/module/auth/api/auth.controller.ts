@@ -26,12 +26,14 @@ import { exceptionHandler } from "../../../exception/exception.handler";
 import { NewPasswordDto } from "../dto/new-password.dto";
 import { AuthRefreshJwtGuard } from "../../../guards/auth-refresh.jwt.guard";
 import { RefreshToken } from "../../../decorators/refresh-token.decorator";
+import { SessionService } from "../../sessions/application/session.service";
 
 
 @Controller('auth')
 export class AuthController {
   constructor(protected authService: AuthService,
-              protected userQueryRepository: UserQueryRepository) {}
+              protected userQueryRepository: UserQueryRepository,
+              protected sessionService: SessionService) {}
 
   @UseGuards(LocalAuthGuard)
   @UseGuards(ThrottlerGuard)
@@ -81,6 +83,12 @@ export class AuthController {
     return exceptionHandler(resultRecovery)
   }
 
+  @UseGuards(AuthRefreshJwtGuard)
+  @Post('refresh-token')
+  async refreshToken(@RefreshToken() token: string, @Res({ passthrough: true }) res: Response) {
+      const resultUpdateTokens = await this.authService.refreshToken(token)
+  }
+
   @UseGuards(ThrottlerGuard)
   @Post('new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -92,8 +100,9 @@ export class AuthController {
   @UseGuards(AuthRefreshJwtGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@RefreshToken() refreshToke) {
-
+  async logout(@RefreshToken() refreshToken: string) {
+    const resultLogout = await this.sessionService.logout(refreshToken)
+    return exceptionHandler(resultLogout)
   }
 
   @UseGuards(AuthAccessJwtGuard)
