@@ -56,6 +56,9 @@ import {
 } from './module/reaction/schema/reaction.schema';
 import { ReactionService } from "./module/reaction/application/reaction.service";
 import { ReactionRepository } from "./module/reaction/infrastructure/reaction.repository";
+import { SessionQueryRepository } from "./module/sessions/infrastructure/session.query.repository";
+import { SecurityController } from "./module/security/api/security.controller";
+import { throttle } from "rxjs";
 
 const controllers = [
   AppController,
@@ -65,6 +68,7 @@ const controllers = [
   TestingController,
   AuthController,
   CommentController,
+  SecurityController
 ];
 
 const validators = [
@@ -96,6 +100,7 @@ const services = [
   TestingRepository,
   SessionService,
   SessionRepository,
+  SessionQueryRepository,
   CommentRepository,
   CommentQueryRepository,
   ReactionRepository

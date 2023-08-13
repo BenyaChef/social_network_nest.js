@@ -29,6 +29,10 @@ export class TokenService {
   }
 
   async decode(token: string) {
-    return this.jwtService.decode(token) as JwtPayload
+    try {
+     return this.jwtService.verify(token, { secret: this.secretKey }) as JwtPayload
+    }catch (e) {
+      return null
+    }
   }
 }

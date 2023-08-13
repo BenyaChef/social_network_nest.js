@@ -4,7 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Ip,
-  Post, Req,
+  Post,
   Res,
   UnauthorizedException, UseGuards
 } from "@nestjs/common";
@@ -85,8 +85,12 @@ export class AuthController {
 
   @UseGuards(AuthRefreshJwtGuard)
   @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
   async refreshToken(@RefreshToken() token: string, @Res({ passthrough: true }) res: Response) {
-      const resultUpdateTokens = await this.authService.refreshToken(token)
+    const resultUpdateTokens = await this.authService.refreshToken(token)
+    if(!resultUpdateTokens) throw new UnauthorizedException()
+    res.cookie('refreshToken', resultUpdateTokens.refreshToken, { httpOnly: true, secure: true, });
+    return { accessToken: resultUpdateTokens.accessToken };
   }
 
   @UseGuards(ThrottlerGuard)
@@ -102,7 +106,8 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@RefreshToken() refreshToken: string) {
     const resultLogout = await this.sessionService.logout(refreshToken)
-    return exceptionHandler(resultLogout)
+    if (!resultLogout) throw new UnauthorizedException()
+    return resultLogout
   }
 
   @UseGuards(AuthAccessJwtGuard)

@@ -14,6 +14,7 @@ import { ResultCode } from '../../../enum/result-code.enum';
 import { NewPasswordDto } from "../dto/new-password.dto";
 import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "jsonwebtoken";
+import { SessionQueryRepository } from "../../sessions/infrastructure/session.query.repository";
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     protected userService: UserService,
     protected tokenService: TokenService,
     protected sessionService: SessionService,
+    protected sessionQueryRepository: SessionQueryRepository,
     protected mailAdapter: MailAdapter,
     protected userRepository: UserRepository,
     protected userQueryRepository: UserQueryRepository,
@@ -90,9 +92,20 @@ export class AuthService {
 
   async refreshToken(token: string) {
     const jwtPayload: JwtPayload | null = await this.tokenService.decode(token)
-    if(!jwtPayload) return ResultCode.NotFound
-    const userID
+    if(!jwtPayload) return null
+    const userId = jwtPayload.sub!
+    const deviceId = jwtPayload.deviceId
+    const lastActiveDate = new Date(jwtPayload.iat! * 1000).toISOString()
+    const user = await this.userQueryRepository.getUserByID(userId)
+    if(!user) return null
+    const device = await this.sessionQueryRepository.getDeviceByDateUserIdAndDeviceId(lastActiveDate, user.id, deviceId)
+    if(!device) return null
+    const newTokens = await this.tokenService.createJwt(user.id, deviceId)
+    const newLastActiveDate = await this.tokenService.getLastActiveDate(newTokens.refreshToken)
+    await this.sessionService.updateLastActiveDate(user.id, deviceId, newLastActiveDate)
+    return newTokens
   }
+
   async validateUser(loginOrEmail: string, password: string,): Promise<UserDocument | null> {
     const user: UserDocument | null = await this.userQueryRepository.findUserLoginOrEmail(loginOrEmail);
     if (!user) return null;
