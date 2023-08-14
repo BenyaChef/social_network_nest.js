@@ -50,11 +50,10 @@ export class AuthService {
   }
 
   async registrationUser(registrationDto: RegistrationDto) {
-    const newUser = await this.userService.registrationUser(registrationDto);
-    await this.mailAdapter.sendUserConfirmation(
-      newUser,
-      newUser.emailInfo.confirmationCode!,
-    );
+    const newUser: UserDocument | null = await this.userService.registrationUser(registrationDto);
+    if (!newUser) return null
+    this.mailAdapter.sendUserConfirmation(newUser, newUser.emailInfo.confirmationCode!);
+    return true
   }
 
   async registrationResendingEmail(email: string) {
@@ -63,12 +62,8 @@ export class AuthService {
     if (user.emailInfo.isConfirmed)
       throw new BadRequestException('emailAlreadyIsConfirm');
     const newConfirmedCode = randomUUID();
-    await this.userRepository.updateEmailConfirmationCode(
-      user.id,
-      newConfirmedCode,
-    );
-    await this.mailAdapter.sendUserConfirmation(user, newConfirmedCode);
-    return true;
+    this.mailAdapter.sendUserConfirmation(user, newConfirmedCode)
+    return this.userRepository.updateEmailConfirmationCode(user.id,newConfirmedCode);
   }
 
   async confirmationRegistration(code: string) {

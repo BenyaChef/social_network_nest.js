@@ -28,7 +28,7 @@ import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
 import { AuthService } from './module/auth/application/auth.service';
 
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import {
   Session,
   SessionSchema,
@@ -59,6 +59,7 @@ import { ReactionRepository } from "./module/reaction/infrastructure/reaction.re
 import { SessionQueryRepository } from "./module/sessions/infrastructure/session.query.repository";
 import { SecurityController } from "./module/security/api/security.controller";
 import { throttle } from "rxjs";
+import { APP_GUARD } from "@nestjs/core";
 
 const controllers = [
   AppController,
@@ -115,6 +116,8 @@ const mongooseModule = [
   { name: Reaction.name, schema: ReactionSchema },
 ];
 
+const guard = {provide: APP_GUARD, useClass: ThrottlerGuard}
+
 @Module({
   imports: [
     PassportModule,
@@ -125,9 +128,9 @@ const mongooseModule = [
       useClass: MongooseConfig,
     }),
     MongooseModule.forFeature(mongooseModule),
-    ThrottlerModule.forRoot({ ttl: 10, limit: 5 }),
+    ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...strategy, MailAdapter],
+  providers: [...services, ...validators, ...strategy, MailAdapter, guard],
 })
 export class AppModule {}

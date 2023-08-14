@@ -1,12 +1,5 @@
 import {
-  Body,
-  Controller, Get,
-  HttpCode,
-  HttpStatus,
-  Ip,
-  Post,
-  Res,
-  UnauthorizedException, UseGuards
+  BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Ip, Post, Res, UnauthorizedException, UseGuards
 } from "@nestjs/common";
 import { PasswordRecoveryDto } from "../dto/password.recovery.dto";
 import { LoginDto } from "../dto/login.dto";
@@ -16,7 +9,7 @@ import { UserAgent } from "../../../decorators/user.agent.decorator";
 import { RegistrationDto } from "../dto/registration.dto";
 import { RegistrationEmailResendingDto } from "../dto/registration.email.resending.dto";
 import { ConfirmationCodeDto } from "../dto/confirmation.code.dto";
-import { ThrottlerGuard } from "@nestjs/throttler";
+import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { LocalAuthGuard } from "../../../guards/auth-local.guard";
 
 import { CurrentUser } from "../../../decorators/current-user.decorator";
@@ -36,7 +29,7 @@ export class AuthController {
               protected sessionService: SessionService) {}
 
   @UseGuards(LocalAuthGuard)
-  @UseGuards(ThrottlerGuard)
+  @Throttle(5, 10)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async loginUser(
@@ -54,33 +47,41 @@ export class AuthController {
     return { accessToken: result.accessToken };
   }
 
-  @UseGuards(ThrottlerGuard)
+  @Throttle(5, 10)
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() registrationDto: RegistrationDto) {
-    return await this.authService.registrationUser(registrationDto);
+    return this.authService.registrationUser(registrationDto);
   }
 
-  @UseGuards(ThrottlerGuard)
+  @Throttle(5, 10)
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(@Body() resendingEmailDto: RegistrationEmailResendingDto) {
-   return this.authService.registrationResendingEmail(resendingEmailDto.email);
+  return this.authService.registrationResendingEmail(resendingEmailDto.email);
   }
 
-  @UseGuards(ThrottlerGuard)
+  @Throttle(5, 10)
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmationRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
     return this.authService.confirmationRegistration(confirmationCodeDto.code)
   }
 
-  @UseGuards(ThrottlerGuard)
+  @Throttle(5, 10)
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
   async passwordRecovery(@Body() recoveryDto: PasswordRecoveryDto) {
     const resultRecovery = await this.authService.passwordRecovery(recoveryDto.email)
     return exceptionHandler(resultRecovery)
+  }
+
+  @Throttle(5, 10)
+  @Post('new-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async assignNewPassword(@Body() newPasswordDto: NewPasswordDto) {
+    const result = await this.authService.assignNewPassword(newPasswordDto)
+    return exceptionHandler(result)
   }
 
   @UseGuards(AuthRefreshJwtGuard)
@@ -91,14 +92,6 @@ export class AuthController {
     if(!resultUpdateTokens) throw new UnauthorizedException()
     res.cookie('refreshToken', resultUpdateTokens.refreshToken, { httpOnly: true, secure: true, });
     return { accessToken: resultUpdateTokens.accessToken };
-  }
-
-  @UseGuards(ThrottlerGuard)
-  @Post('new-password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async assignNewPassword(@Body() newPasswordDto: NewPasswordDto) {
-    const result = await this.authService.assignNewPassword(newPasswordDto)
-    return exceptionHandler(result)
   }
 
   @UseGuards(AuthRefreshJwtGuard)
