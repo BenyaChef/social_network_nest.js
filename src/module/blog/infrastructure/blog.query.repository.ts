@@ -10,8 +10,16 @@ import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 export class BlogQueryRepository {
   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
 
+  async getAllBlogsForCurrentUser(query: BlogQueryPaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>>  {
+        const filter = {
+          name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
+          ownerId: userId
+        };
+    return await this.findBlogsByFilterAndPagination(filter, query);
+  }
+
   async getBlogById(blogId: string): Promise<BlogViewModel | null> {
-    const findBlog = await this.blogModel.findOne({ _id: blogId });
+    const findBlog = await this.blogModel.findOne({ id: blogId });
     if (!findBlog) return null;
     return new BlogViewModel(findBlog);
   }

@@ -7,7 +7,6 @@ import configuration from './config/configuration';
 import { MongooseConfig } from './config/mongoose.config';
 import { Blog, BlogSchema } from './module/blog/schema/blog.schema';
 import { BlogController } from './module/blog/api/blog.controller';
-import { BlogService } from './module/blog/application/blog.service';
 import { BlogRepository } from './module/blog/infrastructure/blog.repository';
 import { BlogQueryRepository } from './module/blog/infrastructure/blog.query.repository';
 import { Post, PostSchema } from './module/post/schema/post.schema';
@@ -58,8 +57,12 @@ import { ReactionService } from "./module/reaction/application/reaction.service"
 import { ReactionRepository } from "./module/reaction/infrastructure/reaction.repository";
 import { SessionQueryRepository } from "./module/sessions/infrastructure/session.query.repository";
 import { SecurityController } from "./module/security/api/security.controller";
-import { throttle } from "rxjs";
 import { APP_GUARD } from "@nestjs/core";
+import { BloggerController } from "./module/blogger/api/blogger.controller";
+import { CqrsModule } from "@nestjs/cqrs";
+import { BlogCreateUseCase } from "./module/blog/application/blog-create.use-case";
+import { BlogDeleteUseCase } from "./module/blog/application/blog-delete.use-case";
+import { BlogUpdateUseCase } from "./module/blog/application/blog-update.use-case";
 
 const controllers = [
   AppController,
@@ -69,7 +72,8 @@ const controllers = [
   TestingController,
   AuthController,
   CommentController,
-  SecurityController
+  SecurityController,
+  BloggerController
 ];
 
 const validators = [
@@ -78,6 +82,8 @@ const validators = [
   LoginExistsValidation,
   EmailExistsValidation,
 ];
+
+const useCase = [BlogCreateUseCase, BlogDeleteUseCase, BlogUpdateUseCase]
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
 
@@ -88,7 +94,6 @@ const services = [
   AuthService,
   JwtService,
   AppService,
-  BlogService,
   PostService,
   UserService,
   BlogRepository,
@@ -116,10 +121,11 @@ const mongooseModule = [
   { name: Reaction.name, schema: ReactionSchema },
 ];
 
-const guard = {provide: APP_GUARD, useClass: ThrottlerGuard}
+const guard = [{provide: APP_GUARD, useClass: ThrottlerGuard}]
 
 @Module({
   imports: [
+    CqrsModule,
     PassportModule,
     MailModule,
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
@@ -131,6 +137,6 @@ const guard = {provide: APP_GUARD, useClass: ThrottlerGuard}
     ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...strategy, MailAdapter, guard],
+  providers: [...services, ...validators, ...strategy, ...guard, ...useCase, MailAdapter]
 })
 export class AppModule {}

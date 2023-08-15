@@ -1,103 +1,55 @@
 import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpStatus,
-    NotFoundException,
-    Param,
-    Post,
-    Put,
-    Query, UseGuards
-} from "@nestjs/common";
-import {BlogService} from '../application/blog.service';
-import {BlogQueryRepository} from '../infrastructure/blog.query.repository';
-import {BlogQueryPaginationDto} from '../dto/blog.query.pagination.dto';
-import {CreateBlogDto} from '../dto/create.blog.dto';
-import {UpdateBlogDto} from '../dto/update.blog.dto';
-import {BlogViewModel} from '../model/blog.view.model';
-import {PaginationViewModel} from '../../../helpers/pagination.view.mapper';
-import {PostService} from "../../post/application/post.service";
-import {PostQueryRepository} from "../../post/infrastructure/post.query.repository";
-import {CreatePostDto} from "../../post/dto/create.post.dto";
-import {PostViewModel} from "../../post/model/post.view.model";
-import {PostQueryPaginationDto} from "../../post/dto/post.query.pagination.dto";
-import { BasicAuth } from "../../../guards/basic.auth.guard";
-import { NonBlockingAuthGuard } from "../../../guards/non-blocking.auth.guard";
-import { CurrentUserId } from "../../../decorators/current-user-id.decorator";
-
-
-
-
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { BlogQueryRepository } from '../infrastructure/blog.query.repository';
+import { BlogQueryPaginationDto } from '../dto/blog.query.pagination.dto';
+import { BlogViewModel } from '../model/blog.view.model';
+import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
+import { PostQueryRepository } from '../../post/infrastructure/post.query.repository';
+import { PostQueryPaginationDto } from '../../post/dto/post.query.pagination.dto';
+import { NonBlockingAuthGuard } from '../../../guards/non-blocking.auth.guard';
+import { CurrentUserId } from '../../../decorators/current-user-id.decorator';
 
 @Controller('blogs')
 export class BlogController {
-    constructor(
-        protected readonly blogService: BlogService,
-        protected readonly blogQueryRepository: BlogQueryRepository,
-        protected readonly postService: PostService,
-        protected readonly postQueryRepository: PostQueryRepository
-    ) {
-    }
-    @Get(':blogId')
-    async getBlogById(@Param('blogId') blogId: string): Promise<BlogViewModel> {
-        const blog: BlogViewModel | null =
-            await this.blogQueryRepository.getBlogById(blogId);
-        if (!blog) throw new NotFoundException();
-        return blog;
-    }
+  constructor(
+    protected readonly blogQueryRepository: BlogQueryRepository,
+    protected readonly postQueryRepository: PostQueryRepository,
+  ) {}
 
-    @UseGuards(NonBlockingAuthGuard)
-    @Get(':blogId/posts')
-    async getAllPostByBlogID(@Param('blogId') blogId: string, @Query() query: PostQueryPaginationDto, @CurrentUserId() userId: string) {
-        const findPosts = await this.postQueryRepository.getAllPostsForBlogId(query, blogId, userId)
-        if(findPosts.items.length <= 0) throw new NotFoundException()
-        return findPosts
-    }
+  @Get(':blogId')
+  async getBlogById(@Param('blogId') blogId: string): Promise<BlogViewModel> {
+    const blog: BlogViewModel | null =
+      await this.blogQueryRepository.getBlogById(blogId);
+    if (!blog) throw new NotFoundException();
+    return blog;
+  }
 
-    @Get()
-    async getAllBlogs(
-        @Query() paginationQueryParam: BlogQueryPaginationDto,
-    ): Promise<PaginationViewModel<BlogViewModel[]>> {
-        return this.blogQueryRepository.getAllBlogs(paginationQueryParam);
-    }
+  @UseGuards(NonBlockingAuthGuard)
+  @Get(':blogId/posts')
+  async getAllPostByBlogID(
+    @Param('blogId') blogId: string,
+    @Query() query: PostQueryPaginationDto,
+    @CurrentUserId() userId: string,
+  ) {
+    const findPosts = await this.postQueryRepository.getAllPostsForBlogId(
+      query,
+      blogId,
+      userId,
+    );
+    if (findPosts.items.length <= 0) throw new NotFoundException();
+    return findPosts;
+  }
 
-    @Post()
-    @UseGuards(BasicAuth)
-    async createBlog(
-        @Body() createDto: CreateBlogDto,
-    ): Promise<BlogViewModel | null> {
-        const blogId: string = await this.blogService.createBlog(createDto);
-        return this.blogQueryRepository.getBlogById(blogId);
-    }
-
-    @Post(':blogId/posts')
-    @UseGuards(BasicAuth)
-    async createNewPostForBlog(@Body() createDto: CreatePostDto, @Param('blogId') blogId: string): Promise<PostViewModel | null> {
-        const newBlogId: string | null = await this.postService.createPost(createDto, blogId)
-        if (!newBlogId) throw new NotFoundException()
-        return this.postQueryRepository.getPostById(newBlogId)
-    }
-
-    @Put(':blogId')
-    @UseGuards(BasicAuth)
-    @HttpCode(HttpStatus.NO_CONTENT)
-    async updateBlog(
-        @Body() updateDto: UpdateBlogDto,
-        @Param('blogId') blogId: string,
-    ) {
-        const blog: BlogViewModel | null =
-            await this.blogQueryRepository.getBlogById(blogId);
-        if (!blog) throw new NotFoundException();
-        return this.blogService.updateBlog(updateDto, blogId);
-    }
-
-    @Delete(':blogId')
-    @UseGuards(BasicAuth)
-    @HttpCode(HttpStatus.NO_CONTENT)
-    async deleteBlog(@Param('blogId') blogId: string) {
-        const isDeleted: boolean = await this.blogService.deleteBlog(blogId);
-        if (!isDeleted) throw new NotFoundException();
-    }
+  @Get()
+  async getAllBlogs(
+    @Query() paginationQueryParam: BlogQueryPaginationDto,
+  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+    return this.blogQueryRepository.getAllBlogs(paginationQueryParam);
+  }
 }

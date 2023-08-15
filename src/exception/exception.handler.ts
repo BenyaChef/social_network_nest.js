@@ -1,9 +1,9 @@
 import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { ResultCode } from "../enum/result-code.enum";
 
-export const exceptionHandler = (code: ResultCode) => {
+export const exceptionHandler = (data: ResultCode) => {
 
-  switch (code) {
+  switch (data) {
     case ResultCode.BadRequest: {
       throw new BadRequestException();
     }

@@ -1,46 +1,58 @@
-import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {HydratedDocument, Model} from 'mongoose';
-import {UpdateBlogDto} from "../dto/update.blog.dto";
-import {CreateBlogDto} from "../dto/create.blog.dto";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Model } from 'mongoose';
+import { UpdateBlogDto } from '../dto/update.blog.dto';
+import { CreateBlogDto } from '../dto/create.blog.dto';
+import { randomUUID } from "crypto";
 
-
-@Schema()
+@Schema({versionKey: false})
 export class Blog {
-    @Prop()
-    name: string;
+  @Prop({ required: true, type: String })
+  id:string
 
-    @Prop()
-    description: string;
+  @Prop({ required: true, type: String })
+  name: string;
 
-    @Prop()
-    websiteUrl: string;
+  @Prop({ required: true, type: String })
+  description: string;
 
-    @Prop({default: () => new Date().toISOString()})
-    createdAt: string;
+  @Prop({ required: true, type: String })
+  websiteUrl: string;
 
-    @Prop({default: false})
-    isMembership: boolean;
+  @Prop({ required: true, type: String })
+  createdAt: string;
 
-    update(updateDto: UpdateBlogDto) {
-        this.name = updateDto.name
-        this.description = updateDto.description
-        this.websiteUrl = updateDto.websiteUrl
-    }
+  @Prop({ required: true, type: Boolean })
+  isMembership: boolean;
 
-    static createBlog(blogModel: BlogModel, createDto: CreateBlogDto): BlogDocument {
-        return new blogModel(createDto)
-    }
+  @Prop({ required: true, type: String })
+  ownerId: string;
+
+  update(updateDto: UpdateBlogDto) {
+    this.name = updateDto.name;
+    this.description = updateDto.description;
+    this.websiteUrl = updateDto.websiteUrl;
+  }
+
+  static createBlog(createDto: CreateBlogDto, userId: string): Blog {
+    const newBlog = new Blog()
+    newBlog.id = randomUUID()
+    newBlog.name = createDto.name
+    newBlog.description = createDto.description
+    newBlog.websiteUrl = createDto.websiteUrl
+    newBlog.ownerId = userId
+    newBlog.isMembership = false
+    newBlog.createdAt = new Date().toISOString()
+    return newBlog
+  }
 }
 
 interface BlogStatic {
-    createBlog(blogModel: BlogModel, createDto: CreateBlogDto): BlogDocument
+  createBlog(blogModel: BlogModel, createDto: CreateBlogDto): BlogDocument;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
-BlogSchema.methods.update = Blog.prototype.update
-BlogSchema.statics.createBlog = Blog.createBlog
-
+BlogSchema.methods.update = Blog.prototype.update;
+BlogSchema.statics.createBlog = Blog.createBlog;
 
 export type BlogDocument = HydratedDocument<Blog>;
-export type BlogModel = Model<BlogDocument> & BlogStatic
-
+export type BlogModel = Model<BlogDocument> & BlogStatic;
