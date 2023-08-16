@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 import { BlogExists } from '../../../decorators/blog.exist.decorator';
 import { Trim } from '../../../decorators/trim.decorator';
 
-export class CreatePostDto {
+export class PostCreateDto {
   @IsString()
   @Trim()
   @MaxLength(30)

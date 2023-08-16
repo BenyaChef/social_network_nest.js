@@ -11,7 +11,6 @@ import { BlogRepository } from './module/blog/infrastructure/blog.repository';
 import { BlogQueryRepository } from './module/blog/infrastructure/blog.query.repository';
 import { Post, PostSchema } from './module/post/schema/post.schema';
 import { PostController } from './module/post/api/post.controller';
-import { PostService } from './module/post/application/post.service';
 import { PostQueryRepository } from './module/post/infrastructure/post.query.repository';
 import { PostRepository } from './module/post/infrastructure/post.repository';
 import { TestingService } from './module/testing/application/testing.service';
@@ -63,6 +62,10 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { BlogCreateUseCase } from "./module/blog/application/blog-create.use-case";
 import { BlogDeleteUseCase } from "./module/blog/application/blog-delete.use-case";
 import { BlogUpdateUseCase } from "./module/blog/application/blog-update.use-case";
+import { PostCreateUseCase } from "./module/post/application/post-create.use-case";
+import { PostUpdateUseCase } from "./module/post/application/post-update.use-case";
+import { PostDeleteUseCase } from "./module/post/application/post-delete.use-case";
+import { PostUpdateReactionUseCase } from "./module/post/application/post-update-reaction.use-case";
 
 const controllers = [
   AppController,
@@ -83,7 +86,11 @@ const validators = [
   EmailExistsValidation,
 ];
 
-const useCase = [BlogCreateUseCase, BlogDeleteUseCase, BlogUpdateUseCase]
+const useCase = [
+  BlogCreateUseCase, BlogDeleteUseCase, BlogUpdateUseCase,
+  PostCreateUseCase, PostUpdateUseCase, PostDeleteUseCase,
+  PostUpdateReactionUseCase
+]
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
 
@@ -94,7 +101,6 @@ const services = [
   AuthService,
   JwtService,
   AppService,
-  PostService,
   UserService,
   BlogRepository,
   BlogQueryRepository,

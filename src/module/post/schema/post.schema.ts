@@ -2,9 +2,9 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 import { UpdatePostDto } from "../dto/update.post.dto";
 import { BlogDocument } from "../../blog/schema/blog.schema";
-import { CreatePostDto } from "../dto/create.post.dto";
 import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
 import { randomUUID } from "crypto";
+import { PostCreateDto } from "../dto/create.post.dto";
 
 @Schema({ _id: false, versionKey: false })
 class NewestLikes {
@@ -33,8 +33,9 @@ export class ExtendedLikesInfo {
 export const ExtendedLikesInfoSchema =
   SchemaFactory.createForClass(ExtendedLikesInfo);
 
-@Schema({ id: false, versionKey: false })
+@Schema({versionKey: false })
 export class Post {
+
   @Prop({ required: true, type: String, unique: true})
   id: string;
 
@@ -67,11 +68,11 @@ export class Post {
     this.blogName = blog.name;
   }
 
-  static createPost(createDto: CreatePostDto, blogInfo: BlogDocument): Post {
+  static createPost(createDto: PostCreateDto, blog: BlogDocument): Post {
     const newPost = new Post();
     newPost.id = randomUUID()
-    newPost.blogName = blogInfo.name;
-    newPost.blogId = blogInfo.id;
+    newPost.blogName = blog.name;
+    newPost.blogId = blog.id;
     newPost.title = createDto.title;
     newPost.content = createDto.content;
     newPost.shortDescription = createDto.shortDescription;

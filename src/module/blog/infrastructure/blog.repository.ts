@@ -11,7 +11,7 @@ export class BlogRepository {
     }
 
     async getBlogById(blogId: string): Promise<BlogDocument | null> {
-        return this.blogModel.findOne({id: blogId});
+        return this.blogModel.findOne({ id: blogId });
     }
     
     async create(newBlog: Blog) {
@@ -23,10 +23,10 @@ export class BlogRepository {
         return this.blogModel.findOneAndUpdate({id: blogId}, {$set: updateDto})
     }
 
-    async save(newBlog: BlogDocument): Promise<string> {
-        const result: BlogDocument = await newBlog.save();
-        return result.id;
-    }
+    // async save(newBlog: BlogDocument): Promise<string> {
+    //     const result: BlogDocument = await newBlog.save();
+    //     return result.id;
+    // }
 
     async delete(blogId: string): Promise<boolean> {
         const resultDelete = await this.blogModel.deleteOne({ id: blogId })
