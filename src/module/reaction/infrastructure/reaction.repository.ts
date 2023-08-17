@@ -16,4 +16,8 @@ export class ReactionRepository {
       { upsert: true },
     );
   }
+
+  async updateBanStatus(userId: string, banStatus: boolean) {
+    return this.reactionModel.updateOne({userId: userId} , {$set: {isUserBanned: banStatus}})
+  }
 }

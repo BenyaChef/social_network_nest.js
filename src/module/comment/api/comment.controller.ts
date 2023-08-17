@@ -11,12 +11,10 @@ import { CommentService } from '../application/comment.service';
 import { CommentQueryRepository } from '../infrastructure/comment.query.repository';
 import { CurrentUserId } from '../../../decorators/current-user-id.decorator';
 import { NonBlockingAuthGuard } from '../../../guards/non-blocking.auth.guard';
-import { ObjectIdGuard } from '../../../guards/objectid.validation.guard';
 import { AuthAccessJwtGuard } from '../../../guards/auth-access.jwt.guard';
 import { UpdateCommentDto } from '../dto/update.comment.dto';
 import { CurrentUser } from "../../../decorators/current-user.decorator";
 import { exceptionHandler } from "../../../exception/exception.handler";
-import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
 import { ReactionStatusDto } from "../dto/reaction.status.dto";
 
 @Controller('comments')

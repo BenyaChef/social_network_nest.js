@@ -23,4 +23,8 @@ export class CommentRepository {
   async delete(commentId: string): Promise<boolean | null> {
     return this.commentModel.findOneAndDelete({_id: commentId})
   }
+
+  async updateBanStatus(userId: string, banStatus: boolean) {
+    return this.commentModel.updateOne({userId: userId} , {$set: {isUserBanned: banStatus}})
+  }
 }

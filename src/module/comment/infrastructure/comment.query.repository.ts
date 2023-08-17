@@ -22,11 +22,16 @@ export class CommentQueryRepository {
     const comments: CommentDocument[] | null = await this.findCommentsByFilterAndPagination(postId, query);
     if (comments.length === 0) return null;
 
+    const commentsNoBan = comments.filter(c => !c.isUserBanned)
+
     const commentsItems: any = []
-    for(const comment of comments) {
+    for(const comment of commentsNoBan) {
       const likeCountAndStatus = await this.likesDataProcessing(comment._id.toString(), userId);
       commentsItems.push(new CommentViewModel(comment, likeCountAndStatus))
     }
+
+    if(commentsItems.length === 0) return null
+
 
     const totalCount = await this.commentModel.countDocuments({ parentId: postId })
     return new PaginationViewModel<CommentViewModel[]>(
@@ -40,13 +45,14 @@ export class CommentQueryRepository {
   async getCommentById(commentId: string, userId?: string | null,): Promise<CommentViewModel | null> {
     const comment: CommentDocument | null = await this.commentModel.findOne({ _id: commentId, });
     if (!comment) return null;
+    if (comment.isUserBanned) return null;
     const likeCountAndStatus = await this.likesDataProcessing(commentId, userId);
     return new CommentViewModel(comment, likeCountAndStatus);
   }
 
   private async likesDataProcessing(commentId: string, userId?: string | null) {
-    const totalLike = await this.reactionModel.countDocuments({ parentId: commentId, reactionStatus: 'Like', });
-    const totalDisLike = await this.reactionModel.countDocuments({ parentId: commentId, reactionStatus: 'Dislike', });
+    const totalLike = await this.reactionModel.countDocuments({ parentId: commentId, reactionStatus: 'Like', isUserBanned: false} );
+    const totalDisLike = await this.reactionModel.countDocuments({ parentId: commentId, reactionStatus: 'Dislike', isUserBanned: false});
     if (!userId) {
       return {
         dislikesCount: +totalDisLike,

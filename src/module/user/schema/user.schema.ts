@@ -38,8 +38,23 @@ class PasswordRecoveryInfo {
 const PasswordRecoveryInfoSchema =
   SchemaFactory.createForClass(PasswordRecoveryInfo);
 
-@Schema({id: true})
+@Schema({ _id: false, versionKey: false })
+export class BanInfo {
+  @Prop({ required: true, type: Boolean, default: false })
+  isBanned: boolean;
+  @Prop({ type: String })
+  banDate: string | null;
+  @Prop({ type: String })
+  banReason: string | null;
+}
+
+const BanInfoSchema = SchemaFactory.createForClass(BanInfo);
+
+@Schema({ versionKey: false })
 export class User {
+  @Prop({ required: true, type: String, unique: true })
+  id: string;
+
   @Prop({ required: true, type: AccountDataSchema })
   accountData: AccountData;
 
@@ -49,20 +64,31 @@ export class User {
   @Prop({ required: true, type: PasswordRecoveryInfoSchema })
   passwordRecoveryInfo: PasswordRecoveryInfo;
 
-  static async createUser(createDto: CreateUserDto, hash: string): Promise<User> {
-  const newUser: User = {
+  @Prop({ required: true, type:  BanInfoSchema})
+  banInfo: BanInfo
+
+  static async createUser(
+    createDto: CreateUserDto,
+    hash: string,
+  ): Promise<User> {
+    const newUser: User = {
+      id: randomUUID(),
       accountData: new AccountData(),
       emailInfo: new EmailInfo(),
-      passwordRecoveryInfo: new PasswordRecoveryInfo()
-    }
-    newUser.accountData.login = createDto.login
-    newUser.accountData.passwordHash = hash
-    newUser.accountData.email = createDto.email
-    newUser.accountData.createdAt = new Date().toISOString()
-    newUser.emailInfo.isConfirmed = false
-    newUser.emailInfo.confirmationCode = randomUUID()
-    newUser.passwordRecoveryInfo.isConfirmed = true
-    newUser.passwordRecoveryInfo.recoveryCode = null
+      passwordRecoveryInfo: new PasswordRecoveryInfo(),
+      banInfo: new BanInfo()
+    };
+    newUser.accountData.login = createDto.login;
+    newUser.accountData.passwordHash = hash;
+    newUser.accountData.email = createDto.email;
+    newUser.accountData.createdAt = new Date().toISOString();
+    newUser.emailInfo.isConfirmed = false;
+    newUser.emailInfo.confirmationCode = randomUUID();
+    newUser.passwordRecoveryInfo.isConfirmed = true;
+    newUser.passwordRecoveryInfo.recoveryCode = null;
+    newUser.banInfo.isBanned = false;
+    newUser.banInfo.banDate = null;
+    newUser.banInfo.banReason = null;
     return newUser;
   }
 }

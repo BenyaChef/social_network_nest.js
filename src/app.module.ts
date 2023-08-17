@@ -66,6 +66,9 @@ import { PostCreateUseCase } from "./module/post/application/post-create.use-cas
 import { PostUpdateUseCase } from "./module/post/application/post-update.use-case";
 import { PostDeleteUseCase } from "./module/post/application/post-delete.use-case";
 import { PostUpdateReactionUseCase } from "./module/post/application/post-update-reaction.use-case";
+import { UserCreateUseCase } from "./module/user/application/user-create.use-case";
+import { UserDeleteUseCase } from "./module/user/application/user-delete.use-case";
+import { UserBanUseCase } from "./module/user/application/user-ban.use-case";
 
 const controllers = [
   AppController,
@@ -89,7 +92,8 @@ const validators = [
 const useCase = [
   BlogCreateUseCase, BlogDeleteUseCase, BlogUpdateUseCase,
   PostCreateUseCase, PostUpdateUseCase, PostDeleteUseCase,
-  PostUpdateReactionUseCase
+  PostUpdateReactionUseCase, UserCreateUseCase, UserDeleteUseCase,
+  UserBanUseCase
 ]
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
@@ -140,9 +144,9 @@ const guard = [{provide: APP_GUARD, useClass: ThrottlerGuard}]
       useClass: MongooseConfig,
     }),
     MongooseModule.forFeature(mongooseModule),
-    ThrottlerModule.forRoot(),
+    // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...strategy, ...guard, ...useCase, MailAdapter]
+  providers: [...services, ...validators, ...strategy, ...useCase, MailAdapter]
 })
 export class AppModule {}

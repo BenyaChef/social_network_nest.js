@@ -7,8 +7,14 @@ import {
   checkSortDirection,
   toNumber,
 } from '../../../helpers/check.value';
+import { BanStatusEnum } from '../../../enum/ban-status.enum';
 
 export class UserQueryPaginationDto {
+
+  @IsOptional()
+  @IsEnum(BanStatusEnum)
+  public banStatus: BanStatusEnum
+
   @IsOptional()
   public searchLoginTerm: string | null;
 

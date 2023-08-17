@@ -33,8 +33,10 @@ export class Comment {
 
   @Prop({ required: true, type: String })
   userLogin: string;
-  // @Prop({ required: true, type: Boolean, default: false })
-  // isUserBanned: boolean;
+
+  @Prop({ required: true, type: Boolean, default: false })
+  isUserBanned: boolean;
+
   @Prop({ required: true, type: String })
   createdAt: string;
 

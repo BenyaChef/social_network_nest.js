@@ -34,4 +34,8 @@ export class SessionRepository {
     const deleteResult = await this.sessionModel.deleteOne({userId: userId, deviceId: deviceId})
     return deleteResult.deletedCount === 1
   }
+
+  async deleteSessionBanUser(userId: string) {
+    return this.sessionModel.deleteMany({userId: userId})
+  }
 }

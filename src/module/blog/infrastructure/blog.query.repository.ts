@@ -5,10 +5,13 @@ import { Blog, BlogDocument } from '../schema/blog.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { BlogViewModel } from '../model/blog.view.model';
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
+import { BlogSaViewModel } from "../model/blog-sa.view.model";
+import { User, UserDocument } from "../../user/schema/user.schema";
 
 @Injectable()
 export class BlogQueryRepository {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
+  constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+              @InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async getAllBlogsForCurrentUser(query: BlogQueryPaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>>  {
         const filter = {
@@ -31,6 +34,34 @@ export class BlogQueryRepository {
       name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
     };
     return await this.findBlogsByFilterAndPagination(filter, query);
+  }
+
+  async findAllBlogsOfOwner(
+    query: BlogQueryPaginationDto,
+  ): Promise<PaginationViewModel<BlogViewModel[]> | null> {
+    const filter = {
+      name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
+    };
+    const blogs = await this.blogModel
+      .find(filter)
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip((query.pageNumber - 1) * query.pageSize)
+      .limit(query.pageSize)
+      .lean();
+
+    if(blogs.length === 0) return null
+    const blogsArray: BlogSaViewModel[] = []
+    for (const blog of blogs) {
+      const user = await this.userModel.findOne({ id: blog.ownerId })
+      blogsArray.push(new BlogSaViewModel(blog, user!))
+    }
+    const totalCount = await this.blogModel.countDocuments(filter);
+    return new PaginationViewModel<BlogViewModel[]>(
+      totalCount,
+      query.pageNumber,
+      query.pageSize,
+      blogsArray
+    );
   }
 
   private async findBlogsByFilterAndPagination(

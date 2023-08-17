@@ -32,6 +32,7 @@ export class PostQueryRepository {
             {
               $match: {
                 reactionStatus: 'Like',
+                isUserBanned: false,
               },
             },
             { $count: 'count' },
@@ -48,6 +49,7 @@ export class PostQueryRepository {
             {
               $match: {
                 reactionStatus: 'Dislike',
+                isUserBanned: false,
               },
             },
             { $count: 'count' },
@@ -80,6 +82,7 @@ export class PostQueryRepository {
             {
               $match: {
                 reactionStatus: 'Like',
+                isUserBanned: false,
               },
             },
             { $sort: { addedAt: -1 } },

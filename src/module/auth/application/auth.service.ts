@@ -29,6 +29,8 @@ export class AuthService {
   ) {}
 
   async loginUser(ip: string, userAgent: string, userId: string) {
+    const user = await this.userRepository.getUserById(userId)
+    if(user!.banInfo.isBanned) return null
     const deviceId = randomUUID();
     const { accessToken, refreshToken } = await this.tokenService.createJwt(
       userId,

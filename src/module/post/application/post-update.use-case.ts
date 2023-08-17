@@ -21,7 +21,6 @@ export class PostUpdateUseCase implements ICommandHandler<PostUpdateCommand> {
   ) {}
 
   async execute(command: PostUpdateCommand): Promise<ResultCode> {
-    console.log(command);
     const blog = await this.blogRepository.getBlogById(command.blogId)
     if(!blog) return ResultCode.NotFound
     const post = await this.postRepository.getPostById(command.postId)

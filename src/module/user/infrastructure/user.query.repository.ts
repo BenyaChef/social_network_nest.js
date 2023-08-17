@@ -6,6 +6,7 @@ import { FilterQuery, Model } from 'mongoose';
 import { UserViewModel } from '../model/user.view.model';
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 import { LoginDto } from '../../auth/dto/login.dto';
+import { BanStatusEnum } from "../../../enum/ban-status.enum";
 
 @Injectable()
 export class UserQueryRepository {
@@ -34,7 +35,7 @@ export class UserQueryRepository {
   }
 
   async getUserByID(userId: string): Promise<UserViewModel | null> {
-    const user = await this.userModel.findOne({ _id: userId });
+    const user = await this.userModel.findOne({ id: userId });
     if (!user) return null;
     return new UserViewModel(user);
   }
@@ -43,9 +44,24 @@ export class UserQueryRepository {
     query: UserQueryPaginationDto,
   ): Promise<PaginationViewModel<UserViewModel[]>> {
     const filter = {
-      $or: [
-        { 'accountData.login': { $regex: query.searchLoginTerm ?? '', $options: 'ix' } },
-        { 'accountData.email': { $regex: query.searchEmailTerm ?? '', $options: 'ix' } },
+      $and: [
+        {
+          $or: [
+            {
+              'accountData.login': {
+                $regex: query.searchLoginTerm ?? '',
+                $options: 'i',
+              },
+            },
+            {
+              'accountData.email': {
+                $regex: query.searchEmailTerm ?? '',
+                $options: 'i',
+              },
+            },
+          ],
+        },
+        this.getBanStatusFilter(query.banStatus),
       ],
     };
 
@@ -69,5 +85,18 @@ export class UserQueryRepository {
       query.pageSize,
       posts.map((user: UserDocument) => new UserViewModel(user)),
     );
+  }
+
+  private getBanStatusFilter(banStatus: BanStatusEnum) {
+    switch (banStatus) {
+      case BanStatusEnum.banned:
+        return { 'banInfo.isBanned': true };
+      case BanStatusEnum.notBanned:
+        return { 'banInfo.isBanned': false };
+      default:
+        return {
+          $or: [{ 'banInfo.isBanned': true }, { 'banInfo.isBanned': false }],
+        };
+    }
   }
 }

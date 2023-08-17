@@ -9,7 +9,7 @@ import { UserAgent } from "../../../decorators/user.agent.decorator";
 import { RegistrationDto } from "../dto/registration.dto";
 import { RegistrationEmailResendingDto } from "../dto/registration.email.resending.dto";
 import { ConfirmationCodeDto } from "../dto/confirmation.code.dto";
-import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
+import { Throttle } from "@nestjs/throttler";
 import { LocalAuthGuard } from "../../../guards/auth-local.guard";
 
 import { CurrentUser } from "../../../decorators/current-user.decorator";

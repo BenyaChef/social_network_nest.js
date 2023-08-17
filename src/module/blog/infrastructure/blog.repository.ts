@@ -32,4 +32,8 @@ export class BlogRepository {
         const resultDelete = await this.blogModel.deleteOne({ id: blogId })
         return resultDelete.deletedCount === 1
     }
+
+    async bindOwnerId(blogId: string, userId:string) {
+        return this.blogModel.findOneAndUpdate({id: blogId}, {$set: {ownerId: userId}})
+    }
 }
