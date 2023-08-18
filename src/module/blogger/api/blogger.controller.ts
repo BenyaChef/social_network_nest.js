@@ -10,9 +10,9 @@ import {
   Param,
   Post,
   Put,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+  Query, UnauthorizedException,
+  UseGuards
+} from "@nestjs/common";
 import { CreateBlogDto } from '../../blog/dto/create.blog.dto';
 import { BlogViewModel } from '../../blog/model/blog.view.model';
 import { PostViewModel } from '../../post/model/post.view.model';
@@ -34,8 +34,10 @@ import { BlogRepository } from '../../blog/infrastructure/blog.repository';
 import { UpdatePostDto } from '../../post/dto/update.post.dto';
 import { PostUpdateCommand } from '../../post/application/post-update.use-case';
 import { PostDeleteCommand } from '../../post/application/post-delete.use-case';
+import { BlogBanDto } from "../../blog/dto/blog.ban.dto";
+import { BlogBanUserCommand } from "../../blog/application/blog.ban-user.use-case";
 
-@Controller('blogger/blogs')
+@Controller('blogger')
 export class BloggerController {
   constructor(
     private commandBus: CommandBus,
@@ -45,7 +47,7 @@ export class BloggerController {
   ) {}
 
   @UseGuards(AuthAccessJwtGuard)
-  @Get()
+  @Get('blogs')
   async getAllBlogsForCurrentUser(
     @Query() query: BlogQueryPaginationDto,
     @CurrentUser() userId: string,
@@ -54,7 +56,7 @@ export class BloggerController {
   }
 
   @UseGuards(AuthAccessJwtGuard)
-  @Post()
+  @Post('blogs')
   async createBlog(
     @Body() createDto: CreateBlogDto,
     @CurrentUser() userId: string,
@@ -66,7 +68,7 @@ export class BloggerController {
   }
 
   @UseGuards(AuthAccessJwtGuard)
-  @Put(':blogId')
+  @Put('blogs/:blogId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
     @Body() updateDto: UpdateBlogDto,
@@ -80,7 +82,7 @@ export class BloggerController {
   }
 
   @UseGuards(AuthAccessJwtGuard)
-  @Delete(':blogId')
+  @Delete('blogs/:blogId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteBlog(
     @Param('blogId') blogId: string,
@@ -93,7 +95,7 @@ export class BloggerController {
   }
 
   @UseGuards(AuthAccessJwtGuard)
-  @Get(':blogId/posts')
+  @Get('blogs/:blogId/posts')
   async getPostCurrentUser(
     @Param('blogId') blogId: string,
     @Query() query: PostQueryPaginationDto,
@@ -106,7 +108,7 @@ export class BloggerController {
   }
 
   @UseGuards(AuthAccessJwtGuard)
-  @Post(':blogId/posts')
+  @Post('blogs/:blogId/posts')
   async createNewPostForBlog(
     @Body() createDto: PostCreateDto,
     @Param('blogId') blogId: string,
@@ -125,7 +127,7 @@ export class BloggerController {
   }
 
   @UseGuards(AuthAccessJwtGuard)
-  @Put(':blogId/posts/:postId')
+  @Put('blogs/:blogId/posts/:postId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePost(
     @Body() updateDto: UpdatePostDto,
@@ -139,12 +141,26 @@ export class BloggerController {
   }
 
   @UseGuards(AuthAccessJwtGuard)
-  @Delete(':blogId/posts/:postId')
+  @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePost(@Param() params, @CurrentUser() userId: string) {
     const resultDelete = await this.commandBus.execute(
       new PostDeleteCommand(userId, params.postId, params.blogId),
     );
     return exceptionHandler(resultDelete);
+  }
+
+  @UseGuards(AuthAccessJwtGuard)
+  @Get('users/blog/:blogId')
+  async findBannedBlogUsers(@Query() query: BlogQueryPaginationDto, @Param('blogId') blogId: string) {
+    return this.blogQueryRepository.findBannedBlogUsers(query, blogId)
+  }
+
+  @UseGuards(AuthAccessJwtGuard)
+  @Put('users/:userId/ban')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async banUserForBlog(@Body() banDto: BlogBanDto, @Param('userId') userId: string, @CurrentUser() ownerId: string) {
+    const banResult =  await this.commandBus.execute(new BlogBanUserCommand(banDto, userId, ownerId))
+    return exceptionHandler(banResult)
   }
 }

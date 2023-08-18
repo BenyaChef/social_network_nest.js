@@ -1,5 +1,4 @@
 import { BlogDocument } from "../schema/blog.schema";
-import { UserDocument } from "../../user/schema/user.schema";
 
 export class BlogSaViewModel {
   id: string;
@@ -12,7 +11,11 @@ export class BlogSaViewModel {
     userId: string,
     userLogin: string
   }
-  constructor(blog: BlogDocument, user: UserDocument) {
+  banInfo: {
+    isBanned: boolean
+    banDate: string | null
+  }
+  constructor(blog: BlogDocument) {
     this.id = blog.id
     this.name = blog.name;
     this.description = blog.description;
@@ -20,8 +23,12 @@ export class BlogSaViewModel {
     this.createdAt = blog.createdAt;
     this.isMembership = blog.isMembership;
     this.blogOwnerInfo = {
-      userId: user.id,
-      userLogin: user.accountData.login
+      userId: blog.ownerId,
+      userLogin: blog.ownerLogin
     };
+    this.banInfo = {
+      isBanned: blog.isBanned,
+      banDate: blog.banDate
+    }
   }
 }

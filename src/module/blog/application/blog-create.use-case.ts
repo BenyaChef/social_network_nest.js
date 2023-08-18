@@ -19,7 +19,7 @@ export class BlogCreateUseCase implements ICommandHandler<BlogCreateCommand> {
     const user = await this.userRepository.getUserById(command.userId)
     if(!user) return null
 
-    const newBlog: Blog = Blog.createBlog(command.CreateBlgDto, command.userId)
+    const newBlog: Blog = Blog.createBlog(command.CreateBlgDto, user)
     try {
       await this.blogRepository.create(newBlog)
       return newBlog.id

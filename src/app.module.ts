@@ -26,7 +26,7 @@ import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
 import { AuthService } from './module/auth/application/auth.service';
 
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
   Session,
   SessionSchema,
@@ -52,23 +52,28 @@ import {
   Reaction,
   ReactionSchema,
 } from './module/reaction/schema/reaction.schema';
-import { ReactionService } from "./module/reaction/application/reaction.service";
-import { ReactionRepository } from "./module/reaction/infrastructure/reaction.repository";
-import { SessionQueryRepository } from "./module/sessions/infrastructure/session.query.repository";
-import { SecurityController } from "./module/security/api/security.controller";
-import { APP_GUARD } from "@nestjs/core";
-import { BloggerController } from "./module/blogger/api/blogger.controller";
-import { CqrsModule } from "@nestjs/cqrs";
-import { BlogCreateUseCase } from "./module/blog/application/blog-create.use-case";
-import { BlogDeleteUseCase } from "./module/blog/application/blog-delete.use-case";
-import { BlogUpdateUseCase } from "./module/blog/application/blog-update.use-case";
-import { PostCreateUseCase } from "./module/post/application/post-create.use-case";
-import { PostUpdateUseCase } from "./module/post/application/post-update.use-case";
-import { PostDeleteUseCase } from "./module/post/application/post-delete.use-case";
-import { PostUpdateReactionUseCase } from "./module/post/application/post-update-reaction.use-case";
-import { UserCreateUseCase } from "./module/user/application/user-create.use-case";
-import { UserDeleteUseCase } from "./module/user/application/user-delete.use-case";
-import { UserBanUseCase } from "./module/user/application/user-ban.use-case";
+import { ReactionService } from './module/reaction/application/reaction.service';
+import { ReactionRepository } from './module/reaction/infrastructure/reaction.repository';
+import { SessionQueryRepository } from './module/sessions/infrastructure/session.query.repository';
+import { SecurityController } from './module/security/api/security.controller';
+import { APP_GUARD } from '@nestjs/core';
+import { BloggerController } from './module/blogger/api/blogger.controller';
+import { CqrsModule } from '@nestjs/cqrs';
+import { BlogCreateUseCase } from './module/blog/application/blog-create.use-case';
+import { BlogDeleteUseCase } from './module/blog/application/blog-delete.use-case';
+import { BlogUpdateUseCase } from './module/blog/application/blog-update.use-case';
+import { PostCreateUseCase } from './module/post/application/post-create.use-case';
+import { PostUpdateUseCase } from './module/post/application/post-update.use-case';
+import { PostDeleteUseCase } from './module/post/application/post-delete.use-case';
+import { PostUpdateReactionUseCase } from './module/post/application/post-update-reaction.use-case';
+import { UserCreateUseCase } from './module/user/application/user-create.use-case';
+import { UserDeleteUseCase } from './module/user/application/user-delete.use-case';
+import { UserBanUseCase } from './module/user/application/user-ban.use-case';
+import {
+  BlogBanUsers,
+  BlogBanUsersSchema,
+} from './module/blog/schema/blog.ban-users.schema';
+import { BlogBanUserUseCase } from "./module/blog/application/blog.ban-user.use-case";
 
 const controllers = [
   AppController,
@@ -79,7 +84,7 @@ const controllers = [
   AuthController,
   CommentController,
   SecurityController,
-  BloggerController
+  BloggerController,
 ];
 
 const validators = [
@@ -90,11 +95,18 @@ const validators = [
 ];
 
 const useCase = [
-  BlogCreateUseCase, BlogDeleteUseCase, BlogUpdateUseCase,
-  PostCreateUseCase, PostUpdateUseCase, PostDeleteUseCase,
-  PostUpdateReactionUseCase, UserCreateUseCase, UserDeleteUseCase,
-  UserBanUseCase
-]
+  BlogCreateUseCase,
+  BlogDeleteUseCase,
+  BlogUpdateUseCase,
+  PostCreateUseCase,
+  PostUpdateUseCase,
+  PostDeleteUseCase,
+  PostUpdateReactionUseCase,
+  UserCreateUseCase,
+  UserDeleteUseCase,
+  UserBanUseCase,
+  BlogBanUserUseCase
+];
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
 
@@ -119,7 +131,7 @@ const services = [
   SessionQueryRepository,
   CommentRepository,
   CommentQueryRepository,
-  ReactionRepository
+  ReactionRepository,
 ];
 
 const mongooseModule = [
@@ -129,16 +141,20 @@ const mongooseModule = [
   { name: Session.name, schema: SessionSchema },
   { name: Comment.name, schema: CommentSchema },
   { name: Reaction.name, schema: ReactionSchema },
+  { name: BlogBanUsers.name, schema: BlogBanUsersSchema },
 ];
 
-const guard = [{provide: APP_GUARD, useClass: ThrottlerGuard}]
+const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
 
 @Module({
   imports: [
     CqrsModule,
     PassportModule,
     MailModule,
-    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useClass: MongooseConfig,
@@ -147,6 +163,6 @@ const guard = [{provide: APP_GUARD, useClass: ThrottlerGuard}]
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...strategy, ...useCase, MailAdapter]
+  providers: [...services, ...validators, ...strategy, ...useCase, MailAdapter],
 })
 export class AppModule {}

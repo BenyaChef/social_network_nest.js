@@ -3,11 +3,13 @@ import {Blog, BlogDocument} from '../schema/blog.schema';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 import { UpdateBlogDto } from "../dto/update.blog.dto";
+import { BlogBanUsers, BlogBanUsersDocument } from "../schema/blog.ban-users.schema";
 
 
 @Injectable()
 export class BlogRepository {
-    constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {
+    constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+                @InjectModel(BlogBanUsers.name) private blogBanUserModel: Model<BlogBanUsersDocument>) {
     }
 
     async getBlogById(blogId: string): Promise<BlogDocument | null> {
@@ -35,5 +37,9 @@ export class BlogRepository {
 
     async bindOwnerId(blogId: string, userId:string) {
         return this.blogModel.findOneAndUpdate({id: blogId}, {$set: {ownerId: userId}})
+    }
+
+    async createBanInfoUser(banInfo: BlogBanUsers) {
+        return this.blogBanUserModel.create(banInfo)
     }
 }

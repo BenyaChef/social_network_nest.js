@@ -5,19 +5,31 @@ import { Blog, BlogDocument } from '../schema/blog.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { BlogViewModel } from '../model/blog.view.model';
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
-import { BlogSaViewModel } from "../model/blog-sa.view.model";
-import { User, UserDocument } from "../../user/schema/user.schema";
+import { BlogSaViewModel } from '../model/blog-sa.view.model';
+import { User, UserDocument } from '../../user/schema/user.schema';
+import {
+  BlogBanUsers,
+  BlogBanUsersDocument,
+} from '../schema/blog.ban-users.schema';
+import { BlogBannedUserViewModel } from '../model/blog.banned-user.view-model';
 
 @Injectable()
 export class BlogQueryRepository {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-              @InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(BlogBanUsers.name)
+    private blogBanModel: Model<BlogBanUsersDocument>,
+  ) {}
 
-  async getAllBlogsForCurrentUser(query: BlogQueryPaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>>  {
-        const filter = {
-          name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
-          ownerId: userId
-        };
+  async getAllBlogsForCurrentUser(
+    query: BlogQueryPaginationDto,
+    userId: string,
+  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+    const filter = {
+      name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
+      ownerId: userId,
+    };
     return await this.findBlogsByFilterAndPagination(filter, query);
   }
 
@@ -49,18 +61,35 @@ export class BlogQueryRepository {
       .limit(query.pageSize)
       .lean();
 
-    if(blogs.length === 0) return null
-    const blogsArray: BlogSaViewModel[] = []
-    for (const blog of blogs) {
-      const user = await this.userModel.findOne({ id: blog.ownerId })
-      blogsArray.push(new BlogSaViewModel(blog, user!))
-    }
+    if (blogs.length === 0) return null;
+
     const totalCount = await this.blogModel.countDocuments(filter);
     return new PaginationViewModel<BlogViewModel[]>(
       totalCount,
       query.pageNumber,
       query.pageSize,
-      blogsArray
+      blogs.map((b) => new BlogSaViewModel(b)),
+    );
+  }
+
+  async findBannedBlogUsers(query: BlogQueryPaginationDto, blogId: string) {
+    const filter = {
+      blogId: blogId,
+      userLogin: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
+    };
+
+    const findBanInfo = await this.blogBanModel
+      .find(filter)
+      .sort({ [query.sortBy]: query.sortDirection })
+      .skip((query.pageNumber - 1) * query.pageSize)
+      .limit(query.pageSize)
+      .lean();
+    const totalCount = await this.blogBanModel.countDocuments(filter);
+    return new PaginationViewModel<BlogBannedUserViewModel[]>(
+      totalCount,
+      query.pageNumber,
+      query.pageSize,
+      findBanInfo.map((banInfo) => new BlogBannedUserViewModel(banInfo)),
     );
   }
 
