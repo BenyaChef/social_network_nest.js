@@ -28,6 +28,8 @@ import { CommentViewModel } from "../../comment/model/comment.view.model";
 import { CommentQueryPaginationDto } from "../../comment/dto/comment.query.pagination.dto";
 import { CommandBus } from "@nestjs/cqrs";
 import { PostUpdateReactionCommand } from "../application/post-update-reaction.use-case";
+import { CommentCreateCommand } from "../../comment/application/comment-create.use-case";
+import { ResultCodeType } from "../../../enum/result-code.enum";
 
 @Controller('posts')
 export class PostController {
@@ -70,15 +72,9 @@ export class PostController {
     @Param('postId') postId: string,
     @CurrentUser() userId: string,
   ) {
-    const post = await this.postQueryRepository.getPostById(postId);
-    if (!post) throw new NotFoundException();
-    const commentId = await this.commentService.createComment(
-      createCommentDto.content,
-      postId,
-      userId,
-    );
-    if (!commentId) throw new NotFoundException();
-    return this.commentQueryRepository.getCommentById(commentId);
+    const resultCommand: ResultCodeType = await this.commandBus.execute(new CommentCreateCommand(userId, postId, createCommentDto))
+    if(!resultCommand.data) return exceptionHandler(resultCommand.code)
+    return this.commentQueryRepository.getCommentById(resultCommand.data);
   }
 
   @UseGuards(AuthAccessJwtGuard)

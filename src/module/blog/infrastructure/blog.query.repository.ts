@@ -12,6 +12,7 @@ import {
   BlogBanUsersDocument,
 } from '../schema/blog.ban-users.schema';
 import { BlogBannedUserViewModel } from '../model/blog.banned-user.view-model';
+import { ResultCode } from '../../../enum/result-code.enum';
 
 @Injectable()
 export class BlogQueryRepository {
@@ -72,11 +73,19 @@ export class BlogQueryRepository {
     );
   }
 
-  async findBannedBlogUsers(query: BlogQueryPaginationDto, blogId: string) {
+  async findBannedBlogUsers(query: BlogQueryPaginationDto, blogId: string, userId: string) {
+
+    const blog = await this.blogModel.findOne({ id: blogId });
+
+    if (!blog) return {data: null, code: ResultCode.NotFound}  ;
+    if (blog.ownerId !== userId) return {data: null, code: ResultCode.Forbidden} ;
+
     const filter = {
       blogId: blogId,
-      userLogin: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
+      isBanned: true,
+      login: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
     };
+
 
     const findBanInfo = await this.blogBanModel
       .find(filter)
@@ -84,13 +93,21 @@ export class BlogQueryRepository {
       .skip((query.pageNumber - 1) * query.pageSize)
       .limit(query.pageSize)
       .lean();
+
+    console.log(findBanInfo);
     const totalCount = await this.blogBanModel.countDocuments(filter);
-    return new PaginationViewModel<BlogBannedUserViewModel[]>(
+    const paginationViewModel = await new PaginationViewModel<BlogBannedUserViewModel[]>(
       totalCount,
       query.pageNumber,
       query.pageSize,
       findBanInfo.map((banInfo) => new BlogBannedUserViewModel(banInfo)),
     );
+    console.log(paginationViewModel);
+    return { data: paginationViewModel, code: ResultCode.Success}
+  }
+
+  async findBanUserForBlog(blogId: string, userId: string) {
+    return this.blogBanModel.findOne({ blogId: blogId, userId: userId });
   }
 
   private async findBlogsByFilterAndPagination(

@@ -74,6 +74,7 @@ import {
   BlogBanUsersSchema,
 } from './module/blog/schema/blog.ban-users.schema';
 import { BlogBanUserUseCase } from "./module/blog/application/blog.ban-user.use-case";
+import { CommentCreateUseCase } from "./module/comment/application/comment-create.use-case";
 
 const controllers = [
   AppController,
@@ -105,7 +106,8 @@ const useCase = [
   UserCreateUseCase,
   UserDeleteUseCase,
   UserBanUseCase,
-  BlogBanUserUseCase
+  BlogBanUserUseCase,
+  CommentCreateUseCase
 ];
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];

@@ -6,6 +6,7 @@ import { User, UserDocument } from '../../user/schema/user.schema';
 import { Session, SessionDocument } from '../../sessions/schema/session.schema';
 import { Comment, CommentDocument } from "../../comment/schema/comment.schema";
 import { Reaction, ReactionDocument } from "../../reaction/schema/reaction.schema";
+import { BlogBanUsers, BlogBanUsersDocument } from "../../blog/schema/blog.ban-users.schema";
 
 export class TestingRepository {
   constructor(
@@ -14,7 +15,8 @@ export class TestingRepository {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Session.name) private sessionModel: Model<SessionDocument>,
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    @InjectModel(Reaction.name) private reactionModel: Model<ReactionDocument>
+    @InjectModel(Reaction.name) private reactionModel: Model<ReactionDocument>,
+    @InjectModel(BlogBanUsers.name) private blogBanModel: Model<BlogBanUsersDocument>
   ) {}
 
   async deleteAllData() {
@@ -25,6 +27,7 @@ export class TestingRepository {
       await this.sessionModel.deleteMany({}),
       await this.commentModel.deleteMany({}),
       await this.reactionModel.deleteMany({}),
+      await this.blogBanModel.deleteMany({})
     ]).catch((error) => {
       console.log(error);
       return null;

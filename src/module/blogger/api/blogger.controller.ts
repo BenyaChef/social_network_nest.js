@@ -35,7 +35,9 @@ import { UpdatePostDto } from '../../post/dto/update.post.dto';
 import { PostUpdateCommand } from '../../post/application/post-update.use-case';
 import { PostDeleteCommand } from '../../post/application/post-delete.use-case';
 import { BlogBanDto } from "../../blog/dto/blog.ban.dto";
-import { BlogBanUserCommand } from "../../blog/application/blog.ban-user.use-case";
+import { BlogBanUnbanUserCommand } from "../../blog/application/blog.ban-user.use-case";
+import { ResultCode } from "../../../enum/result-code.enum";
+import { PaginationViewModel } from "../../../helpers/pagination.view.mapper";
 
 @Controller('blogger')
 export class BloggerController {
@@ -152,15 +154,17 @@ export class BloggerController {
 
   @UseGuards(AuthAccessJwtGuard)
   @Get('users/blog/:blogId')
-  async findBannedBlogUsers(@Query() query: BlogQueryPaginationDto, @Param('blogId') blogId: string) {
-    return this.blogQueryRepository.findBannedBlogUsers(query, blogId)
+  async findBannedBlogUsers(@Query() query: BlogQueryPaginationDto, @Param('blogId') blogId: string, @CurrentUser() userId: string) {
+    const resultFind = await this.blogQueryRepository.findBannedBlogUsers(query, blogId, userId)
+    if(!resultFind.data) return exceptionHandler(resultFind.code)
+    return resultFind.data
   }
 
   @UseGuards(AuthAccessJwtGuard)
   @Put('users/:userId/ban')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async banUserForBlog(@Body() banDto: BlogBanDto, @Param('userId') userId: string, @CurrentUser() ownerId: string) {
-    const banResult =  await this.commandBus.execute(new BlogBanUserCommand(banDto, userId, ownerId))
+  async banUnbanUserForBlog(@Body() banDto: BlogBanDto, @Param('userId') userId: string, @CurrentUser() ownerId: string) {
+    const banResult =  await this.commandBus.execute(new BlogBanUnbanUserCommand(banDto, userId, ownerId))
     return exceptionHandler(banResult)
   }
 }

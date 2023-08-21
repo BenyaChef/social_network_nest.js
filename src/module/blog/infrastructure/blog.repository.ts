@@ -39,7 +39,16 @@ export class BlogRepository {
         return this.blogModel.findOneAndUpdate({id: blogId}, {$set: {ownerId: userId}})
     }
 
-    async createBanInfoUser(banInfo: BlogBanUsers) {
-        return this.blogBanUserModel.create(banInfo)
+    async banUnbanUser(banInfo: BlogBanUsers) {
+        const result = await this.blogBanUserModel.findOne({blogId: banInfo.blogId, userId: banInfo.userId})
+        if(!result) {
+            return this.blogBanUserModel.create(banInfo)
+        }
+        return this.blogBanUserModel.findOneAndUpdate({blogId: banInfo.blogId, userId: banInfo.userId}, {$set: {isBanned: banInfo.isBanned}})
     }
+
+    // async unbanUser(banInfo: BlogBanUsers) {
+    //     console.log(banInfo);
+    //     return this.blogBanUserModel.findOneAndDelete({blogId: banInfo.blogId, userId: banInfo.userId})
+    // }
 }

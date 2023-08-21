@@ -27,14 +27,14 @@ export class BlogBanUsers {
   userId: string
 
   @Prop({type: String})
-  userLogin: string
+  login: string
 
   static createBanInfoUser(banInfoDto: BlogBanDto, user: UserDocument): BlogBanUsers {
     const newBanInfo = new BlogBanUsers()
     newBanInfo.id = randomUUID()
     newBanInfo.blogId = banInfoDto.blogId
     newBanInfo.userId = user.id
-    newBanInfo.userLogin = user.accountData.login
+    newBanInfo.login = user.accountData.login
     newBanInfo.isBanned = banInfoDto.isBanned
     newBanInfo.banData = new Date().toISOString()
     newBanInfo.banReason = banInfoDto.banReason

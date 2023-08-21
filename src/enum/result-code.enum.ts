@@ -4,3 +4,8 @@ export enum ResultCode {
   NotFound,
   Forbidden,
 }
+
+export type ResultCodeType = {
+  data: string | null
+  code: ResultCode
+}

@@ -11,7 +11,7 @@ export class CommentRepository {
     return this.commentModel.findOne({_id: commentId})
   }
 
-  async save(newComment: Comment): Promise<string> {
+  async create(newComment: Comment): Promise<string> {
     const result = await this.commentModel.create(newComment)
     return result.id
   }

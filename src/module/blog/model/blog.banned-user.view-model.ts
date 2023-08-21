@@ -10,7 +10,7 @@ export class BlogBannedUserViewModel {
   }
   constructor(blogBanInfo: BlogBanUsersDocument) {
     this.id = blogBanInfo.userId
-    this.login = blogBanInfo.userLogin
+    this.login = blogBanInfo.login
     this.banInfo = {
       isBanned: blogBanInfo.isBanned,
       banDate: blogBanInfo.banData,

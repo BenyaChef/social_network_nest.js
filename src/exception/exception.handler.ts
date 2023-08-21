@@ -15,7 +15,6 @@ import { ResultCode } from "../enum/result-code.enum";
 // }
 
 export const exceptionHandler = (code: ResultCode) => {
-
   switch (code) {
     case ResultCode.BadRequest: {
       throw new BadRequestException();
