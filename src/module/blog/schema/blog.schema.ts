@@ -32,7 +32,7 @@ export class Blog {
   @Prop({ required: true, type: String })
   ownerLogin: string;
 
-  @Prop({ required: true, type: Boolean, default: false })
+  @Prop({ required: true, type: Boolean })
   isBanned: boolean;
 
   @Prop({ type: String, default: null})
@@ -56,6 +56,7 @@ export class Blog {
     newBlog.ownerId = user.id;
     newBlog.ownerLogin = user.accountData.login;
     newBlog.isMembership = false;
+    newBlog.isBanned = false
     newBlog.createdAt = new Date().toISOString();
     return newBlog;
   }

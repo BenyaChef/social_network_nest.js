@@ -35,7 +35,6 @@ import { ResultCodeType } from "../../../enum/result-code.enum";
 export class PostController {
   constructor(
     protected postQueryRepository: PostQueryRepository,
-    protected commentService: CommentService,
     protected commentQueryRepository: CommentQueryRepository,
     protected commandBus: CommandBus
   ) {}
@@ -53,8 +52,8 @@ export class PostController {
   async getPostById(@Param('postId') postId: string, @CurrentUserId() userId: string): Promise<PostViewModel> {
     const post: PostViewModel | null =
       await this.postQueryRepository.getPostById(postId, userId);
-    if (!post) throw new NotFoundException();
-    return post;
+      if (!post) throw new NotFoundException();
+      return post;
   }
 
   @UseGuards(NonBlockingAuthGuard)

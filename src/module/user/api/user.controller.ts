@@ -15,6 +15,9 @@ import { UserBanCommand } from "../application/user-ban.use-case";
 import { BlogQueryPaginationDto } from "../../blog/dto/blog.query.pagination.dto";
 import { BlogQueryRepository } from "../../blog/infrastructure/blog.query.repository";
 import { UserBindCommand } from "../application/user-bind.use-case";
+import { BlogBanDto } from "../../blog/dto/blog.ban.dto";
+import { SaBlogBanDto } from "../dto/sa.blog-ban.dto";
+import { SaBlogBanCommand } from "../application/sa.blog-ban.use-case";
 
 
 @Controller('sa')
@@ -55,7 +58,16 @@ export class UserController {
     @Get('blogs')
     @UseGuards(BasicAuth)
     async findAllBlogsOfOwner(@Query() query: BlogQueryPaginationDto) {
-        return this.blogQueryRepository.findAllBlogsOfOwner(query)
+        const blogs = await this.blogQueryRepository.findAllBlogsOfOwner(query)
+        if(!blogs) throw new NotFoundException()
+        return blogs
+    }
+
+    @Put('blogs/:blogId/ban')
+    @UseGuards(BasicAuth)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async banBlog(@Param('blogId') blogId: string, @Body() banDto: SaBlogBanDto) {
+        return this.commandBus.execute(new SaBlogBanCommand(blogId, banDto.isBanned))
     }
 
     @Put('blogs/:blogId/bind-with-user/:userId')

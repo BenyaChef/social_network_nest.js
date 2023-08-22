@@ -1,6 +1,6 @@
 import { PostQueryPaginationDto } from '../dto/post.query.pagination.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { FilterQuery, Model } from 'mongoose';
+import  { FilterQuery, Model } from 'mongoose';
 import { Post, PostDocument } from '../schema/post.schema';
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 import { PostViewModel } from '../model/post.view.model';
@@ -93,6 +93,20 @@ export class PostQueryRepository {
           ],
           as: 'newestLikes',
         },
+      },
+      {
+        $lookup: {
+          from: "blogs",
+          localField: "blogId",
+          foreignField: "id",
+          as: "blog"
+        }
+      },
+      { $unwind: "$blog" }, {
+        $match: {
+          "blog.isBanned": false
+
+        }
       },
       {
         $project: {

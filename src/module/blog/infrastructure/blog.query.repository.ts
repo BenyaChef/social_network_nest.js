@@ -37,6 +37,7 @@ export class BlogQueryRepository {
   async getBlogById(blogId: string): Promise<BlogViewModel | null> {
     const findBlog = await this.blogModel.findOne({ id: blogId });
     if (!findBlog) return null;
+    if(findBlog.isBanned) return null
     return new BlogViewModel(findBlog);
   }
 
@@ -45,13 +46,14 @@ export class BlogQueryRepository {
   ): Promise<PaginationViewModel<BlogViewModel[]>> {
     const filter = {
       name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
+      isBanned: false
     };
     return await this.findBlogsByFilterAndPagination(filter, query);
   }
 
   async findAllBlogsOfOwner(
     query: BlogQueryPaginationDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]> | null> {
+  ): Promise<PaginationViewModel<BlogSaViewModel[]> | null> {
     const filter = {
       name: { $regex: query.searchNameTerm ?? '', $options: 'ix' },
     };
@@ -61,11 +63,11 @@ export class BlogQueryRepository {
       .skip((query.pageNumber - 1) * query.pageSize)
       .limit(query.pageSize)
       .lean();
-
+    console.log(blogs);
     if (blogs.length === 0) return null;
 
     const totalCount = await this.blogModel.countDocuments(filter);
-    return new PaginationViewModel<BlogViewModel[]>(
+    return new PaginationViewModel<BlogSaViewModel[]>(
       totalCount,
       query.pageNumber,
       query.pageSize,
@@ -94,7 +96,7 @@ export class BlogQueryRepository {
       .limit(query.pageSize)
       .lean();
 
-    console.log(findBanInfo);
+
     const totalCount = await this.blogBanModel.countDocuments(filter);
     const paginationViewModel = await new PaginationViewModel<BlogBannedUserViewModel[]>(
       totalCount,
@@ -102,7 +104,6 @@ export class BlogQueryRepository {
       query.pageSize,
       findBanInfo.map((banInfo) => new BlogBannedUserViewModel(banInfo)),
     );
-    console.log(paginationViewModel);
     return { data: paginationViewModel, code: ResultCode.Success}
   }
 

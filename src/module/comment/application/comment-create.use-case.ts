@@ -6,6 +6,7 @@ import { BlogQueryRepository } from '../../blog/infrastructure/blog.query.reposi
 import { Comment } from '../schema/comment.schema';
 import { UserRepository } from '../../user/infrastructure/user.repository';
 import { ResultCode, ResultCodeType } from "../../../enum/result-code.enum";
+import { BlogRepository } from "../../blog/infrastructure/blog.repository";
 
 export class CommentCreateCommand {
   constructor(
@@ -24,6 +25,7 @@ export class CommentCreateUseCase
     private readonly postRepository: PostRepository,
     private readonly blogQueryRepository: BlogQueryRepository,
     private readonly userRepository: UserRepository,
+    private readonly blogRepository: BlogRepository
   ) {}
 
   async execute(command: CommentCreateCommand): Promise<ResultCodeType> {
@@ -41,6 +43,12 @@ export class CommentCreateUseCase
         code: ResultCode.NotFound,
       };
 
+    const blog = await this.blogRepository.getBlogById(post.blogId)
+    if(!blog) return {
+      data: null,
+      code: ResultCode.NotFound,
+    };
+
     const banBlog = await this.blogQueryRepository.findBanUserForBlog(post.blogId, command.userId,);
     if (banBlog && banBlog.isBanned)
       return {
@@ -48,10 +56,10 @@ export class CommentCreateUseCase
         code: ResultCode.Forbidden,
       };
 
-    const newComment = Comment.createComment(command.createDto.content, command.postId, user);
-    const commentId = await this.commentRepository.create(newComment);
+    const newComment = Comment.createComment(command.createDto.content, post, user, blog);
+    await this.commentRepository.create(newComment);
     return {
-      data: commentId,
+      data: newComment.id,
       code: ResultCode.Success,
     };
   }

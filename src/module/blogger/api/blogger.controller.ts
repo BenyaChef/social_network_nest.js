@@ -10,9 +10,9 @@ import {
   Param,
   Post,
   Put,
-  Query, UnauthorizedException,
-  UseGuards
-} from "@nestjs/common";
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateBlogDto } from '../../blog/dto/create.blog.dto';
 import { BlogViewModel } from '../../blog/model/blog.view.model';
 import { PostViewModel } from '../../post/model/post.view.model';
@@ -34,10 +34,11 @@ import { BlogRepository } from '../../blog/infrastructure/blog.repository';
 import { UpdatePostDto } from '../../post/dto/update.post.dto';
 import { PostUpdateCommand } from '../../post/application/post-update.use-case';
 import { PostDeleteCommand } from '../../post/application/post-delete.use-case';
-import { BlogBanDto } from "../../blog/dto/blog.ban.dto";
-import { BlogBanUnbanUserCommand } from "../../blog/application/blog.ban-user.use-case";
-import { ResultCode } from "../../../enum/result-code.enum";
-import { PaginationViewModel } from "../../../helpers/pagination.view.mapper";
+import { BlogBanDto } from '../../blog/dto/blog.ban.dto';
+import { BlogBanUnbanUserCommand } from '../../blog/application/blog.ban-user.use-case';
+import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
+import { CommentQueryRepository } from '../../comment/infrastructure/comment.query.repository';
+import { CommentQueryPaginationDto } from '../../comment/dto/comment.query.pagination.dto';
 
 @Controller('blogger')
 export class BloggerController {
@@ -46,6 +47,7 @@ export class BloggerController {
     protected readonly blogRepository: BlogRepository,
     protected readonly blogQueryRepository: BlogQueryRepository,
     protected readonly postQueryRepository: PostQueryRepository,
+    protected readonly commentQueryRepository: CommentQueryRepository,
   ) {}
 
   @UseGuards(AuthAccessJwtGuard)
@@ -53,8 +55,17 @@ export class BloggerController {
   async getAllBlogsForCurrentUser(
     @Query() query: BlogQueryPaginationDto,
     @CurrentUser() userId: string,
-  ) {
+  ): Promise<PaginationViewModel<BlogViewModel[]>> {
     return this.blogQueryRepository.getAllBlogsForCurrentUser(query, userId);
+  }
+
+  @UseGuards(AuthAccessJwtGuard)
+  @Get('blogs/comments')
+  async getAllCommentsForAllPostsCurrentUser(
+    @Query() query: CommentQueryPaginationDto,
+    @CurrentUser() userId: string,
+  ) {
+    return this.commentQueryRepository.getAllCommentsForAllPostsCurrentUser(query, userId);
   }
 
   @UseGuards(AuthAccessJwtGuard)
@@ -154,17 +165,31 @@ export class BloggerController {
 
   @UseGuards(AuthAccessJwtGuard)
   @Get('users/blog/:blogId')
-  async findBannedBlogUsers(@Query() query: BlogQueryPaginationDto, @Param('blogId') blogId: string, @CurrentUser() userId: string) {
-    const resultFind = await this.blogQueryRepository.findBannedBlogUsers(query, blogId, userId)
-    if(!resultFind.data) return exceptionHandler(resultFind.code)
-    return resultFind.data
+  async findBannedBlogUsers(
+    @Query() query: BlogQueryPaginationDto,
+    @Param('blogId') blogId: string,
+    @CurrentUser() userId: string,
+  ) {
+    const resultFind = await this.blogQueryRepository.findBannedBlogUsers(
+      query,
+      blogId,
+      userId,
+    );
+    if (!resultFind.data) return exceptionHandler(resultFind.code);
+    return resultFind.data;
   }
 
   @UseGuards(AuthAccessJwtGuard)
   @Put('users/:userId/ban')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async banUnbanUserForBlog(@Body() banDto: BlogBanDto, @Param('userId') userId: string, @CurrentUser() ownerId: string) {
-    const banResult =  await this.commandBus.execute(new BlogBanUnbanUserCommand(banDto, userId, ownerId))
-    return exceptionHandler(banResult)
+  async banUnbanUserForBlog(
+    @Body() banDto: BlogBanDto,
+    @Param('userId') userId: string,
+    @CurrentUser() ownerId: string,
+  ) {
+    const banResult = await this.commandBus.execute(
+      new BlogBanUnbanUserCommand(banDto, userId, ownerId),
+    );
+    return exceptionHandler(banResult);
   }
 }

@@ -5,8 +5,6 @@ import { Post } from '../schema/post.schema';
 import { BlogRepository } from '../../blog/infrastructure/blog.repository';
 import { BlogDocument } from '../../blog/schema/blog.schema';
 import { ResultCode } from '../../../enum/result-code.enum';
-import { UserRepository } from "../../user/infrastructure/user.repository";
-
 
 export class PostCreateCommand {
   constructor(
@@ -28,6 +26,7 @@ export class PostCreateUseCase implements ICommandHandler<PostCreateCommand> {
       command.blogId,
     );
     if (!blog) return ResultCode.NotFound
+    if (blog.isBanned) return ResultCode.NotFound
     if (blog.ownerId !== command.userId) return ResultCode.Forbidden
 
     const newPost: Post = Post.createPost(command.createDto, blog);

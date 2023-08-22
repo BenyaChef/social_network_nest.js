@@ -4,6 +4,7 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 import { UpdateBlogDto } from "../dto/update.blog.dto";
 import { BlogBanUsers, BlogBanUsersDocument } from "../schema/blog.ban-users.schema";
+import { SaBlogBanDto } from "../../user/dto/sa.blog-ban.dto";
 
 
 @Injectable()
@@ -23,6 +24,13 @@ export class BlogRepository {
 
     async update(updateDto: UpdateBlogDto, blogId: string) {
         return this.blogModel.findOneAndUpdate({id: blogId}, {$set: updateDto})
+    }
+
+    async banUnbanBlog(banDto: boolean, blogId: string) {
+        return this.blogModel.findOneAndUpdate(
+          { id: blogId },
+          { $set: { isBanned: banDto, banDate: new Date().toISOString()} },
+        );
     }
 
     // async save(newBlog: BlogDocument): Promise<string> {
