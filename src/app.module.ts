@@ -164,9 +164,9 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
       useClass: MongooseConfig,
     }),
     MongooseModule.forFeature(mongooseModule),
-    // ThrottlerModule.forRoot(),
+    ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...strategy, ...useCase, MailAdapter],
+  providers: [...services, ...validators, ...strategy,...guard , ...useCase, MailAdapter],
 })
 export class AppModule {}
