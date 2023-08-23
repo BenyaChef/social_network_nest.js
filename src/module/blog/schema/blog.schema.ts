@@ -72,3 +72,5 @@ BlogSchema.statics.createBlog = Blog.createBlog;
 
 export type BlogDocument = HydratedDocument<Blog>;
 // export type BlogModel = Model<BlogDocument> & BlogStatic;
+
+
