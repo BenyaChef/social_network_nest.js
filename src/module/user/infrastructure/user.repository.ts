@@ -22,7 +22,7 @@ export class UserRepository {
     return resultDelete !== null;
   }
 
-  async updateEmailConfirmationCode(userId: string, newConfirmationCode: string,) {
+  async updateEmailConfirmationCode(userId: string, newConfirmationCode: string) {
     return this.userModel.updateOne({ id: userId }, { $set: { 'emailInfo.confirmationCode': newConfirmationCode } },);
   }
 

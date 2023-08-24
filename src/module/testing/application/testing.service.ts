@@ -1,9 +1,11 @@
 import { TestingRepository } from '../infrastructure/testing.repository';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
+import { ITestingRepository } from "../infrastructure/interfaces/interface.testing-repository";
 
 @Injectable()
 export class TestingService {
-  constructor(protected testingRepository: TestingRepository) {}
+  constructor(readonly testingRepository: ITestingRepository) {}
+
   async deleteAllData() {
     return this.testingRepository.deleteAllData();
   }

@@ -76,6 +76,10 @@ import {
 import { BlogBanUserUseCase } from "./module/blog/application/blog.ban-user.use-case";
 import { CommentCreateUseCase } from "./module/comment/application/comment-create.use-case";
 import { SaBlogBanUseCase } from "./module/user/application/sa.blog-ban.use-case";
+import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { UserQueryRepositorySql } from "./module/user/infrastructure/raw-sql.repositoryes/user.query-repository.sql";
+import { ITestingRepository } from "./module/testing/infrastructure/interfaces/interface.testing-repository";
+import { SqlTestingRepository } from "./module/testing/infrastructure/sql.testing.repository";
 
 const controllers = [
   AppController,
@@ -88,6 +92,18 @@ const controllers = [
   SecurityController,
   BloggerController,
 ];
+
+const options: TypeOrmModuleOptions  = {
+  type: 'postgres',
+  host: 'localhost',
+  port: 5432,
+  username: 'postgres',
+  password: 'sa',
+  database: 'SocialNetwork',
+  entities: [],
+  synchronize: true,
+  ssl: false
+}
 
 const validators = [
   BlogExistsValidation,
@@ -129,14 +145,18 @@ const services = [
   UserQueryRepository,
   UserRepository,
   TestingService,
-  TestingRepository,
   SessionService,
   SessionRepository,
   SessionQueryRepository,
   CommentRepository,
   CommentQueryRepository,
   ReactionRepository,
+  UserQueryRepositorySql
 ];
+
+const repo = [
+  {provide: ITestingRepository, useClass: TestingRepository}
+]
 
 const mongooseModule = [
   { name: Blog.name, schema: BlogSchema },
@@ -164,9 +184,10 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
       useClass: MongooseConfig,
     }),
     MongooseModule.forFeature(mongooseModule),
-    ThrottlerModule.forRoot(),
+    TypeOrmModule.forRoot(options),
+    // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...strategy,...guard , ...useCase, MailAdapter],
+  providers: [...services, ...validators, ...strategy, ...repo, ...useCase, MailAdapter],
 })
 export class AppModule {}

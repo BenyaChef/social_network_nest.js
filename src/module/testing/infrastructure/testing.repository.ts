@@ -7,8 +7,12 @@ import { Session, SessionDocument } from '../../sessions/schema/session.schema';
 import { Comment, CommentDocument } from "../../comment/schema/comment.schema";
 import { Reaction, ReactionDocument } from "../../reaction/schema/reaction.schema";
 import { BlogBanUsers, BlogBanUsersDocument } from "../../blog/schema/blog.ban-users.schema";
+import { ITestingRepository } from "./interfaces/interface.testing-repository";
+import { Injectable } from "@nestjs/common";
 
-export class TestingRepository {
+
+@Injectable()
+export class TestingRepository implements ITestingRepository{
   constructor(
     @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
@@ -19,8 +23,8 @@ export class TestingRepository {
     @InjectModel(BlogBanUsers.name) private blogBanModel: Model<BlogBanUsersDocument>
   ) {}
 
-  async deleteAllData() {
-    return Promise.all([
+  async deleteAllData(): Promise<null | boolean> {
+      await Promise.all([
       await this.blogModel.deleteMany({}),
       await this.postModel.deleteMany({}),
       await this.userModel.deleteMany({}),
@@ -28,9 +32,12 @@ export class TestingRepository {
       await this.commentModel.deleteMany({}),
       await this.reactionModel.deleteMany({}),
       await this.blogBanModel.deleteMany({})
-    ]).catch((error) => {
+    ])
+      .then((results) =>  results)
+      .catch((error) => {
       console.log(error);
       return null;
     });
+    return true
   }
 }

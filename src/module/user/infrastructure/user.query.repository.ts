@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import {  Injectable } from "@nestjs/common";
 import { UserQueryPaginationDto } from '../dto/user.query.pagination.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../schema/user.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { UserViewModel } from '../model/user.view.model';
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
-import { LoginDto } from '../../auth/dto/login.dto';
+
 import { BanStatusEnum } from "../../../enum/ban-status.enum";
+
 
 @Injectable()
 export class UserQueryRepository {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>
+  ) {}
 
   async findUserByEmailRecoveryCode(code: string): Promise<UserDocument | null> {
     return this.userModel.findOne({'emailInfo.confirmationCode': code})
@@ -40,33 +42,36 @@ export class UserQueryRepository {
     return new UserViewModel(user);
   }
 
-  async getAllUsers(
-    query: UserQueryPaginationDto,
-  ): Promise<PaginationViewModel<UserViewModel[]>> {
-    const filter = {
-      $and: [
-        {
-          $or: [
-            {
-              'accountData.login': {
-                $regex: query.searchLoginTerm ?? '',
-                $options: 'i',
-              },
-            },
-            {
-              'accountData.email': {
-                $regex: query.searchEmailTerm ?? '',
-                $options: 'i',
-              },
-            },
-          ],
-        },
-        this.getBanStatusFilter(query.banStatus),
-      ],
-    };
 
-    return this.findPostsByFilterAndPagination(filter, query);
-  }
+
+
+  // async getAllUsers(
+  //   query: UserQueryPaginationDto,
+  // ): Promise<PaginationViewModel<UserViewModel[]>> {
+  //   const filter = {
+  //     $and: [
+  //       {
+  //         $or: [
+  //           {
+  //             'accountData.login': {
+  //               $regex: query.searchLoginTerm ?? '',
+  //               $options: 'i',
+  //             },
+  //           },
+  //           {
+  //             'accountData.email': {
+  //               $regex: query.searchEmailTerm ?? '',
+  //               $options: 'i',
+  //             },
+  //           },
+  //         ],
+  //       },
+  //       this.getBanStatusFilter(query.banStatus),
+  //     ],
+  //   };
+  //
+  //   return this.findPostsByFilterAndPagination(filter, query);
+  // }
 
   private async findPostsByFilterAndPagination(
     filter: FilterQuery<User>,

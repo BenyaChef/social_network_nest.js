@@ -15,20 +15,21 @@ import { UserBanCommand } from "../application/user-ban.use-case";
 import { BlogQueryPaginationDto } from "../../blog/dto/blog.query.pagination.dto";
 import { BlogQueryRepository } from "../../blog/infrastructure/blog.query.repository";
 import { UserBindCommand } from "../application/user-bind.use-case";
-import { BlogBanDto } from "../../blog/dto/blog.ban.dto";
 import { SaBlogBanDto } from "../dto/sa.blog-ban.dto";
 import { SaBlogBanCommand } from "../application/sa.blog-ban.use-case";
+import { UserQueryRepositorySql } from "../infrastructure/raw-sql.repositoryes/user.query-repository.sql";
 
 
 @Controller('sa')
 export class UserController {
     constructor(protected userQueryRepository: UserQueryRepository,
                 protected blogQueryRepository: BlogQueryRepository,
-                protected commandBus: CommandBus) {
+                protected commandBus: CommandBus,
+                protected userSqlQueryRepo: UserQueryRepositorySql) {
     }
     @Get('users')
     async getAllUsers(@Query() query: UserQueryPaginationDto) {
-        return this.userQueryRepository.getAllUsers(query)
+        return this.userSqlQueryRepo.getAllUsers(query)
     }
 
     @Post('users')
