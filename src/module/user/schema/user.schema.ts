@@ -67,10 +67,7 @@ export class User {
   @Prop({ required: true, type:  BanInfoSchema})
   banInfo: BanInfo
 
-  static async createUser(
-    createDto: CreateUserDto,
-    hash: string,
-  ): Promise<User> {
+  static async createUser(createDto: CreateUserDto, hash: string): Promise<User> {
     const newUser: User = {
       id: randomUUID(),
       accountData: new AccountData(),

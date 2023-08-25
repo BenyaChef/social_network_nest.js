@@ -1,5 +1,4 @@
-import { TestingRepository } from '../infrastructure/testing.repository';
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ITestingRepository } from "../infrastructure/interfaces/interface.testing-repository";
 
 @Injectable()

@@ -80,6 +80,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { UserQueryRepositorySql } from "./module/user/infrastructure/raw-sql.repositoryes/user.query-repository.sql";
 import { ITestingRepository } from "./module/testing/infrastructure/interfaces/interface.testing-repository";
 import { SqlTestingRepository } from "./module/testing/infrastructure/sql.testing.repository";
+import { UserRepositorySql } from "./module/user/infrastructure/raw-sql.repositoryes/user.repository.sql";
 
 const controllers = [
   AppController,
@@ -151,11 +152,12 @@ const services = [
   CommentRepository,
   CommentQueryRepository,
   ReactionRepository,
-  UserQueryRepositorySql
+  UserQueryRepositorySql,
+  UserRepositorySql
 ];
 
-const repo = [
-  {provide: ITestingRepository, useClass: TestingRepository}
+const repositories = [
+  { provide: ITestingRepository, useClass: SqlTestingRepository }
 ]
 
 const mongooseModule = [
@@ -188,6 +190,6 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
-  providers: [...services, ...validators, ...strategy, ...repo, ...useCase, MailAdapter],
+  providers: [...services, ...validators, ...strategy, ...repositories, ...useCase, MailAdapter],
 })
 export class AppModule {}
