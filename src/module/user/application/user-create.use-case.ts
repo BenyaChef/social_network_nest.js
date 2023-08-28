@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserDto } from "../dto/create.user.dto";
 import { UserService } from "./user.service";
-import { UserRepositorySql } from "../infrastructure/raw-sql.repositoryes/user.repository.sql";
+import { IUserRepository } from "../infrastructure/interfaces/user-repository.interface";
 
 export class UserCreateCommand {
   constructor(public createDto: CreateUserDto) {}
@@ -9,7 +9,7 @@ export class UserCreateCommand {
 
 @CommandHandler(UserCreateCommand)
 export class UserCreateUseCase implements ICommandHandler<UserCreateCommand> {
-  constructor(private readonly userRepository: UserRepositorySql,
+  constructor(private readonly userRepository: IUserRepository,
               private readonly userService: UserService) {}
 
   async execute(command: UserCreateCommand): Promise<string> {

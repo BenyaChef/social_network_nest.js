@@ -1,22 +1,22 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { UserDocument } from "../module/user/schema/user.schema";
-
-
-import { AuthService } from "../module/auth/application/auth.service";
-
+import { User } from "../module/user/schema/user.schema";
+import { IUserQueryRepository } from "../module/user/infrastructure/interfaces/user.query-repository.interface";
+import bcrypt from 'bcrypt';
 
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(protected authService: AuthService) {
+  constructor(protected userQueryRepository: IUserQueryRepository) {
     super({usernameField: 'loginOrEmail'});
   }
 
-  async validate(loginOrEmail: string, password: string): Promise<UserDocument | null> {
-    const user: UserDocument | null = await this.authService.validateUser(loginOrEmail, password)
+  async validate(loginOrEmail: string, password: string): Promise<User | null> {
+    const user = await this.userQueryRepository.findUserLoginOrEmail(loginOrEmail)
     if (!user) throw new UnauthorizedException();
-    return user
+    const encodingUser = await bcrypt.compare(password, user.accountData.passwordHash);
+    if (!encodingUser) return null;
+    return user;
   }
 }

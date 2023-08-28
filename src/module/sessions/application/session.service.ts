@@ -1,16 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { SessionRepository } from '../infrastructure/session.repository';
+
 import { Session } from "../schema/session.schema";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../../auth/application/jwt.service";
 import { ResultCode } from "../../../enum/result-code.enum";
+import { ISessionRepository } from "../infrastructure/interfaces/session.repository.interface";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class SessionService {
-  constructor(protected sessionRepository: SessionRepository,
+  constructor(protected sessionRepository: ISessionRepository,
               protected tokenService: TokenService,) {}
 
-  async createSession(newSession: Session) {
+  async createSession(ip: string, userAgent: string, userId: string, refreshToken: string) {
+    const decodeToken = await this.tokenService.decode(refreshToken)
+    const lastActiveDate = await this.tokenService.getLastActiveDate(refreshToken)
+    const newSession: Session = {
+      id: randomUUID(),
+      ip,
+      title: userAgent,
+      lastActiveDate,
+      deviceId: decodeToken!.deviceId,
+      userId: userId,
+    };
     return this.sessionRepository.createSession(newSession)
   }
 
@@ -39,7 +51,7 @@ export class SessionService {
     const session = await this.sessionRepository.getSessionByDeviceId(deviceId)
     if(!session) return ResultCode.NotFound
     if(session.userId !== jwtPayload.sub) return ResultCode.Forbidden
-     const deleteResult = await this.sessionRepository.deleteSessionByDeviceIdAndUserId(deviceId, jwtPayload.sub)
+     const deleteResult = await this.sessionRepository.deleteSessionByDeviceIdAndUserId(deviceId, jwtPayload.sub!)
     if(!deleteResult) return ResultCode.NotFound
     return ResultCode.Success
   }

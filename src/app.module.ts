@@ -81,6 +81,15 @@ import { UserQueryRepositorySql } from "./module/user/infrastructure/raw-sql.rep
 import { ITestingRepository } from "./module/testing/infrastructure/interfaces/interface.testing-repository";
 import { SqlTestingRepository } from "./module/testing/infrastructure/sql.testing.repository";
 import { UserRepositorySql } from "./module/user/infrastructure/raw-sql.repositoryes/user.repository.sql";
+import { IUserRepository } from "./module/user/infrastructure/interfaces/user-repository.interface";
+import { RegistrationUserUseCase } from "./module/auth/application/use-cases/registration-user.use-case";
+import { IUserQueryRepository } from "./module/user/infrastructure/interfaces/user.query-repository.interface";
+import { LoginUserUseCase } from "./module/auth/application/use-cases/login-user.use-case";
+import { ISessionRepository } from "./module/sessions/infrastructure/interfaces/session.repository.interface";
+import { SessionRepositorySql } from "./module/sessions/infrastructure/sql-repositoryes/session.repository.sql";
+import {
+  RegistrationEmailResendingUseCase
+} from "./module/auth/application/use-cases/registration-email-resending.use-case";
 
 const controllers = [
   AppController,
@@ -126,7 +135,10 @@ const useCase = [
   UserBanUseCase,
   BlogBanUserUseCase,
   CommentCreateUseCase,
-  SaBlogBanUseCase
+  SaBlogBanUseCase,
+  RegistrationUserUseCase,
+  LoginUserUseCase,
+  RegistrationEmailResendingUseCase
 ];
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
@@ -152,12 +164,13 @@ const services = [
   CommentRepository,
   CommentQueryRepository,
   ReactionRepository,
-  UserQueryRepositorySql,
-  UserRepositorySql
 ];
 
 const repositories = [
-  { provide: ITestingRepository, useClass: SqlTestingRepository }
+  { provide: ITestingRepository, useClass: SqlTestingRepository },
+  { provide: IUserQueryRepository, useClass: UserQueryRepositorySql },
+  { provide: IUserRepository, useClass: UserRepositorySql },
+  { provide: ISessionRepository, useClass:SessionRepositorySql},
 ]
 
 const mongooseModule = [

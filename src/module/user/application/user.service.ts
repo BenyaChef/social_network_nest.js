@@ -6,11 +6,12 @@ import { UserRepository } from '../infrastructure/user.repository';
 import { UserQueryRepository } from '../infrastructure/user.query.repository';
 import { RegistrationDto } from '../../auth/dto/registration.dto';
 import { randomUUID } from 'crypto';
+import { IUserRepository } from "../infrastructure/interfaces/user-repository.interface";
 
 @Injectable()
 export class UserService {
   constructor(
-    protected userRepository: UserRepository,
+    protected userRepository: IUserRepository,
     protected userQueryRepository: UserQueryRepository,
   ) {}
 
@@ -39,12 +40,6 @@ export class UserService {
       }
     };
     return newUser;
-  }
-
-  async registrationUser(createDto: RegistrationDto) {
-    const passwordHash = await this.generatorHash(createDto.password);
-    const newUser = await User.createUser(createDto, passwordHash);
-    return this.userRepository.createUser(newUser);
   }
 
   async confirmationUserEmail(code: string) {

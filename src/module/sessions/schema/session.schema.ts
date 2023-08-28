@@ -5,6 +5,8 @@ import { HydratedDocument } from "mongoose";
 @Schema({ id: false, versionKey: false })
 export class Session {
   @Prop({ required: true, type: String })
+  id: string
+  @Prop({ required: true, type: String })
   ip: string;
   @Prop({ required: true, type: String })
   userId: string;

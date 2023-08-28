@@ -1,5 +1,5 @@
 import {
-  BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Ip, Post, Res, UnauthorizedException, UseGuards
+  Body, Controller, Get, HttpCode, HttpStatus, Ip, Post, Res, UnauthorizedException, UseGuards
 } from "@nestjs/common";
 import { PasswordRecoveryDto } from "../dto/password.recovery.dto";
 import { LoginDto } from "../dto/login.dto";
@@ -20,12 +20,17 @@ import { NewPasswordDto } from "../dto/new-password.dto";
 import { AuthRefreshJwtGuard } from "../../../guards/auth-refresh.jwt.guard";
 import { RefreshToken } from "../../../decorators/refresh-token.decorator";
 import { SessionService } from "../../sessions/application/session.service";
+import { CommandBus } from "@nestjs/cqrs";
+import { RegistrationUserCommand } from "../application/use-cases/registration-user.use-case";
+import { IUserQueryRepository } from "../../user/infrastructure/interfaces/user.query-repository.interface";
+import { LoginUserCommand } from "../application/use-cases/login-user.use-case";
 
 
 @Controller('auth')
 export class AuthController {
   constructor(protected authService: AuthService,
-              protected userQueryRepository: UserQueryRepository,
+              protected userQueryRepository: IUserQueryRepository,
+              protected commandBus: CommandBus,
               protected sessionService: SessionService) {}
 
   @UseGuards(LocalAuthGuard)
@@ -40,7 +45,10 @@ export class AuthController {
     @CurrentUser() userId: string
   ) {
 
-    const result = await this.authService.loginUser(ip, userAgent, userId);
+    const user = await this.userQueryRepository.getUserByID(userId)
+    if(user!.banInfo.isBanned) throw new UnauthorizedException();
+
+    const result = await this.commandBus.execute(new LoginUserCommand(ip, userAgent, userId))
     if (!result) throw new UnauthorizedException();
 
     res.cookie('refreshToken', result.refreshToken, { httpOnly: true, secure: true, });
@@ -51,7 +59,7 @@ export class AuthController {
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() registrationDto: RegistrationDto) {
-    return this.authService.registrationUser(registrationDto);
+    return this.commandBus.execute(new RegistrationUserCommand(registrationDto))
   }
 
   @Throttle(5, 10)

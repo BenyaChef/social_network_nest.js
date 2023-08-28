@@ -17,19 +17,19 @@ import { BlogQueryRepository } from "../../blog/infrastructure/blog.query.reposi
 import { UserBindCommand } from "../application/user-bind.use-case";
 import { SaBlogBanDto } from "../dto/sa.blog-ban.dto";
 import { SaBlogBanCommand } from "../application/sa.blog-ban.use-case";
-import { UserQueryRepositorySql } from "../infrastructure/raw-sql.repositoryes/user.query-repository.sql";
+import { IUserQueryRepository } from "../infrastructure/interfaces/user.query-repository.interface";
 
 
 @Controller('sa')
 export class UserController {
-    constructor(protected userQueryRepository: UserQueryRepository,
+    constructor(
                 protected blogQueryRepository: BlogQueryRepository,
                 protected commandBus: CommandBus,
-                protected userSqlQueryRepo: UserQueryRepositorySql) {
+                protected userQueryRepository:IUserQueryRepository) {
     }
     @Get('users')
     async getAllUsers(@Query() query: UserQueryPaginationDto) {
-        return this.userSqlQueryRepo.getAllUsers(query)
+        return this.userQueryRepository.getAllUsers(query)
     }
 
     @Post('users')
@@ -52,6 +52,7 @@ export class UserController {
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteUser(@Param('userId') userId: string) {
         const isDeleted = await this.commandBus.execute(new UserDeleteCommand(userId))
+        console.log(isDeleted);
         if(!isDeleted) throw new NotFoundException()
         return isDeleted
     }
