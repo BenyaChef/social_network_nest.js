@@ -13,7 +13,7 @@ export class UserRepositorySql implements IUserRepository {
 
   async createUser(newUser: User): Promise<boolean> {
     try {
-      await this.dataSource.query(`BEGIN`)
+      await this.dataSource.query(`BEGIN`);
       await this.dataSource.query(
         `INSERT INTO public."Users"(
        "Id", "Email", "Login", "CreatedAt", "PasswordHash")
@@ -56,37 +56,63 @@ VALUES($1, $2, $3, $4)`,
         ],
       );
       await this.dataSource.query('COMMIT');
-      return true
+      return true;
     } catch (e) {
       console.log(`create User: ${e}`);
-      await this.dataSource.query('ROLLBACK')
-      return false
+      await this.dataSource.query('ROLLBACK');
+      return false;
     }
   }
 
   async deleteUser(userId: string): Promise<boolean> {
     try {
-      await this.dataSource.query(`BEGIN`)
-      await this.dataSource.query(`DELETE FROM public."BanInfo" WHERE "UserId" = $1`, [userId])
-      await this.dataSource.query(`DELETE FROM public."PasswordRecoveryInfo" WHERE "UserId" = $1`, [userId])
-      await this.dataSource.query(`DELETE FROM public."EmailInfo" WHERE "UserId" = $1`, [userId])
-      await this.dataSource.query(`DELETE FROM public."Users" WHERE "Id" = $1`, [userId])
-      await this.dataSource.query(`COMMIT`)
-      return true
+      await this.dataSource.query(`BEGIN`);
+      await this.dataSource.query(
+        `DELETE FROM public."BanInfo" WHERE "UserId" = $1`,
+        [userId],
+      );
+      await this.dataSource.query(
+        `DELETE FROM public."PasswordRecoveryInfo" WHERE "UserId" = $1`,
+        [userId],
+      );
+      await this.dataSource.query(
+        `DELETE FROM public."EmailInfo" WHERE "UserId" = $1`,
+        [userId],
+      );
+      await this.dataSource.query(
+        `DELETE FROM public."Users" WHERE "Id" = $1`,
+        [userId],
+      );
+      await this.dataSource.query(`COMMIT`);
+      return true;
     } catch (e) {
       console.log(`delete User: ${e}`);
-      await this.dataSource.query('ROLLBACK')
-      return false
+      await this.dataSource.query('ROLLBACK');
+      return false;
     }
-
   }
 
   async updateEmailConfirmationCode(
     userId: string,
     newConfirmationCode: string,
-  ) {}
+  ) {
+    await this.dataSource.query(
+      `UPDATE public."EmailInfo"
+     SET "ConfirmationCode" = $1
+     WHERE "UserId" = $2`,
+      [newConfirmationCode, userId],
+    );
+    return true
+  }
 
-  async updateConfirmationStatus(userId: string) {}
+  async updateConfirmationStatus(userId: string) {
+    await this.dataSource.query(`UPDATE public."EmailInfo"
+     SET "ConfirmationCode" = null,
+         "IsConfirmed" = true
+     WHERE "UserId" = $1`,
+     [userId])
+    return true
+  }
 
   async assignNewPassword(userId: string, newPasswordHash: string) {}
 

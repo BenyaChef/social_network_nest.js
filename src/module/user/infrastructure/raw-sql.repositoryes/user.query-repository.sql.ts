@@ -34,21 +34,56 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
 
   async finUserByNewPasswordRecoveryCode(code: string) {}
 
-  async findUserByEmail(email: string): Promise< any | null > {
+  async findUserByEmail(email: string): Promise< User | null > {
     const result = await this.dataSource.query(
-      `SELECT * FROM public."Users" 
-       JOIN public."EmailInfo" b ON u."Id" = b."UserId" 
+      `SELECT u.*, e.*
+       FROM public."Users" u
+       JOIN public."EmailInfo" e ON u."Id" = e."UserId" 
        WHERE "Email" = $1`, [email])
+
     if(result.length === 0) return null
-    return result[0]
+
+    const findUser = result[0]
+    return {
+      id: findUser.Id,
+      accountData: {
+        email: findUser.Email,
+        login: findUser.Login,
+        createdAt: findUser.CreatedAt,
+        passwordHash: findUser.PasswordHash,
+      },
+      emailInfo: {
+        isConfirmed: findUser.IsConfirmed,
+        confirmationCode: findUser.ConfirmationCode,
+      },
+      passwordRecoveryInfo: {
+        recoveryCode: null,
+        isConfirmed: true,
+      },
+      banInfo: {
+        isBanned: false,
+        banReason: null,
+        banDate: null,
+      },
+    };
   }
 
-  async findUserByEmailRecoveryCode(code: string): Promise<boolean | null> {
-    return true;
-  }
+  async findUserByEmailRecoveryCode(code: string): Promise<any | null> {
+    const result = await this.dataSource.query(
+      `SELECT *
+        FROM "EmailInfo"
+        WHERE "ConfirmationCode" = $1`, [code])
+    if (result.length === 0) return null
+      return {
+        id: result[0].UserId,
+        isConfirmed: result[0].IsConfirmed,
+        confirmationCode: result[0].ConfirmationCode
+      }
+   }
 
   async findUserByLogin(login: string): Promise<string | null> {
     const result = await this.dataSource.query(`SELECT * FROM public."Users" WHERE "Login" = $1`, [login])
+    if(result.length === 0) return null
     return result[0].Login
   }
 

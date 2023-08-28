@@ -24,6 +24,8 @@ import { CommandBus } from "@nestjs/cqrs";
 import { RegistrationUserCommand } from "../application/use-cases/registration-user.use-case";
 import { IUserQueryRepository } from "../../user/infrastructure/interfaces/user.query-repository.interface";
 import { LoginUserCommand } from "../application/use-cases/login-user.use-case";
+import { RegistrationEmailResendingCommand } from "../application/use-cases/registration-email-resending.use-case";
+import { RegistrationConfirmationCommand } from "../application/use-cases/registration-confirmation.use-case";
 
 
 @Controller('auth')
@@ -66,14 +68,14 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registrationEmailResending(@Body() resendingEmailDto: RegistrationEmailResendingDto) {
-  return this.authService.registrationResendingEmail(resendingEmailDto.email);
+  return this.commandBus.execute(new RegistrationEmailResendingCommand(resendingEmailDto))
   }
 
   @Throttle(5, 10)
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmationRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
-    return this.authService.confirmationRegistration(confirmationCodeDto.code)
+    return this.commandBus.execute(new RegistrationConfirmationCommand(confirmationCodeDto))
   }
 
   @Throttle(5, 10)

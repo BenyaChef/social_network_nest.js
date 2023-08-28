@@ -90,6 +90,9 @@ import { SessionRepositorySql } from "./module/sessions/infrastructure/sql-repos
 import {
   RegistrationEmailResendingUseCase
 } from "./module/auth/application/use-cases/registration-email-resending.use-case";
+import {
+  RegistrationConfirmationUseCase
+} from "./module/auth/application/use-cases/registration-confirmation.use-case";
 
 const controllers = [
   AppController,
@@ -138,7 +141,8 @@ const useCase = [
   SaBlogBanUseCase,
   RegistrationUserUseCase,
   LoginUserUseCase,
-  RegistrationEmailResendingUseCase
+  RegistrationEmailResendingUseCase,
+  RegistrationConfirmationUseCase
 ];
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
