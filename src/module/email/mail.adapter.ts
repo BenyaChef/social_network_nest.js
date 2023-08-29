@@ -1,6 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { User } from "../user/schema/user.schema";
 
 @Injectable()
 export class MailAdapter {
@@ -20,15 +19,15 @@ export class MailAdapter {
     });
   }
 
-  async sendUserRecoveryPassword(user: User, code: string) {
+  async sendUserRecoveryPassword(email: string, login: string, code: string) {
     const url = `https://somesite.com/password-recovery?recoveryCode=${code}`;
 
     await this.mailerService.sendMail({
-      to: user.accountData.email,
+      to: email,
       subject: 'Recovery password',
       template: './recovery',
       context: {
-        login: user.accountData.login,
+        login: login,
         url,
       },
     });

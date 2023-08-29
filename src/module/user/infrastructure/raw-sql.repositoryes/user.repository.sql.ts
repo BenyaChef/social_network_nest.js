@@ -92,10 +92,7 @@ VALUES($1, $2, $3, $4)`,
     }
   }
 
-  async updateEmailConfirmationCode(
-    userId: string,
-    newConfirmationCode: string,
-  ) {
+  async updateEmailConfirmationCode(userId: string, newConfirmationCode: string) {
     await this.dataSource.query(
       `UPDATE public."EmailInfo"
      SET "ConfirmationCode" = $1
@@ -114,9 +111,35 @@ VALUES($1, $2, $3, $4)`,
     return true
   }
 
-  async assignNewPassword(userId: string, newPasswordHash: string) {}
+  async assignNewPassword(userId: string, newPasswordHash: string) {
+    try {
+      await this.dataSource.query('BEGIN')
+      await this.dataSource.query(
+        `UPDATE public."Users"
+       SET "PasswordHash" = $1
+       WHERE "Id" = $2`,
+        [newPasswordHash, userId]
+      );
+      await this.dataSource.query(
+        `UPDATE public."PasswordRecoveryInfo"
+       SET "RecoveryCode" = null, "IsConfirmed" = true
+       WHERE "UserId" = $1`,
+        [userId]
+      );
 
-  async recoveryPassword(userId: string, newRecoveryPassword: string) {}
+      await this.dataSource.query('COMMIT');
+      return true
+    } catch (e) {
+      console.log(`assign new password: ${e}`);
+      return null
+    }
+  }
+
+  async recoveryPassword(userId: string, newRecoveryPassword: string) {
+    await this.dataSource.query(`UPDATE public."PasswordRecoveryInfo"
+       SET "IsConfirmed" = false, "RecoveryCode" = $1
+       WHERE "UserId" = $2;`, [newRecoveryPassword, userId])
+  }
 
   async banOrUnbanUser(userId: string, updateBanInfoDto: BanInfo) {
     return;

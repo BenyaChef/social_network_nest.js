@@ -1,5 +1,5 @@
 export enum FieldsEnum {
-  createdAt = 'createdAt',
+  createdAt = 'CreatedAt',
   blogId = 'blogId',
   postId = 'postId',
   code = 'code',

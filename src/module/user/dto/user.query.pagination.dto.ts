@@ -10,16 +10,15 @@ import {
 import { BanStatusEnum } from '../../../enum/ban-status.enum';
 
 export class UserQueryPaginationDto {
-
   @IsOptional()
   @IsEnum(BanStatusEnum)
-  public banStatus: BanStatusEnum
+  public banStatus: BanStatusEnum;
 
   @IsOptional()
-  public searchLoginTerm: string | null;
+  public searchLoginTerm: string | null = null;
 
   @IsOptional()
-  public searchEmailTerm: string | null;
+  public searchEmailTerm: string | null = null;
 
   @IsOptional()
   @Transform(({ value }) => checkSortBy(value))

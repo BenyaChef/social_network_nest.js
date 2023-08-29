@@ -24,8 +24,6 @@ import { UserRepository } from './module/user/infrastructure/user.repository';
 import { BlogExistsValidation } from './validators/blog.exists.validator';
 import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
-import { AuthService } from './module/auth/application/auth.service';
-
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import {
   Session,
@@ -93,6 +91,22 @@ import {
 import {
   RegistrationConfirmationUseCase
 } from "./module/auth/application/use-cases/registration-confirmation.use-case";
+import { PasswordRecoveryUseCase } from "./module/auth/application/use-cases/password-recovery.use-case";
+import { PasswordAssignUseCase } from "./module/auth/application/use-cases/password-assign.use-case";
+import { LogoutUseCase } from "./module/sessions/application/use-cases/logout.use-case";
+import {
+  ISessionQueryRepository
+} from "./module/sessions/infrastructure/interfaces/session.query-repository.interface";
+import {
+  SessionQueryRepositorySql
+} from "./module/sessions/infrastructure/sql-repositoryes/session.query.repository.sql";
+import { TokensUpdateUseCase } from "./module/auth/application/use-cases/tokens-update.use-case";
+import {
+  DeleteAllSessionsExceptCurrentUserUseCase
+} from "./module/sessions/application/use-cases/delete.all-sessions.except-current-user.use-case";
+import {
+  DeleteSessionByDeviceIdUseCase
+} from "./module/sessions/application/use-cases/delete.session-by-deviceId.use-case";
 
 const controllers = [
   AppController,
@@ -142,7 +156,13 @@ const useCase = [
   RegistrationUserUseCase,
   LoginUserUseCase,
   RegistrationEmailResendingUseCase,
-  RegistrationConfirmationUseCase
+  RegistrationConfirmationUseCase,
+  PasswordRecoveryUseCase,
+  PasswordAssignUseCase,
+  LogoutUseCase,
+  TokensUpdateUseCase,
+  DeleteAllSessionsExceptCurrentUserUseCase,
+  DeleteSessionByDeviceIdUseCase
 ];
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
@@ -151,7 +171,6 @@ const services = [
   CommentService,
   ReactionService,
   TokenService,
-  AuthService,
   JwtService,
   AppService,
   UserService,
@@ -174,7 +193,9 @@ const repositories = [
   { provide: ITestingRepository, useClass: SqlTestingRepository },
   { provide: IUserQueryRepository, useClass: UserQueryRepositorySql },
   { provide: IUserRepository, useClass: UserRepositorySql },
-  { provide: ISessionRepository, useClass:SessionRepositorySql},
+  { provide: ISessionRepository, useClass:SessionRepositorySql },
+  { provide: ISessionQueryRepository, useClass: SessionQueryRepositorySql }
+
 ]
 
 const mongooseModule = [

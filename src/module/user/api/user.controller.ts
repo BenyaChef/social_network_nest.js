@@ -2,7 +2,6 @@ import {
     Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Put, Query, UseGuards
 } from "@nestjs/common";
 import {UserQueryPaginationDto} from "../dto/user.query.pagination.dto";
-import {UserQueryRepository} from "../infrastructure/user.query.repository";
 import {CreateUserDto} from "../dto/create.user.dto";
 import {UserViewModel} from "../model/user.view.model";
 import { BasicAuth } from "../../../guards/basic.auth.guard";
@@ -29,7 +28,8 @@ export class UserController {
     }
     @Get('users')
     async getAllUsers(@Query() query: UserQueryPaginationDto) {
-        return this.userQueryRepository.getAllUsers(query)
+        const result = await this.userQueryRepository.getAllUsers(query)
+        return result;
     }
 
     @Post('users')
@@ -52,7 +52,6 @@ export class UserController {
     @HttpCode(HttpStatus.NO_CONTENT)
     async deleteUser(@Param('userId') userId: string) {
         const isDeleted = await this.commandBus.execute(new UserDeleteCommand(userId))
-        console.log(isDeleted);
         if(!isDeleted) throw new NotFoundException()
         return isDeleted
     }
