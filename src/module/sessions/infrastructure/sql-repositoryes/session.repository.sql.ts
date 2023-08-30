@@ -28,12 +28,11 @@ VALUES($1, $2, $3, $4, $5, $6)`,
     userId: string,
     deviceId: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
+    return await this.dataSource.query(
       `DELETE FROM public."Sessions"
           WHERE "UserId" = $1 AND "DeviceId" <> $2`,
-      [userId, deviceId],
+      [userId, deviceId]
     );
-    return result[1] > 0;
   }
 
   async deleteSessionBanUser(userId: string) {}

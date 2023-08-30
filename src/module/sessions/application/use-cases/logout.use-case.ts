@@ -1,11 +1,11 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { TokenService } from "../../../auth/application/jwt.service";
-import { ISessionRepository } from "../../infrastructure/interfaces/session.repository.interface";
-import { JwtPayload } from "jsonwebtoken";
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { TokenService } from '../../../auth/application/jwt.service';
+import { ISessionRepository } from '../../infrastructure/interfaces/session.repository.interface';
+import { JwtPayload } from 'jsonwebtoken';
+import {isBefore} from "date-fns";
 
 export class LogoutCommand {
-  constructor(public refreshToken: string) {
-  }
+  constructor(public refreshToken: string) {}
 }
 
 @CommandHandler(LogoutCommand)
@@ -14,12 +14,13 @@ export class LogoutUseCase implements ICommandHandler<LogoutCommand> {
     private readonly tokenService: TokenService,
     private readonly sessionRepository: ISessionRepository,
   ) {}
-    async execute(command: LogoutCommand): Promise<boolean | null> {
+    async execute(command: LogoutCommand): Promise<null | boolean> {
       const jwtPayload: JwtPayload | null = await this.tokenService.decode(command.refreshToken)
       if(!jwtPayload) return null
+      // if(isBefore(Date.now(), jwtPayload.exp!)) return null
       const userId = jwtPayload.sub
       const deviceId = jwtPayload.deviceId
       const lastActiveDate = new Date(jwtPayload.iat! * 1000).toISOString()
-      return this.sessionRepository.logout(lastActiveDate, userId!, deviceId)
-    }
+      return  this.sessionRepository.logout(lastActiveDate, userId!, deviceId)
+  }
 }

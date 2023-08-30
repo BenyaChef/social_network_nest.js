@@ -31,11 +31,11 @@ export class TokensUpdateUseCase implements ICommandHandler<TokensUpdateCommand>
    const user = await this.userQueryRepository.getUserByID(userId)
    if(!user) return null
 
-   const device = await this.sessionQueryRepository.getDeviceByDateUserIdAndDeviceId(lastActiveDate, user.id, deviceId)
+   const device = await this.sessionQueryRepository.getDeviceByDateUserIdAndDeviceId(lastActiveDate, userId, deviceId)
    if(!device) return null
 
    const newDeviceId = randomUUID()
-   const newTokens = await this.tokenService.createJwt(user.id, newDeviceId)
+   const newTokens = await this.tokenService.createJwt(userId, newDeviceId)
    const newLastActiveDate = await this.tokenService.getLastActiveDate(newTokens.refreshToken)
    await this.sessionRepository.updateLastActiveDate(user.id, deviceId, newLastActiveDate)
    return newTokens

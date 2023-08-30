@@ -29,6 +29,7 @@ export class UserController {
     @Get('users')
     async getAllUsers(@Query() query: UserQueryPaginationDto) {
         const result = await this.userQueryRepository.getAllUsers(query)
+        console.log(result);
         return result;
     }
 

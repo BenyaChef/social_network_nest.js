@@ -9,13 +9,20 @@ export class SessionQueryRepositorySql implements ISessionQueryRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async getAllDeviceCurrentUser(userId: string): Promise<DeviceViewModel> {
-    return  this.dataSource.query(
-      `SELECT "Ip" AS "id", "Title" AS "title", "DeviceId" AS "deviceId", "LastActiveDate" AS "lastActiveDate"
+    const resultFindDevices = await this.dataSource.query(
+      `SELECT "Ip" AS "ip", "Title" AS "title", "DeviceId" AS "deviceId", "LastActiveDate" AS "lastActiveDate"
     FROM public."Sessions"
     WHERE "UserId" = $1`,
       [userId],
     );
-
+    return resultFindDevices.map(d => {
+      return {
+        ip: d.ip,
+        title: d.title,
+        lastActiveDate: d.lastActiveDate,
+        deviceId: d.deviceId
+      }
+    })
   }
 
   async getDeviceByDateUserIdAndDeviceId(

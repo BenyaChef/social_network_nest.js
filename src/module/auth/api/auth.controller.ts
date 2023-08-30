@@ -110,8 +110,8 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@RefreshToken() refreshToken: string) {
-    const resultLogout = await this.commandBus.execute(new LogoutCommand(refreshToken))
-    if (!resultLogout) throw new UnauthorizedException()
+    const resultLogout: null | boolean = await this.commandBus.execute(new LogoutCommand(refreshToken))
+    if(!resultLogout) throw new UnauthorizedException()
     return resultLogout
   }
 

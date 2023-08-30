@@ -67,7 +67,7 @@ VALUES($1, $2, $3, $4)`,
   async deleteUser(userId: string): Promise<boolean> {
     try {
       await this.dataSource.query(`BEGIN`);
-      await this.dataSource.query(
+      const resultDelete = await this.dataSource.query(
         `DELETE FROM public."BanInfo" WHERE "UserId" = $1`,
         [userId],
       );
@@ -84,7 +84,8 @@ VALUES($1, $2, $3, $4)`,
         [userId],
       );
       await this.dataSource.query(`COMMIT`);
-      return true;
+      console.log(resultDelete[1]);
+      return resultDelete[1] > 0
     } catch (e) {
       console.log(`delete User: ${e}`);
       await this.dataSource.query('ROLLBACK');

@@ -34,7 +34,9 @@ export class SecurityController {
   @Get('devices')
   @HttpCode(HttpStatus.OK)
   async getAllSessionsCurrentUser(@CurrentUser() userId: string): Promise<DeviceViewModel> {
-    return this.sessionsQueryRepository.getAllDeviceCurrentUser(userId)
+    const findResult = await this.sessionsQueryRepository.getAllDeviceCurrentUser(userId)
+    console.log(findResult);
+    return findResult
   }
 
   @UseGuards(AuthRefreshJwtGuard)

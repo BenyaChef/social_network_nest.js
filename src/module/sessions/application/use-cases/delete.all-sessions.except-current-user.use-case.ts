@@ -16,7 +16,7 @@ export class DeleteAllSessionsExceptCurrentUserUseCase
     private readonly sessionRepository: ISessionRepository,
   ) {}
 
-  async execute(command: DeleteAllSessionsExceptCurrentCommand): Promise<any> {
+  async execute(command: DeleteAllSessionsExceptCurrentCommand): Promise<boolean | null> {
     const jwtPayload: JwtPayload | null = await this.tokenService.decode(command.refreshToken)
     if(!jwtPayload) return null
     return this.sessionRepository.deleteAllUserSessionExceptCurrent(jwtPayload.sub!, jwtPayload.deviceId!)

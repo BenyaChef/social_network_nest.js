@@ -39,6 +39,7 @@ import { BlogBanUnbanUserCommand } from '../../blog/application/blog.ban-user.us
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 import { CommentQueryRepository } from '../../comment/infrastructure/comment.query.repository';
 import { CommentQueryPaginationDto } from '../../comment/dto/comment.query.pagination.dto';
+import { ResultCode } from "../../../enum/result-code.enum";
 
 @Controller('blogger')
 export class BloggerController {
@@ -126,8 +127,8 @@ export class BloggerController {
     @Body() createDto: PostCreateDto,
     @Param('blogId') blogId: string,
     @CurrentUser() userId: string,
-  ): Promise<PostViewModel | boolean> {
-    const resultCreatePost = await this.commandBus.execute(
+  ){
+    const resultCreatePost: string | ResultCode = await this.commandBus.execute(
       new PostCreateCommand(blogId, userId, createDto),
     );
     if (typeof resultCreatePost !== 'string')

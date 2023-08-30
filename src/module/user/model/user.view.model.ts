@@ -1,4 +1,4 @@
-import { BanInfo, UserDocument } from "../schema/user.schema";
+import { BanInfo, User } from "../schema/user.schema";
 
 export class UserViewModel {
     id: string
@@ -6,7 +6,7 @@ export class UserViewModel {
     email: string
     createdAt: string
     banInfo: BanInfo
-    constructor(user: UserDocument) {
+    constructor(user: User) {
         this.id = user.id
         this.login = user.accountData.login
         this.email = user.accountData.email

@@ -2,6 +2,7 @@ export enum ResultCode {
   Success,
   BadRequest,
   NotFound,
+  Unauthorized,
   Forbidden,
 }
 

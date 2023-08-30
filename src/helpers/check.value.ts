@@ -1,4 +1,5 @@
 import { FieldsEnum } from '../enum/fields.enum';
+import { BanStatusEnum } from "../enum/ban-status.enum";
 
 interface ToNumberOptions {
   default?: number;
@@ -25,14 +26,28 @@ export const toNumber = (value: string, options: ToNumberOptions = {}): number =
   return newValue;
 };
 
-export const checkSortDirection = (value: string): string => {
-  const asc = 'asc';
-  const desc = 'desc';
-  return value === (asc || desc) ? value : desc;
+export const checkSortDirection = (value: string): number => {
+  switch (value) {
+    case 'desc': return -1
+    case 'asc': return 1
+    default: return -1
+  }
 };
 
 export const checkSortBy = (value: string): string => {
-  return !value ?  FieldsEnum.createdAt : value;
+  if(!value) return 'CreatedAt'
+  const firstLetter = value.charAt(0).toUpperCase();
+  const restOfString = value.slice(1);
+
+  return `${firstLetter}${restOfString}`;
 };
+
+export const getBanStatusFilter = (banStatus: BanStatusEnum) => {
+  switch (banStatus) {
+    case BanStatusEnum.banned: return `b."IsBanned" = ${true}` ;
+    case BanStatusEnum.notBanned: return `b."IsBanned" = ${false}` ;
+    default: return 'TRUE'
+  }
+}
 
 
