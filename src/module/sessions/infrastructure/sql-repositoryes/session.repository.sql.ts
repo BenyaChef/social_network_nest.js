@@ -61,13 +61,13 @@ VALUES($1, $2, $3, $4, $5, $6)`,
     userId: string,
     deviceId: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
+    const resultLogout = await this.dataSource.query(
       `
         DELETE FROM public."Sessions"
         WHERE "LastActiveDate" = $1 AND "UserId" = $2 AND "DeviceId" = $3`,
       [lastActiveDate, userId, deviceId],
     );
-    return result[1] > 0;
+    return resultLogout[1] > 0
   }
 
   async updateLastActiveDate(

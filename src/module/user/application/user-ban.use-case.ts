@@ -5,6 +5,8 @@ import { CommentRepository } from "../../comment/infrastructure/comment.reposito
 import { SessionRepository } from "../../sessions/infrastructure/session.repository";
 import { ReactionRepository } from "../../reaction/infrastructure/reaction.repository";
 import { ResultCode } from "../../../enum/result-code.enum";
+import { IUserRepository } from "../infrastructure/interfaces/user-repository.interface";
+import { ISessionRepository } from "../../sessions/infrastructure/interfaces/session.repository.interface";
 
 export class UserBanCommand {
   constructor(public userId: string, public banDto: UserBanDto) {}
@@ -13,18 +15,17 @@ export class UserBanCommand {
 @CommandHandler(UserBanCommand)
 export class UserBanUseCase implements ICommandHandler<UserBanCommand> {
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: IUserRepository,
     private readonly commentRepository: CommentRepository,
-    private readonly sessionRepository: SessionRepository,
+    private readonly sessionRepository: ISessionRepository,
     private readonly reactionRepository: ReactionRepository,
   ) {}
 
   async execute(command: UserBanCommand): Promise<ResultCode> {
     const user = await this.userRepository.getUserById(command.userId);
     if (!user) return ResultCode.NotFound;
-    const updateBanInfoDto = command.banDto.isBanned
-      ? {
-          isBanned: command.banDto.isBanned,
+    const updateBanInfoDto = command.banDto.isBanned ? {
+         isBanned: command.banDto.isBanned,
           banDate: new Date().toISOString(),
           banReason: command.banDto.banReason,
         }

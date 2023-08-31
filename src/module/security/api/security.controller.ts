@@ -35,7 +35,6 @@ export class SecurityController {
   @HttpCode(HttpStatus.OK)
   async getAllSessionsCurrentUser(@CurrentUser() userId: string): Promise<DeviceViewModel> {
     const findResult = await this.sessionsQueryRepository.getAllDeviceCurrentUser(userId)
-    console.log(findResult);
     return findResult
   }
 

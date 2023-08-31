@@ -2,6 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogRepository } from '../../blog/infrastructure/blog.repository';
 import { ResultCode } from '../../../enum/result-code.enum';
+import { IPostRepository } from "../infrastructure/interfaces/post.repository.interface";
+import { IBlogRepository } from "../../blog/infrastructure/interfaces/blog-repository.interface";
 
 export class PostDeleteCommand {
   constructor(
@@ -14,8 +16,8 @@ export class PostDeleteCommand {
 @CommandHandler(PostDeleteCommand)
 export class PostDeleteUseCase implements ICommandHandler<PostDeleteCommand> {
   constructor(
-    private readonly postRepository: PostRepository,
-    private readonly blogRepository: BlogRepository,
+    private readonly postRepository: IPostRepository,
+    private readonly blogRepository: IBlogRepository,
   ) {}
 
   async execute(command: PostDeleteCommand): Promise<ResultCode> {

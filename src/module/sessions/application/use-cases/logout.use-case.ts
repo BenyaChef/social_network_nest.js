@@ -17,10 +17,9 @@ export class LogoutUseCase implements ICommandHandler<LogoutCommand> {
     async execute(command: LogoutCommand): Promise<null | boolean> {
       const jwtPayload: JwtPayload | null = await this.tokenService.decode(command.refreshToken)
       if(!jwtPayload) return null
-      // if(isBefore(Date.now(), jwtPayload.exp!)) return null
       const userId = jwtPayload.sub
       const deviceId = jwtPayload.deviceId
       const lastActiveDate = new Date(jwtPayload.iat! * 1000).toISOString()
-      return  this.sessionRepository.logout(lastActiveDate, userId!, deviceId)
+      return this.sessionRepository.logout(lastActiveDate, userId!, deviceId)
   }
 }

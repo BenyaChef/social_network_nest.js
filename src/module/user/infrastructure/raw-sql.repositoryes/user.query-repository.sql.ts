@@ -162,7 +162,6 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
     const sortDirectionFilter = sortDirection === -1 ? 'DESC' : 'ASC';
     const loginFilter = searchLoginTerm !== null ? `%${searchLoginTerm}%` : `%`;
     const emailFilter = searchEmailTerm !== null ? `%${searchEmailTerm}%` : `%`;
-
     const totalCount = await this.dataSource.query(
       `
     SELECT COUNT(*)
@@ -178,7 +177,7 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
     FROM public."Users" u
     LEFT JOIN public."BanInfo" b ON u."Id" = b."UserId"
     WHERE (u."Login" ILIKE $1 OR u."Email" ILIKE $2)  AND  (b."IsBanned" = ANY ($3))
-    ORDER BY u."${sortBy}" ${sortDirectionFilter}
+    ORDER BY u."${sortBy}" COLLATE "C" ${sortDirectionFilter}
     OFFSET $4
     LIMIT $5
     `,
@@ -202,7 +201,7 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
       +totalCount[0].count,
       pageNumber,
       pageSize,
-      viewUsers.sort((a, b) => a.login.toLowerCase().localeCompare(b.login.toLowerCase()))
+      viewUsers
     );
   }
 

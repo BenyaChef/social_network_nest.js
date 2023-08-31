@@ -4,7 +4,6 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 import { UpdateBlogDto } from "../dto/update.blog.dto";
 import { BlogBanUsers, BlogBanUsersDocument } from "../schema/blog.ban-users.schema";
-import { SaBlogBanDto } from "../../user/dto/sa.blog-ban.dto";
 
 
 @Injectable()

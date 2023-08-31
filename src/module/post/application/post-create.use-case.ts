@@ -1,10 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostCreateDto } from '../dto/create.post.dto';
-import { PostRepository } from '../infrastructure/post.repository';
 import { Post } from '../schema/post.schema';
-import { BlogRepository } from '../../blog/infrastructure/blog.repository';
-import { BlogDocument } from '../../blog/schema/blog.schema';
+import { Blog, BlogDocument } from "../../blog/schema/blog.schema";
 import { ResultCode } from '../../../enum/result-code.enum';
+import { IPostRepository } from '../infrastructure/interfaces/post.repository.interface';
+import { IBlogRepository } from '../../blog/infrastructure/interfaces/blog-repository.interface';
+import { randomUUID } from 'crypto';
+import { ReactionStatusEnum } from '../../../enum/reaction.status.enum';
+import { UpdatePostDto } from "../dto/update.post.dto";
 
 export class PostCreateCommand {
   constructor(
@@ -17,20 +20,34 @@ export class PostCreateCommand {
 @CommandHandler(PostCreateCommand)
 export class PostCreateUseCase implements ICommandHandler<PostCreateCommand> {
   constructor(
-    private readonly postRepository: PostRepository,
-    private readonly blogRepository: BlogRepository,
+    private readonly postRepository: IPostRepository,
+    private readonly blogRepository: IBlogRepository,
   ) {}
 
   async execute(command: PostCreateCommand): Promise<ResultCode | string> {
-    const blog: BlogDocument | null = await this.blogRepository.getBlogById(
+    const blog: Blog | null = await this.blogRepository.getBlogById(
       command.blogId,
     );
-    if (!blog) return ResultCode.NotFound
-    if (blog.isBanned) return ResultCode.NotFound
-    if (blog.ownerId !== command.userId) return ResultCode.Forbidden
+    if (!blog) return ResultCode.NotFound;
+    if (blog.isBanned) return ResultCode.NotFound;
+    if (blog.ownerId !== command.userId) return ResultCode.Forbidden;
 
-    const newPost: Post = Post.createPost(command.createDto, blog);
-    await this.postRepository.createPost(newPost)
-    return newPost.id
+    const newPost: Post = {
+      id: randomUUID(),
+      blogName: blog.name,
+      blogId: blog.id,
+      title: command.createDto.title,
+      content: command.createDto.content,
+      shortDescription: command.createDto.shortDescription,
+      createdAt: new Date().toISOString(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: ReactionStatusEnum.None,
+        newestLikes: [],
+      }
+    };
+    await this.postRepository.createPost(newPost);
+    return newPost.id;
   }
 }

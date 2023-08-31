@@ -3,6 +3,8 @@ import { UpdatePostDto } from '../dto/update.post.dto';
 import { PostRepository } from '../infrastructure/post.repository';
 import { BlogRepository } from '../../blog/infrastructure/blog.repository';
 import { ResultCode } from '../../../enum/result-code.enum';
+import { IPostRepository } from "../infrastructure/interfaces/post.repository.interface";
+import { IBlogRepository } from "../../blog/infrastructure/interfaces/blog-repository.interface";
 
 export class PostUpdateCommand {
   constructor(
@@ -16,8 +18,8 @@ export class PostUpdateCommand {
 @CommandHandler(PostUpdateCommand)
 export class PostUpdateUseCase implements ICommandHandler<PostUpdateCommand> {
   constructor(
-    private readonly postRepository: PostRepository,
-    private readonly blogRepository: BlogRepository,
+    private readonly postRepository: IPostRepository,
+    private readonly blogRepository: IBlogRepository,
   ) {}
 
   async execute(command: PostUpdateCommand): Promise<ResultCode> {

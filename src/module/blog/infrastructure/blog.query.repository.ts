@@ -63,7 +63,6 @@ export class BlogQueryRepository {
       .skip((query.pageNumber - 1) * query.pageSize)
       .limit(query.pageSize)
       .lean();
-    console.log(blogs);
     if (blogs.length === 0) return null;
 
     const totalCount = await this.blogModel.countDocuments(filter);

@@ -38,7 +38,6 @@ export const checkSortBy = (value: string): string => {
   if(!value) return 'CreatedAt'
   const firstLetter = value.charAt(0).toUpperCase();
   const restOfString = value.slice(1);
-
   return `${firstLetter}${restOfString}`;
 };
 

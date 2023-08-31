@@ -4,7 +4,6 @@ import { UpdateBlogDto } from '../dto/update.blog.dto';
 import { CreateBlogDto } from '../dto/create.blog.dto';
 import { randomUUID } from "crypto";
 import { UserDocument } from "../../user/schema/user.schema";
-import e from "express";
 
 @Schema({ versionKey: false })
 export class Blog {
@@ -21,7 +20,7 @@ export class Blog {
   websiteUrl: string;
 
   @Prop({ required: true, type: String })
-  createdAt: string;
+    createdAt: string;
 
   @Prop({ required: true, type: Boolean })
   isMembership: boolean;
@@ -41,11 +40,11 @@ export class Blog {
   @Prop({ type: String, default: null})
   bannedUsers: string[]
 
-  update(updateDto: UpdateBlogDto) {
-    this.name = updateDto.name;
-    this.description = updateDto.description;
-    this.websiteUrl = updateDto.websiteUrl;
-  }
+  // update(updateDto: UpdateBlogDto) {
+  //   this.name = updateDto.name;
+  //   this.description = updateDto.description;
+  //   this.websiteUrl = updateDto.websiteUrl;
+  // }
 
   static createBlog(createDto: CreateBlogDto, user: UserDocument): Blog {
     const newBlog = new Blog();
@@ -67,7 +66,7 @@ export class Blog {
 // }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
-BlogSchema.methods.update = Blog.prototype.update;
+// BlogSchema.methods.update = Blog.prototype.update;
 BlogSchema.statics.createBlog = Blog.createBlog;
 
 export type BlogDocument = HydratedDocument<Blog>;

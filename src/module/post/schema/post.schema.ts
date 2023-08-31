@@ -60,13 +60,13 @@ export class Post {
   @Prop({ required: true, type: ExtendedLikesInfoSchema })
   extendedLikesInfo: ExtendedLikesInfo;
 
-  update(updateDto: UpdatePostDto, blog: BlogDocument) {
-    this.title = updateDto.title;
-    this.shortDescription = updateDto.shortDescription;
-    this.content = updateDto.content;
-    this.blogId = blog.id;
-    this.blogName = blog.name;
-  }
+  // update(updateDto: UpdatePostDto, blog: BlogDocument) {
+  //   this.title = updateDto.title;
+  //   this.shortDescription = updateDto.shortDescription;
+  //   this.content = updateDto.content;
+  //   this.blogId = blog.id;
+  //   this.blogName = blog.name;
+  // }
 
   static createPost(createDto: PostCreateDto, blog: BlogDocument): Post {
     const newPost = new Post();
@@ -89,7 +89,7 @@ export class Post {
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
-PostSchema.methods.update = Post.prototype.update
+// PostSchema.methods.update = Post.prototype.update
 PostSchema.statics.createPost = Post.createPost
 
 export type PostDocument = HydratedDocument<Post>;

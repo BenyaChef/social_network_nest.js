@@ -107,6 +107,14 @@ import {
 import {
   DeleteSessionByDeviceIdUseCase
 } from "./module/sessions/application/use-cases/delete.session-by-deviceId.use-case";
+import { IBlogQueryRepository } from "./module/blog/infrastructure/interfaces/blog.query-repository.interface";
+import { SqlBlogQueryRepository } from "./module/blog/infrastructure/sql-repositories/sql.blog-query.repository";
+import { IBlogRepository } from "./module/blog/infrastructure/interfaces/blog-repository.interface";
+import { SqlBlogRepository } from "./module/blog/infrastructure/sql-repositories/sql.blog.repository";
+import { IPostRepository } from "./module/post/infrastructure/interfaces/post.repository.interface";
+import { PostSqlRepository } from "./module/post/infrastructure/sql-repositories/post.sql.repository";
+import { IPostQueryRepository } from "./module/post/infrastructure/interfaces/post.query-repository.interface";
+import { PostSqlQueryRepository} from "./module/post/infrastructure/sql-repositories/post.sql.query.repository";
 
 const controllers = [
   AppController,
@@ -128,7 +136,7 @@ const options: TypeOrmModuleOptions  = {
   password: 'sa',
   database: 'SocialNetwork',
   entities: [],
-  synchronize: true,
+  synchronize: false,
   ssl: false
 }
 
@@ -194,8 +202,11 @@ const repositories = [
   { provide: IUserQueryRepository, useClass: UserQueryRepositorySql },
   { provide: IUserRepository, useClass: UserRepositorySql },
   { provide: ISessionRepository, useClass:SessionRepositorySql },
-  { provide: ISessionQueryRepository, useClass: SessionQueryRepositorySql }
-
+  { provide: ISessionQueryRepository, useClass: SessionQueryRepositorySql },
+  { provide: IBlogQueryRepository, useClass: SqlBlogQueryRepository},
+  { provide: IBlogRepository, useClass: SqlBlogRepository},
+  { provide: IPostRepository, useClass: PostSqlRepository},
+  { provide: IPostQueryRepository, useClass: PostSqlQueryRepository},
 ]
 
 const mongooseModule = [

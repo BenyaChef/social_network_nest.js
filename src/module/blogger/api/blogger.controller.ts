@@ -40,14 +40,17 @@ import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 import { CommentQueryRepository } from '../../comment/infrastructure/comment.query.repository';
 import { CommentQueryPaginationDto } from '../../comment/dto/comment.query.pagination.dto';
 import { ResultCode } from "../../../enum/result-code.enum";
+import { IPostQueryRepository } from "../../post/infrastructure/interfaces/post.query-repository.interface";
+import { IBlogRepository } from "../../blog/infrastructure/interfaces/blog-repository.interface";
+import { IBlogQueryRepository } from "../../blog/infrastructure/interfaces/blog.query-repository.interface";
 
 @Controller('blogger')
 export class BloggerController {
   constructor(
     private commandBus: CommandBus,
-    protected readonly blogRepository: BlogRepository,
-    protected readonly blogQueryRepository: BlogQueryRepository,
-    protected readonly postQueryRepository: PostQueryRepository,
+    protected readonly blogRepository: IBlogRepository,
+    protected readonly blogQueryRepository: IBlogQueryRepository,
+    protected readonly postQueryRepository: IPostQueryRepository,
     protected readonly commentQueryRepository: CommentQueryRepository,
   ) {}
 
@@ -117,7 +120,7 @@ export class BloggerController {
   ) {
     const blog = await this.blogRepository.getBlogById(blogId);
     if (!blog) throw new NotFoundException();
-    if (blog.ownerId) throw new ForbiddenException();
+    if (blog.ownerId !== userId) throw new ForbiddenException();
     return this.postQueryRepository.getAllPostsForBlogId(query, blogId, userId);
   }
 
@@ -128,11 +131,10 @@ export class BloggerController {
     @Param('blogId') blogId: string,
     @CurrentUser() userId: string,
   ){
-    const resultCreatePost: string | ResultCode = await this.commandBus.execute(
-      new PostCreateCommand(blogId, userId, createDto),
-    );
-    if (typeof resultCreatePost !== 'string')
+    const resultCreatePost: string | ResultCode = await this.commandBus.execute(new PostCreateCommand(blogId, userId, createDto));
+    if (typeof resultCreatePost !== 'string') {
       return exceptionHandler(resultCreatePost);
+    }
     const newPost = await this.postQueryRepository.getPostById(
       resultCreatePost,
     );

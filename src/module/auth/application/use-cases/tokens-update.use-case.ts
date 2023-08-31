@@ -6,7 +6,6 @@ import {
 } from "../../../sessions/infrastructure/interfaces/session.query-repository.interface";
 import { TokenService } from "../jwt.service";
 import { ISessionRepository } from "../../../sessions/infrastructure/interfaces/session.repository.interface";
-import { randomUUID } from "crypto";
 
 export class TokensUpdateCommand {
   constructor(public refreshToke: string) {
@@ -34,8 +33,8 @@ export class TokensUpdateUseCase implements ICommandHandler<TokensUpdateCommand>
    const device = await this.sessionQueryRepository.getDeviceByDateUserIdAndDeviceId(lastActiveDate, userId, deviceId)
    if(!device) return null
 
-   const newDeviceId = randomUUID()
-   const newTokens = await this.tokenService.createJwt(userId, newDeviceId)
+
+   const newTokens = await this.tokenService.createJwt(userId, deviceId)
    const newLastActiveDate = await this.tokenService.getLastActiveDate(newTokens.refreshToken)
    await this.sessionRepository.updateLastActiveDate(user.id, deviceId, newLastActiveDate)
    return newTokens

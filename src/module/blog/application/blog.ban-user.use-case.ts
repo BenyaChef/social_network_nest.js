@@ -4,6 +4,9 @@ import { UserRepository } from '../../user/infrastructure/user.repository';
 import { BlogBanUsers } from '../schema/blog.ban-users.schema';
 import { BlogRepository } from '../infrastructure/blog.repository';
 import { ResultCode } from '../../../enum/result-code.enum';
+import { IUserRepository } from "../../user/infrastructure/interfaces/user-repository.interface";
+import { IBlogRepository } from "../infrastructure/interfaces/blog-repository.interface";
+import { randomUUID } from "crypto";
 
 export class BlogBanUnbanUserCommand {
   constructor(
@@ -18,8 +21,8 @@ export class BlogBanUserUseCase
   implements ICommandHandler<BlogBanUnbanUserCommand>
 {
   constructor(
-    private readonly userRepository: UserRepository,
-    private readonly blogRepository: BlogRepository,
+    private readonly userRepository: IUserRepository,
+    private readonly blogRepository: IBlogRepository,
   ) {}
 
   async execute(command: BlogBanUnbanUserCommand): Promise<ResultCode> {
@@ -30,7 +33,11 @@ export class BlogBanUserUseCase
     if (!blog) return ResultCode.NotFound;
     if (blog.ownerId !== command.ownerId) return ResultCode.Forbidden;
 
-    const banUserInfo = BlogBanUsers.createBanInfoUser(command.banDto, user);
+    const banUserInfo = {
+      id: randomUUID(),
+      userLogin: user.login,
+      blogId: blog.id
+    }
 
     await this.blogRepository.banUnbanUser(banUserInfo);
     return ResultCode.Success;

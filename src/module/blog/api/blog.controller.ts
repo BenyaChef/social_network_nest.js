@@ -6,20 +6,20 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { BlogQueryRepository } from '../infrastructure/blog.query.repository';
 import { BlogQueryPaginationDto } from '../dto/blog.query.pagination.dto';
 import { BlogViewModel } from '../model/blog.view.model';
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
-import { PostQueryRepository } from '../../post/infrastructure/post.query.repository';
 import { PostQueryPaginationDto } from '../../post/dto/post.query.pagination.dto';
 import { NonBlockingAuthGuard } from '../../../guards/non-blocking.auth.guard';
 import { CurrentUserId } from '../../../decorators/current-user-id.decorator';
+import { IBlogQueryRepository } from "../infrastructure/interfaces/blog.query-repository.interface";
+import { IPostQueryRepository } from "../../post/infrastructure/interfaces/post.query-repository.interface";
 
 @Controller('blogs')
 export class BlogController {
   constructor(
-    protected readonly blogQueryRepository: BlogQueryRepository,
-    protected readonly postQueryRepository: PostQueryRepository,
+    protected readonly blogQueryRepository: IBlogQueryRepository,
+    protected readonly postQueryRepository: IPostQueryRepository,
   ) {}
 
   @Get(':blogId')

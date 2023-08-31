@@ -11,14 +11,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { PostQueryRepository } from '../infrastructure/post.query.repository';
 import { PostQueryPaginationDto } from '../dto/post.query.pagination.dto';
 import { PostViewModel } from '../model/post.view.model';
 import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 import { CreateCommentDto } from '../../comment/dto/create.comment.dto';
 import { AuthAccessJwtGuard } from '../../../guards/auth-access.jwt.guard';
 import { CurrentUser } from '../../../decorators/current-user.decorator';
-import { CommentService } from '../../comment/application/comment.service';
 import { CommentQueryRepository } from '../../comment/infrastructure/comment.query.repository';
 import { ReactionStatusDto } from "../../comment/dto/reaction.status.dto";
 import { exceptionHandler } from "../../../exception/exception.handler";
@@ -30,11 +28,12 @@ import { CommandBus } from "@nestjs/cqrs";
 import { PostUpdateReactionCommand } from "../application/post-update-reaction.use-case";
 import { CommentCreateCommand } from "../../comment/application/comment-create.use-case";
 import { ResultCodeType } from "../../../enum/result-code.enum";
+import { IPostQueryRepository } from "../infrastructure/interfaces/post.query-repository.interface";
 
 @Controller('posts')
 export class PostController {
   constructor(
-    protected postQueryRepository: PostQueryRepository,
+    protected postQueryRepository: IPostQueryRepository,
     protected commentQueryRepository: CommentQueryRepository,
     protected commandBus: CommandBus
   ) {}

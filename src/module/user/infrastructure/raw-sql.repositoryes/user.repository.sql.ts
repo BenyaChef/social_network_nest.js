@@ -7,8 +7,12 @@ import { BanInfo, User } from '../../schema/user.schema';
 export class UserRepositorySql implements IUserRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  async getUserById(userId: string): Promise<User | null> {
-    return new User();
+  async getUserById(userId: string): Promise<{id: string, login: string} | null> {
+    const user = await this.dataSource.query(`
+    SELECT "Id" AS "id", "Login" AS "login"
+    FROM public."Users"
+    WHERE "Id" = $1`, [userId])
+    return user[0]
   }
 
   async createUser(newUser: User): Promise<boolean> {
@@ -84,8 +88,7 @@ VALUES($1, $2, $3, $4)`,
         [userId],
       );
       await this.dataSource.query(`COMMIT`);
-      console.log(resultDelete[1]);
-      return resultDelete[1] > 0
+      return resultDelete[1] > 0;
     } catch (e) {
       console.log(`delete User: ${e}`);
       await this.dataSource.query('ROLLBACK');
@@ -93,56 +96,76 @@ VALUES($1, $2, $3, $4)`,
     }
   }
 
-  async updateEmailConfirmationCode(userId: string, newConfirmationCode: string) {
+  async updateEmailConfirmationCode(
+    userId: string,
+    newConfirmationCode: string,
+  ) {
     await this.dataSource.query(
       `UPDATE public."EmailInfo"
      SET "ConfirmationCode" = $1
      WHERE "UserId" = $2`,
       [newConfirmationCode, userId],
     );
-    return true
+    return true;
   }
 
   async updateConfirmationStatus(userId: string) {
-    await this.dataSource.query(`UPDATE public."EmailInfo"
+    await this.dataSource.query(
+      `UPDATE public."EmailInfo"
      SET "ConfirmationCode" = null,
          "IsConfirmed" = true
      WHERE "UserId" = $1`,
-     [userId])
-    return true
+      [userId],
+    );
+    return true;
   }
 
   async assignNewPassword(userId: string, newPasswordHash: string) {
     try {
-      await this.dataSource.query('BEGIN')
+      await this.dataSource.query('BEGIN');
       await this.dataSource.query(
         `UPDATE public."Users"
        SET "PasswordHash" = $1
        WHERE "Id" = $2`,
-        [newPasswordHash, userId]
+        [newPasswordHash, userId],
       );
       await this.dataSource.query(
         `UPDATE public."PasswordRecoveryInfo"
        SET "RecoveryCode" = null, "IsConfirmed" = true
        WHERE "UserId" = $1`,
-        [userId]
+        [userId],
       );
 
       await this.dataSource.query('COMMIT');
-      return true
+      return true;
     } catch (e) {
       console.log(`assign new password: ${e}`);
-      return null
+      return null;
     }
   }
 
   async recoveryPassword(userId: string, newRecoveryPassword: string) {
-    await this.dataSource.query(`UPDATE public."PasswordRecoveryInfo"
+    await this.dataSource.query(
+      `UPDATE public."PasswordRecoveryInfo"
        SET "IsConfirmed" = false, "RecoveryCode" = $1
-       WHERE "UserId" = $2;`, [newRecoveryPassword, userId])
+       WHERE "UserId" = $2;`,
+      [newRecoveryPassword, userId],
+    );
   }
 
   async banOrUnbanUser(userId: string, updateBanInfoDto: BanInfo) {
-    return;
+    return this.dataSource.query(`  
+        UPDATE public."BanInfo"
+            SET "IsBanned" = $1,
+                "BanDate" = $2,
+                "BanReason" = $3
+            WHERE "UserId" = $4;`,
+      [
+        updateBanInfoDto.isBanned,
+        updateBanInfoDto.banDate,
+        updateBanInfoDto.banReason,
+        userId,
+      ],
+    );
   }
 }
