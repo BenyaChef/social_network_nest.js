@@ -35,8 +35,12 @@ export class BlogBanUserUseCase
 
     const banUserInfo = {
       id: randomUUID(),
+      userId: user.id,
       userLogin: user.login,
-      blogId: blog.id
+      blogId: command.banDto.blogId,
+      banReason: command.banDto.banReason,
+      isBanned: command.banDto.isBanned,
+      banData: new Date().toISOString(),
     }
 
     await this.blogRepository.banUnbanUser(banUserInfo);
