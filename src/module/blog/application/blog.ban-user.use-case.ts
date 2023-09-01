@@ -36,7 +36,7 @@ export class BlogBanUserUseCase
     const banUserInfo = {
       id: randomUUID(),
       userId: user.id,
-      userLogin: user.login,
+      login: user.login,
       blogId: command.banDto.blogId,
       banReason: command.banDto.banReason,
       isBanned: command.banDto.isBanned,

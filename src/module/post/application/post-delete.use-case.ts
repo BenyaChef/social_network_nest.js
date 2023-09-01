@@ -27,7 +27,6 @@ export class PostDeleteUseCase implements ICommandHandler<PostDeleteCommand> {
     const post = await this.postRepository.getPostById(command.postId);
     if (!post) return ResultCode.NotFound;
     if (blog.ownerId !== command.userId) return ResultCode.Forbidden;
-
     const deleteResult = await this.postRepository.deletePost(command.postId);
     if (!deleteResult) return ResultCode.NotFound;
     return ResultCode.Success;

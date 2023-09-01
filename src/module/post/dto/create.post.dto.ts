@@ -18,9 +18,4 @@ export class PostCreateDto {
   @Trim()
   @MaxLength(1000)
   content: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @BlogExists()
-  blogId: string;
 }

@@ -12,17 +12,17 @@ import { UserBanDto } from "../dto/user-ban.dto";
 import { exceptionHandler } from "../../../exception/exception.handler";
 import { UserBanCommand } from "../application/user-ban.use-case";
 import { BlogQueryPaginationDto } from "../../blog/dto/blog.query.pagination.dto";
-import { BlogQueryRepository } from "../../blog/infrastructure/blog.query.repository";
 import { UserBindCommand } from "../application/user-bind.use-case";
 import { SaBlogBanDto } from "../dto/sa.blog-ban.dto";
 import { SaBlogBanCommand } from "../application/sa.blog-ban.use-case";
 import { IUserQueryRepository } from "../infrastructure/interfaces/user.query-repository.interface";
+import { IBlogQueryRepository } from "../../blog/infrastructure/interfaces/blog.query-repository.interface";
 
 
 @Controller('sa')
 export class UserController {
     constructor(
-                protected blogQueryRepository: BlogQueryRepository,
+                protected blogQueryRepository: IBlogQueryRepository,
                 protected commandBus: CommandBus,
                 protected userQueryRepository:IUserQueryRepository) {
     }

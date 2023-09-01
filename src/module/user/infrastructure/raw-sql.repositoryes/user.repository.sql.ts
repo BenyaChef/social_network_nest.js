@@ -12,6 +12,7 @@ export class UserRepositorySql implements IUserRepository {
     SELECT "Id" AS "id", "Login" AS "login"
     FROM public."Users"
     WHERE "Id" = $1`, [userId])
+    if (user.length === 0) return null
     return user[0]
   }
 

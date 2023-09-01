@@ -22,7 +22,6 @@ export abstract class IBlogQueryRepository {
   abstract findBannedBlogUsers(
     query: BlogQueryPaginationDto,
     blogId: string,
-    userId: string,
   );
 
   abstract findBanUserForBlog(blogId: string, userId: string);

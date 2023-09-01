@@ -29,14 +29,13 @@ export class PostSqlRepository implements IPostRepository {
   }
 
   async deletePost(postId: string): Promise<boolean> {
-    const deleteResult = await this.dataSource.query(
-      `
-    DELETE FROM public."Posts"
-        WHERE "Id" = $1;
-    `[postId],
+    const deleteResult = await this.dataSource.query(`
+    DELETE 
+    FROM public."Posts"
+      WHERE "Id" = $1;
+    `,[postId]
     );
-
-    return deleteResult[1] > 1;
+    return deleteResult[1] > 0;
   }
 
   async getPostById(postId: string): Promise<Post | null> {

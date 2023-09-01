@@ -111,13 +111,16 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
     postId: string,
     userId?: string,
   ): Promise<PostViewModel | null> {
-    const post = await this.dataSource.query(
-      `
-    SELECT *
-    FROM public."Posts"
-    WHERE "Id" = $1`,
+
+    const post = await this.dataSource.query(`
+    SELECT p.*  -- Выбираем все столбцы из таблицы "Posts"
+        FROM public."Posts" p
+        LEFT JOIN public."Blogs" b ON p."BlogId" = b."Id"
+        WHERE p."Id" = $1 AND (b."IsBanned" IS NULL OR b."IsBanned" = false);`,
       [postId],
     );
+
+    if(post.length === 0) return null
 
     return {
       id: post[0].Id,

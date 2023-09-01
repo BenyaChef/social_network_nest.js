@@ -173,13 +173,14 @@ export class BloggerController {
     @Param('blogId') blogId: string,
     @CurrentUser() userId: string,
   ) {
-    const resultFind = await this.blogQueryRepository.findBannedBlogUsers(
+    const blog = await this.blogRepository.getBlogById(blogId)
+    if(!blog) throw new NotFoundException()
+    if(blog.ownerId !== userId) throw new ForbiddenException()
+    return  this.blogQueryRepository.findBannedBlogUsers(
       query,
-      blogId,
-      userId,
+      blogId
     );
-    if (!resultFind.data) return exceptionHandler(resultFind.code);
-    return resultFind.data;
+
   }
 
   @UseGuards(AuthAccessJwtGuard)

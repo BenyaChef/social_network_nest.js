@@ -10,11 +10,69 @@ import { UpdateBlogDto } from '../../dto/update.blog.dto';
 export class SqlBlogRepository implements IBlogRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  banUnbanBlog(banDto: boolean, blogId: string) {}
+  async banUnbanBlog(banDto: boolean, blogId: string): Promise<boolean> {
 
-  banUnbanUser(banInfo: BlogBanUsers) {}
+    const banDate = new Date().toISOString()
+    return this.dataSource.query(
+      `
+      UPDATE public."Blogs"
+            SET "IsBanned" = $1, "BanDate" = CASE WHEN $1 = true THEN $2 ELSE null END
+            WHERE "Id" = $3`,
+      [banDto, banDate, blogId],
+    );
+  }
 
-  bindOwnerId(blogId: string, userId: string) {}
+  async banUnbanUser(banInfo: BlogBanUsers) {
+    const findBanUser = await this.dataSource.query(
+      `
+    SELECT *
+    FROM public."UsersBanList"
+    WHERE "UserId" = $1 AND "BlogId" = $2
+    `,
+      [banInfo.userId, banInfo.blogId],
+    );
+    if (findBanUser.length === 0) {
+      return this.dataSource.query(
+        `
+     INSERT INTO public."UsersBanList"(
+        "Id", "UserId", "Login", "BlogId", "BanReason", "IsBanned", "CreatedAt")
+        VALUES ($1, $2, $3, $4, $5, $6, $7);
+     `,
+        [
+          banInfo.id,
+          banInfo.userId,
+          banInfo.login,
+          banInfo.blogId,
+          banInfo.banReason,
+          banInfo.isBanned,
+          banInfo.banData,
+        ],
+      );
+    }
+    return this.dataSource.query(
+      `
+    UPDATE public."UsersBanList"
+     SET "BanReason"= $1, "IsBanned"= $2, "BanData"= $3
+     WHERE "UserId" = $4 AND "BlogId" = $5
+    `,
+      [
+        banInfo.banReason,
+        banInfo.isBanned,
+        banInfo.banData,
+        banInfo.userId,
+        banInfo.blogId,
+      ],
+    );
+  }
+
+  async bindOwnerId(blogId: string, userId: string) {
+    return this.dataSource.query(`
+    UPDATE public."Blogs"
+        SET "OwnerId" = $1
+        WHERE "Id" = $2`,
+      [userId, blogId]
+    );
+  }
 
   async create(newBlog: Blog) {
     return this.dataSource.query(
@@ -37,12 +95,14 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
   }
 
   async delete(blogId: string): Promise<boolean> {
-    const deleteResult = await this.dataSource.query(`
+    const deleteResult = await this.dataSource.query(
+      `
     DELETE FROM public."Blogs"
         WHERE "Id" = $1;
-    `, [blogId])
-    console.log(deleteResult);
-      return deleteResult[1] > 0
+    `,
+      [blogId],
+    );
+    return deleteResult[1] > 0;
   }
 
   async getBlogById(blogId: string): Promise<Blog | null> {
@@ -53,7 +113,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
     WHERE "Id" = $1`,
       [blogId],
     );
-    if(blog.length === 0) return null
+    if (blog.length === 0) return null;
     return {
       id: blog[0].Id,
       name: blog[0].Name,
@@ -70,19 +130,15 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
   }
 
   async update(updateDto: UpdateBlogDto, blogId: string) {
-    return this.dataSource.query(`
+    return this.dataSource.query(
+      `
     UPDATE public."Blogs"
       SET "Name" = $1, 
           "Description" = $2, 
           "WebsiteUrl" = $3
       WHERE "Id" = $4;
     `,
-      [
-        updateDto.name,
-        updateDto.description,
-        updateDto.websiteUrl,
-        blogId
-      ],
+      [updateDto.name, updateDto.description, updateDto.websiteUrl, blogId],
     );
   }
 }

@@ -14,16 +14,100 @@ export class SqlBlogQueryRepository implements IBlogQueryRepository {
   async findAllBlogsOfOwner(
     query: BlogQueryPaginationDto,
   ): Promise<PaginationViewModel<BlogSaViewModel[]> | null> {
-    return null;
+
+    const {searchNameTerm, sortBy, sortDirection, pageNumber, pageSize} = query
+    const nameFilter = searchNameTerm !== null ? `%${searchNameTerm}%` : `%`;
+    const sortDirectionFilter = sortDirection === -1 ? 'DESC' : 'ASC';
+    const offset = (pageNumber - 1) * pageSize;
+
+    const findBlogs = await this.dataSource.query(`
+    SELECT b.*, u."Login"
+    FROM public."Blogs" AS b
+    LEFT JOIN  public."Users" AS u
+    ON b."OwnerId" = u."Id"
+    WHERE b."Name" ILIKE $1 
+    ORDER BY b."${sortBy}" COLLATE "C" ${sortDirectionFilter}
+    OFFSET $2
+    LIMIT $3
+    `, [nameFilter, offset, pageSize])
+
+    const totalCount = await this.dataSource.query(`
+    SELECT COUNT(*)
+    FROM public."Blogs"
+    WHERE "Name" ILIKE $1 
+    `, [nameFilter])
+
+    return new PaginationViewModel(
+      +totalCount[0].count,
+      pageNumber,
+      pageSize,
+      findBlogs.map((b) => {
+        return {
+          id: b.Id,
+          name: b.Name,
+          description: b.Description,
+          websiteUrl: b.WebsiteUrl,
+          createdAt: b.CreatedAt,
+          isMembership: b.IsMembership,
+          blogOwnerInfo: {
+            userId: b.OwnerId,
+            userLogin: b.Login
+          },
+          banInfo: {
+            isBanned: b.IsBanned,
+            banDate: b.BanDate
+          }
+        };
+      }),
+    );
   }
 
   async findBanUserForBlog(blogId: string, userId: string) {}
 
   async findBannedBlogUsers(
     query: BlogQueryPaginationDto,
-    blogId: string,
-    userId: string,
-  ) {}
+    blogId: string
+  ) {
+    const {searchNameTerm, sortBy, sortDirection, pageNumber, pageSize} = query
+    const loginFilter = searchNameTerm !== null ? `%${searchNameTerm}%` : `%`;
+    const sortDirectionFilter = sortDirection === -1 ? 'DESC' : 'ASC';
+    const offset = (pageNumber - 1) * pageSize;
+
+    const bannedUsersFound = await this.dataSource.query(`
+    SELECT *
+    FROM public."UsersBanList" 
+    WHERE "IsBanned" = true AND "BlogId" = $1 AND "Login" ILIKE $2
+    ORDER BY "${sortBy}" COLLATE "C" ${sortDirectionFilter}
+    OFFSET $3
+    LIMIT $4
+    `, [blogId, loginFilter, offset, pageSize])
+
+    const totalCount = await this.dataSource.query(
+      `
+    SELECT COUNT(*)
+    FROM public."UsersBanList"
+    WHERE  "IsBanned" = true AND "BlogId" = $1 AND "Login" ILIKE $2`,
+      [blogId, loginFilter]
+    );
+
+    return new PaginationViewModel(
+      +totalCount[0].count,
+      pageNumber,
+      pageSize,
+      bannedUsersFound.map((u) => {
+        return {
+          id: u.UserId,
+          login: u.Login,
+          banInfo: {
+            isBanned: u.IsBanned,
+            banDate: u.CreatedAt,
+            banReason: u.BanReason
+          }
+        };
+      }),
+    );
+
+  }
 
   async getAllBlogs(
     query: BlogQueryPaginationDto,
@@ -84,7 +168,7 @@ export class SqlBlogQueryRepository implements IBlogQueryRepository {
     SELECT *
     FROM public."Blogs" b
     WHERE "OwnerId" = $1 AND b."Name" ILIKE $2
-    ORDER BY b."${sortBy}" ${sortDirectionFilter}
+    ORDER BY b."${sortBy}" COLLATE "C" ${sortDirectionFilter}
     OFFSET $3
     LIMIT $4
 
@@ -126,7 +210,7 @@ export class SqlBlogQueryRepository implements IBlogQueryRepository {
     "CreatedAt" AS "createdAt", 
     "IsMembership" AS "isMembership"
     FROM public."Blogs"
-    WHERE "Id" = $1`,
+    WHERE "Id" = $1 AND "IsBanned" = false`,
       [blogId],
     );
     if (blog.length === 0) return null;
