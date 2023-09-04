@@ -16,18 +16,6 @@ export class CommentService {
     protected reactionService: ReactionService
   ) {}
 
-  // async createComment(
-  //   content: string,
-  //   postId: string,
-  //   userId: string,
-  // ): Promise<string | null> {
-  //   const user = await this.userRepository.getUserById(userId);
-  //   if (!user) return null;
-  //   if(user.banInfo.isBanned) return null
-  //   const newComment: Comment = Comment.createComment(content, postId, user);
-  //   return this.commentRepository.save(newComment);
-  // }
-
   async update(
     content: string,
     userId: string,
@@ -54,7 +42,7 @@ export class CommentService {
     if(!comment) return ResultCode.NotFound
     const user = await this.userRepository.getUserById(userId)
     if(!user) return ResultCode.NotFound
-    await this.reactionService.updateReactionByParentId(commentId, reaction, user)
+    await this.reactionService.updateReactionByParentId(commentId, reaction, user.id)
     return ResultCode.Success
   }
 }

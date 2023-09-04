@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
-import { PostRepository } from "../infrastructure/post.repository";
-import { UserRepository } from "../../user/infrastructure/user.repository";
 import { ReactionService } from "../../reaction/application/reaction.service";
 import { ResultCode } from "../../../enum/result-code.enum";
+import { IPostRepository } from "../infrastructure/interfaces/post.repository.interface";
+import { IUserRepository } from "../../user/infrastructure/interfaces/user-repository.interface";
 
 export class PostUpdateReactionCommand {
   constructor(public postId: string, public userId: string, public reactions: ReactionStatusEnum) {
@@ -15,8 +15,8 @@ export class PostUpdateReactionUseCase
   implements ICommandHandler<PostUpdateReactionCommand>
 {
   constructor(
-    private readonly postRepository: PostRepository,
-    private readonly userRepository: UserRepository,
+    private readonly postRepository: IPostRepository,
+    private readonly userRepository: IUserRepository,
     private readonly reactionService: ReactionService,
   ) {}
 
@@ -27,7 +27,7 @@ export class PostUpdateReactionUseCase
    const user = await this.userRepository.getUserById(command.userId)
    if(!user) return ResultCode.NotFound
 
-   const resultUpdateReaction = await this.reactionService.updateReactionByParentId(command.postId, command.reactions, user)
+   const resultUpdateReaction: string = await this.reactionService.updateReactionByParentId(command.postId, command.reactions, user.id)
    if(!resultUpdateReaction) return ResultCode.NotFound
    return ResultCode.Success
  }

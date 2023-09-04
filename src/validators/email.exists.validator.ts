@@ -1,7 +1,6 @@
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { Injectable } from "@nestjs/common";
-import { UserQueryRepository } from "../module/user/infrastructure/user.query.repository";
-import { User, UserDocument } from "../module/user/schema/user.schema";
+import { User } from "../module/user/schema/user.schema";
 import { IUserQueryRepository } from "../module/user/infrastructure/interfaces/user.query-repository.interface";
 
 @ValidatorConstraint({ name: 'EmailExistsValidation', async: true })

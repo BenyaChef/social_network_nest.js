@@ -1,6 +1,5 @@
 
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
-import { BlogExists } from '../../../decorators/blog.exist.decorator';
+import { IsString, MaxLength } from "class-validator";
 import { Trim } from '../../../decorators/trim.decorator';
 
 export class PostCreateDto {

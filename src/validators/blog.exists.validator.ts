@@ -14,7 +14,6 @@ export class BlogExistsValidation implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments): string {
-
     return 'Blog not found';
   }
 }

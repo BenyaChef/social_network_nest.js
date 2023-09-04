@@ -29,12 +29,13 @@ import { PostUpdateReactionCommand } from "../application/post-update-reaction.u
 import { CommentCreateCommand } from "../../comment/application/comment-create.use-case";
 import { ResultCodeType } from "../../../enum/result-code.enum";
 import { IPostQueryRepository } from "../infrastructure/interfaces/post.query-repository.interface";
+import { ICommentQueryRepository } from "../../comment/infrastructure/interfaces/comment.query-repository.interface";
 
 @Controller('posts')
 export class PostController {
   constructor(
     protected postQueryRepository: IPostQueryRepository,
-    protected commentQueryRepository: CommentQueryRepository,
+    protected commentQueryRepository: ICommentQueryRepository,
     protected commandBus: CommandBus
   ) {}
 

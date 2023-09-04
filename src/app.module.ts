@@ -115,6 +115,12 @@ import { IPostRepository } from "./module/post/infrastructure/interfaces/post.re
 import { PostSqlRepository } from "./module/post/infrastructure/sql-repositories/post.sql.repository";
 import { IPostQueryRepository } from "./module/post/infrastructure/interfaces/post.query-repository.interface";
 import { PostSqlQueryRepository} from "./module/post/infrastructure/sql-repositories/post.sql.query.repository";
+import { ICommentQueryRepository } from "./module/comment/infrastructure/interfaces/comment.query-repository.interface";
+import { ICommentRepository } from "./module/comment/infrastructure/interfaces/comment.repository.interface";
+import { SqlCommentQueryRepository } from "./module/comment/infrastructure/sql-repository/sql.comment.query.repository";
+import { SqlCommentRepository } from "./module/comment/infrastructure/sql-repository/sql.comment.repository";
+import { IReactionRepository } from "./module/reaction/infrastructure/interfaces/reaction.repository.interface";
+import { ReactionSqlRepository } from "./module/reaction/infrastructure/sql-repository/reaction.sql.repository";
 
 const controllers = [
   AppController,
@@ -207,6 +213,9 @@ const repositories = [
   { provide: IBlogRepository, useClass: SqlBlogRepository},
   { provide: IPostRepository, useClass: PostSqlRepository},
   { provide: IPostQueryRepository, useClass: PostSqlQueryRepository},
+  { provide: ICommentQueryRepository, useClass: SqlCommentQueryRepository},
+  { provide: ICommentRepository, useClass: SqlCommentRepository},
+  { provide: IReactionRepository, useClass: ReactionSqlRepository},
 ]
 
 const mongooseModule = [

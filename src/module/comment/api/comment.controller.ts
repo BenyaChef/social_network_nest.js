@@ -8,7 +8,6 @@ import {
   UseGuards
 } from "@nestjs/common";
 import { CommentService } from '../application/comment.service';
-import { CommentQueryRepository } from '../infrastructure/comment.query.repository';
 import { CurrentUserId } from '../../../decorators/current-user-id.decorator';
 import { NonBlockingAuthGuard } from '../../../guards/non-blocking.auth.guard';
 import { AuthAccessJwtGuard } from '../../../guards/auth-access.jwt.guard';
@@ -16,12 +15,13 @@ import { UpdateCommentDto } from '../dto/update.comment.dto';
 import { CurrentUser } from "../../../decorators/current-user.decorator";
 import { exceptionHandler } from "../../../exception/exception.handler";
 import { ReactionStatusDto } from "../dto/reaction.status.dto";
+import { ICommentQueryRepository } from "../infrastructure/interfaces/comment.query-repository.interface";
 
 @Controller('comments')
 export class CommentController {
   constructor(
     protected commentService: CommentService,
-    protected commentQueryRepository: CommentQueryRepository,
+    protected commentQueryRepository: ICommentQueryRepository,
   ) {}
 
   @UseGuards(NonBlockingAuthGuard)
