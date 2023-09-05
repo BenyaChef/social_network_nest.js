@@ -1,7 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateCommentDto } from '../dto/create.comment.dto';
-import { CommentRepository } from '../infrastructure/comment.repository';
-import { Comment } from '../schema/comment.schema';
 import { ResultCode, ResultCodeType } from "../../../enum/result-code.enum";
 import { IBlogQueryRepository } from "../../blog/infrastructure/interfaces/blog.query-repository.interface";
 import { IPostRepository } from "../../post/infrastructure/interfaces/post.repository.interface";
@@ -52,12 +50,6 @@ export class CommentCreateUseCase
       code: ResultCode.NotFound,
     };
 
-    const banBlog = await this.blogQueryRepository.findBanUserForBlog(post.blogId, command.userId);
-    if (banBlog && banBlog.isBanned)
-      return {
-        data: null,
-        code: ResultCode.Forbidden,
-      };
 
     const newComment: CommentDbModel = {
       id: randomUUID(),

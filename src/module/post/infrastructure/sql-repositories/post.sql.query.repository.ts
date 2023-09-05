@@ -5,6 +5,7 @@ import { PostQueryPaginationDto } from '../../dto/post.query.pagination.dto';
 import { PaginationViewModel } from '../../../../helpers/pagination.view.mapper';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { ReactionStatusEnum } from "../../../../enum/reaction.status.enum";
 
 @Injectable()
 export class PostSqlQueryRepository implements IPostQueryRepository {
@@ -18,14 +19,28 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
     const sortDirectionFilter = sortDirection === -1 ? 'DESC' : 'ASC';
     const offset = (pageNumber - 1) * pageSize;
 
-    const posts = await this.dataSource.query(
-      `
-    SELECT p.* 
-    FROM public."Posts" p
-    ORDER BY p."${sortBy}" COLLATE "C" ${sortDirectionFilter}
-    OFFSET $1
-    LIMIT $2`,
-      [offset, pageSize],
+    const posts = await this.dataSource.query(`
+     SELECT p.*,
+    (SELECT COUNT(*) FROM public."Reactions" WHERE "ParentId" = p."Id" AND "Status" = 'Like') AS "LikeCount",
+    (SELECT COUNT(*) FROM public."Reactions" WHERE "ParentId" = p."Id" AND "Status" = 'Dislike') AS "DislikeCount",
+    (SELECT "Status" FROM public."Reactions" WHERE "ParentId" = p."Id" AND "UserId" = $1) AS "MyStatus",
+    ARRAY(
+      SELECT json_build_object(
+        'addedAt', r."AddedAt",
+        'userId', r."UserId",
+        'login', u."Login"
+      )
+      FROM public."Reactions" r
+      LEFT JOIN public."Users" u ON r."UserId" = u."Id"
+      WHERE r."ParentId" = p."Id" AND r."Status" = 'Like'
+      ORDER BY r."AddedAt" DESC
+      LIMIT 3
+    ) AS "NewestLikes"
+  FROM public."Posts" p
+  ORDER BY p."${sortBy}" COLLATE "C" ${sortDirectionFilter}
+  OFFSET $2
+  LIMIT $3`,
+      [userId, offset, pageSize]
     );
 
     const totalCount = await this.dataSource.query(`
@@ -46,10 +61,10 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
           blogName: p.BlogName,
           createdAt: p.CreatedAt,
           extendedLikesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: 'None',
-            newestLikes: [],
+            likesCount: +p.LikeCount,
+            dislikesCount: +p.DislikeCount,
+            myStatus: p.MyStatus || ReactionStatusEnum.None,
+            newestLikes: p.NewestLikes,
           },
         };
       }),
@@ -65,17 +80,32 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
     const sortDirectionFilter = sortDirection === -1 ? 'DESC' : 'ASC';
     const offset = (pageNumber - 1) * pageSize;
 
-    const posts = await this.dataSource.query(
-      `
-    SELECT p.* 
-    FROM public."Posts" p
-    WHERE "BlogId" = $1
-    ORDER BY p."${sortBy}" COLLATE "C" ${sortDirectionFilter}
-    OFFSET $2
-    LIMIT $3`,
-      [blogId, offset, pageSize],
+    const posts = await this.dataSource.query(`
+     SELECT p.*,
+    (SELECT COUNT(*) FROM public."Reactions" WHERE "ParentId" = p."Id" AND "Status" = 'Like') AS "LikeCount",
+    (SELECT COUNT(*) FROM public."Reactions" WHERE "ParentId" = p."Id" AND "Status" = 'Dislike') AS "DislikeCount",
+    (SELECT "Status" FROM public."Reactions" WHERE "ParentId" = p."Id" AND "UserId" = $1) AS "MyStatus",
+    ARRAY(
+      SELECT json_build_object(
+        'addedAt', r."AddedAt",
+        'userId', r."UserId",
+        'login', u."Login"
+      )
+      FROM public."Reactions" r
+      LEFT JOIN public."Users" u ON r."UserId" = u."Id"
+      WHERE r."ParentId" = p."Id" AND r."Status" = 'Like'
+      ORDER BY r."AddedAt" DESC
+      LIMIT 3
+    ) AS "NewestLikes"
+  FROM public."Posts" p
+  WHERE p."BlogId" = $2
+  ORDER BY p."${sortBy}" COLLATE "C" ${sortDirectionFilter}
+  OFFSET $3
+  LIMIT $4`,
+      [userId ,blogId, offset, pageSize],
     );
 
+    console.log(posts);
     const totalCount = await this.dataSource.query(
       `
     SELECT COUNT(*)
@@ -97,10 +127,10 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
           blogName: p.BlogName,
           createdAt: p.CreatedAt,
           extendedLikesInfo: {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: 'None',
-            newestLikes: [],
+            likesCount: +p.LikeCount,
+            dislikesCount: +p.DislikeCount,
+            myStatus: p.MyStatus || ReactionStatusEnum.None,
+            newestLikes: p.NewestLikes,
           },
         };
       }),
@@ -113,14 +143,26 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
   ): Promise<PostViewModel | null> {
 
     const post = await this.dataSource.query(`
-    SELECT p.*  -- Выбираем все столбцы из таблицы "Posts"
-        FROM public."Posts" p
-        LEFT JOIN public."Blogs" b ON p."BlogId" = b."Id"
-        WHERE p."Id" = $1 AND (b."IsBanned" IS NULL OR b."IsBanned" = false);`,
-      [postId],
+    SELECT *,
+        (SELECT COUNT(*) FROM public."Reactions" WHERE "ParentId" = $2 AND "Status" = 'Like') AS "LikeCount",
+        (SELECT COUNT(*) FROM public."Reactions" WHERE "ParentId" = $2 AND "Status" = 'Dislike') AS "DislikeCount",
+        (SELECT "Status" FROM public."Reactions" WHERE "ParentId" = $2 AND "UserId" = $1) AS "MyStatus"
+        FROM public."Posts"
+        WHERE "Id" = $2`,
+        [userId, postId],
     );
 
     if(post.length === 0) return null
+
+    const lastLikes = await this.dataSource.query(`
+    SELECT "AddedAt"  AS "addedAt", "UserId" AS "userId",
+        (SELECT "Login" AS "login" FROM public."Users"  WHERE "Id" = "Reactions"."UserId") AS login
+         FROM public."Reactions" 
+         WHERE "ParentId" = $1 AND "Status" = 'Like'
+         ORDER BY "Reactions"."AddedAt" COLLATE "C" DESC 
+         LIMIT 3`,
+         [postId])
+
 
     return {
       id: post[0].Id,
@@ -131,10 +173,10 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
       blogName: post[0].BlogName,
       createdAt: post[0].CreatedAt,
       extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: 'None',
-        newestLikes: [],
+        likesCount: +post[0].LikeCount,
+        dislikesCount: +post[0].DislikeCount,
+        myStatus: post[0].MyStatus || ReactionStatusEnum.None,
+        newestLikes: lastLikes,
       },
     };
   }
