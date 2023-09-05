@@ -74,8 +74,6 @@ export class Comment {
     newComment.userLogin = user.accountData.login;
     newComment.createdAt = new Date().toISOString();
     newComment.blogId = blog.id
-    newComment.blogName = blog.name
-    newComment.blogOwnerId = blog.ownerId
     newComment.likesInfo = {
       likesCount: 0,
       dislikesCount: 0,

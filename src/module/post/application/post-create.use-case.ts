@@ -12,7 +12,6 @@ import { UpdatePostDto } from "../dto/update.post.dto";
 export class PostCreateCommand {
   constructor(
     public blogId: string,
-    public userId: string,
     public createDto: PostCreateDto,
   ) {}
 }
@@ -29,8 +28,6 @@ export class PostCreateUseCase implements ICommandHandler<PostCreateCommand> {
       command.blogId,
     );
     if (!blog) return ResultCode.NotFound;
-    if (blog.isBanned) return ResultCode.NotFound;
-    if (blog.ownerId !== command.userId) return ResultCode.Forbidden;
 
     const newPost: Post = {
       id: randomUUID(),

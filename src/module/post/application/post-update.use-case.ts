@@ -9,7 +9,7 @@ import { IBlogRepository } from "../../blog/infrastructure/interfaces/blog-repos
 export class PostUpdateCommand {
   constructor(
     public updateDto: UpdatePostDto,
-    public userId: string,
+
     public blogId: string,
     public postId: string,
   ) {}
@@ -27,7 +27,6 @@ export class PostUpdateUseCase implements ICommandHandler<PostUpdateCommand> {
     if(!blog) return ResultCode.NotFound
     const post = await this.postRepository.getPostById(command.postId)
     if(!post) return ResultCode.NotFound
-    if(blog.ownerId !== command.userId) return ResultCode.Forbidden
     const updatePostDto = {
       title: command.updateDto.title,
       shortDescription: command.updateDto.shortDescription,

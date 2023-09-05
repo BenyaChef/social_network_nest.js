@@ -37,7 +37,6 @@ export class BlogQueryRepository {
   async getBlogById(blogId: string): Promise<BlogViewModel | null> {
     const findBlog = await this.blogModel.findOne({ id: blogId });
     if (!findBlog) return null;
-    if(findBlog.isBanned) return null
     return new BlogViewModel(findBlog);
   }
 
@@ -79,7 +78,6 @@ export class BlogQueryRepository {
     const blog = await this.blogModel.findOne({ id: blogId });
 
     if (!blog) return {data: null, code: ResultCode.NotFound}  ;
-    if (blog.ownerId !== userId) return {data: null, code: ResultCode.Forbidden} ;
 
     const filter = {
       blogId: blogId,

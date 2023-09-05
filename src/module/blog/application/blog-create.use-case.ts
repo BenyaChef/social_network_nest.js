@@ -7,32 +7,23 @@ import { randomUUID } from "crypto";
 
 
 export class BlogCreateCommand {
-  constructor(public createBlgDto: CreateBlogDto, public userId: string) {
+  constructor(public createBlgDto: CreateBlogDto) {
   }
 }
 
 @CommandHandler(BlogCreateCommand)
 export class BlogCreateUseCase implements ICommandHandler<BlogCreateCommand> {
-  constructor(private readonly blogRepository: IBlogRepository,
-              private readonly userRepository: IUserRepository) {
+  constructor(private readonly blogRepository: IBlogRepository) {
   }
 
   async execute(command: BlogCreateCommand): Promise<string | null> {
-    const user = await this.userRepository.getUserById(command.userId)
-    if(!user) return null
-
     const newBlog: Blog = {
       id: randomUUID(),
       name: command.createBlgDto.name,
       description: command.createBlgDto.description,
       websiteUrl: command.createBlgDto.websiteUrl,
-      ownerId: user.id,
       isMembership: false,
       createdAt: new Date().toISOString(),
-      isBanned: false,
-      banDate: null,
-      ownerLogin: '',
-      bannedUsers: [],
     }
     try {
       await this.blogRepository.create(newBlog)

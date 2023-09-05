@@ -31,7 +31,6 @@ export class BlogBanUserUseCase
 
     const blog = await this.blogRepository.getBlogById(command.banDto.blogId);
     if (!blog) return ResultCode.NotFound;
-    if (blog.ownerId !== command.ownerId) return ResultCode.Forbidden;
 
     const banUserInfo = {
       id: randomUUID(),

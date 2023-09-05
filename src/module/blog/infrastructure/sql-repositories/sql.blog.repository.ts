@@ -78,8 +78,8 @@ export class SqlBlogRepository implements IBlogRepository {
     return this.dataSource.query(
       `
     INSERT INTO public."Blogs"(
-    "Id", "Name", "Description", "WebsiteUrl", "CreatedAt", "IsMembership", "OwnerId", "IsBanned", "BanDate")
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    "Id", "Name", "Description", "WebsiteUrl", "CreatedAt", "IsMembership")
+VALUES ($1, $2, $3, $4, $5, $6)`,
       [
         newBlog.id,
         newBlog.name,
@@ -87,9 +87,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
         newBlog.websiteUrl,
         newBlog.createdAt,
         newBlog.isMembership,
-        newBlog.ownerId,
-        newBlog.isBanned,
-        newBlog.banDate,
+
       ],
     );
   }
@@ -121,11 +119,6 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
       websiteUrl: blog[0].WebsiteUrl,
       createdAt: blog[0].CreatedAt,
       isMembership: blog[0].IsMembership,
-      ownerId: blog[0].OwnerId,
-      ownerLogin: blog[0].OwnerLogin,
-      isBanned: blog[0].IsBanned,
-      banDate: blog[0].BanDate,
-      bannedUsers: blog[0].BannedUsers,
     };
   }
 

@@ -48,19 +48,44 @@ export class SqlCommentRepository implements ICommentRepository {
     };
   }
 
-  async delete(commentId: string): Promise<boolean | null> {
-    return Promise.resolve(null);
+  async delete(commentId: string): Promise<boolean> {
+    const deleteResult = await this.dataSource.query(`
+    DELETE 
+        FROM public."Comments"
+        WHERE "Id" = $1;
+    `, [commentId])
+
+    return deleteResult[1] > 0
   }
 
   async getCommentById(
     commentId: string,
     userId?: string,
   ): Promise<CommentDbModel | null> {
-    return Promise.resolve(null);
+    const findComment = await this.dataSource.query(`
+    SELECT "Id", "PostId", "Content", "UserId", "CreatedAt"
+    FROM public."Comments"
+    WHERE "Id" = $1`, [commentId])
+
+    if (findComment.length === 0) return null
+
+    return {
+      id: findComment[0].Id,
+      content: findComment[0].Content,
+      postId: findComment[0].PostId,
+      userId: findComment[0].UserId,
+      createdAt: findComment[0].CreatedAt,
+    }
   }
 
   async update(comment: CommentDbModel) {
-    return true;
+    const updateResult = await this.dataSource.query(`
+    UPDATE public."Comments"
+        SET "Content" = $1
+        WHERE "Id" = $2;
+    `, [comment.content, comment.id])
+
+    return updateResult[1] > 0
   }
 
   async updateBanStatus(userId: string, banStatus: boolean) {}

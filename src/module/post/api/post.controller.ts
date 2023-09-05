@@ -17,7 +17,6 @@ import { PaginationViewModel } from '../../../helpers/pagination.view.mapper';
 import { CreateCommentDto } from '../../comment/dto/create.comment.dto';
 import { AuthAccessJwtGuard } from '../../../guards/auth-access.jwt.guard';
 import { CurrentUser } from '../../../decorators/current-user.decorator';
-import { CommentQueryRepository } from '../../comment/infrastructure/comment.query.repository';
 import { ReactionStatusDto } from "../../comment/dto/reaction.status.dto";
 import { exceptionHandler } from "../../../exception/exception.handler";
 import { NonBlockingAuthGuard } from "../../../guards/non-blocking.auth.guard";

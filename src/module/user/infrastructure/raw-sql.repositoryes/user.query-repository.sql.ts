@@ -7,6 +7,7 @@ import { UserQueryPaginationDto } from '../../dto/user.query.pagination.dto';
 import { User } from '../../schema/user.schema';
 import { BanStatusEnum } from '../../../../enum/ban-status.enum';
 import { PaginationViewModel } from '../../../../helpers/pagination.view.mapper';
+import { UserDto } from '../../dto/user.dto';
 
 @Injectable()
 export class UserQueryRepositorySql implements IUserQueryRepository {
@@ -15,23 +16,17 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
   async getUserByID(userId: string): Promise<UserViewModel | null> {
     const result = await this.dataSource.query(
       `
-      SELECT u.*, b.*
-            FROM public."Users" u
-            JOIN public."BanInfo" b ON u."Id" = b."UserId"
-            WHERE u."Id" = $1;`,
+      SELECT *
+          FROM public."Users" 
+          WHERE "Id" = $1;`,
       [userId],
     );
-    if(result.length === 0) return null
+    if (result.length === 0) return null;
     return {
       id: result[0].Id,
       login: result[0].Login,
       email: result[0].Email,
       createdAt: result[0].CreatedAt,
-      banInfo: {
-        isBanned: result[0].IsBanned,
-        banReason: result[0].BanReason,
-        banDate: result[0].BanDate,
-      },
     };
   }
 
@@ -53,7 +48,7 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
     return result[0].Id;
   }
 
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<any | null> {
     const result = await this.dataSource.query(
       `SELECT u.*, e.*
        FROM public."Users" u
@@ -81,15 +76,14 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
         recoveryCode: null,
         isConfirmed: true,
       },
-      banInfo: {
-        isBanned: false,
-        banReason: null,
-        banDate: null,
-      },
     };
   }
 
-  async findUserByEmailRecoveryCode(code: string): Promise<any | null> {
+  async findUserByEmailRecoveryCode(code: string): Promise<{
+    id: string,
+    isConfirmed: string,
+    confirmationCode: string,
+  } | null> {
     const result = await this.dataSource.query(
       `SELECT *
         FROM "EmailInfo"
@@ -106,17 +100,20 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
 
   async findUserByLogin(login: string): Promise<string | null> {
     const result = await this.dataSource.query(
-      `SELECT * FROM public."Users" WHERE "Login" = $1`,
+      `SELECT * 
+        FROM public."Users" 
+        WHERE "Login" = $1`,
       [login],
     );
     if (result.length === 0) return null;
     return result[0].Login;
   }
 
-  async findUserLoginOrEmail(loginOrEmail: string): Promise<User | null> {
+  async findUserLoginOrEmail(loginOrEmail: string): Promise<UserDto | null> {
     const result = await this.dataSource.query(
-      `SELECT * FROM public."Users"
-    WHERE "Login" = $1 OR "Email" = $1`,
+      `SELECT * 
+        FROM public."Users"
+        WHERE "Login" = $1 OR "Email" = $1`,
       [loginOrEmail],
     );
     if (result.length === 0) return null;
@@ -137,17 +134,11 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
         recoveryCode: null,
         isConfirmed: true,
       },
-      banInfo: {
-        isBanned: false,
-        banReason: null,
-        banDate: null,
-      },
     };
   }
 
-  async getAllUsers(query: UserQueryPaginationDto) {
+  async getAllUsers(query: UserQueryPaginationDto): Promise<PaginationViewModel<UserViewModel[]>>  {
     const {
-      banStatus,
       searchLoginTerm,
       searchEmailTerm,
       sortBy,
@@ -157,7 +148,6 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
     } = query;
     const offset = (pageNumber - 1) * pageSize;
 
-    const bannedStatus = this.getBanStatusFilter(banStatus);
 
     const sortDirectionFilter = sortDirection === -1 ? 'DESC' : 'ASC';
     const loginFilter = searchLoginTerm !== null ? `%${searchLoginTerm}%` : `%`;
@@ -166,22 +156,20 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
       `
     SELECT COUNT(*)
     FROM public."Users" u
-    LEFT JOIN public."BanInfo" b ON u."Id" = b."UserId"
-    WHERE (u."Login" ILIKE $1 OR u."Email" ILIKE $2) AND (b."IsBanned" = ANY ($3))`,
-      [loginFilter, emailFilter, bannedStatus],
+    WHERE u."Login" ILIKE $1 OR u."Email" ILIKE $2`,
+      [loginFilter, emailFilter],
     );
 
     const users = await this.dataSource.query(
       `
-    SELECT u.*, b.*
-    FROM public."Users" u
-    LEFT JOIN public."BanInfo" b ON u."Id" = b."UserId"
-    WHERE (u."Login" ILIKE $1 OR u."Email" ILIKE $2)  AND  (b."IsBanned" = ANY ($3))
-    ORDER BY u."${sortBy}" COLLATE "C" ${sortDirectionFilter}
-    OFFSET $4
-    LIMIT $5
+    SELECT *
+    FROM public."Users"
+    WHERE "Login" ILIKE $1 OR "Email" ILIKE $2
+    ORDER BY "${sortBy}" COLLATE "C" ${sortDirectionFilter}
+    OFFSET $3
+    LIMIT $4
     `,
-      [loginFilter, emailFilter, bannedStatus, offset, pageSize],
+      [loginFilter, emailFilter, offset, pageSize],
     );
 
     const viewUsers = users.map((u) => {
@@ -190,18 +178,13 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
         login: u.Login,
         email: u.Email,
         createdAt: u.CreatedAt,
-        banInfo: {
-          isBanned: u.IsBanned,
-          banDate: u.BanDate,
-          banReason: u.BanReason,
-        },
       };
     });
     return new PaginationViewModel(
       +totalCount[0].count,
       pageNumber,
       pageSize,
-      viewUsers
+      viewUsers,
     );
   }
 
@@ -210,7 +193,7 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
       case BanStatusEnum.banned:
         return [true];
       case BanStatusEnum.notBanned:
-        return [false] ;
+        return [false];
       default:
         return [true, false];
     }

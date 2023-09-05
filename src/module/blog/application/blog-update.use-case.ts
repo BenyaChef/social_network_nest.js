@@ -7,7 +7,6 @@ import { IBlogRepository } from "../infrastructure/interfaces/blog-repository.in
 export class BlogUpdateCommand {
   constructor(
     public updateDto: UpdateBlogDto,
-    public userId: string,
     public blogId: string,
   ) {}
 }
@@ -19,7 +18,6 @@ export class BlogUpdateUseCase implements ICommandHandler<BlogUpdateCommand> {
   async execute(command: BlogUpdateCommand) {
     const blog = await this.blogRepository.getBlogById(command.blogId);
     if (!blog) return ResultCode.NotFound;
-    if (blog.ownerId !== command.userId) return ResultCode.Forbidden;
     const updateBlogDto = {
       name: command.updateDto.name,
       websiteUrl: command.updateDto.websiteUrl,

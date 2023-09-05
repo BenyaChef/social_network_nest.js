@@ -10,9 +10,6 @@ import {
 import { BanStatusEnum } from '../../../enum/ban-status.enum';
 
 export class UserQueryPaginationDto {
-  @IsOptional()
-  @IsEnum(BanStatusEnum)
-  public banStatus: BanStatusEnum;
 
   @IsOptional()
   public searchLoginTerm: string | null = null;

@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { User } from "../module/user/schema/user.schema";
 import { IUserQueryRepository } from "../module/user/infrastructure/interfaces/user.query-repository.interface";
 import bcrypt from 'bcrypt';
+import { UserDto } from "../module/user/dto/user.dto";
 
 
 @Injectable()
@@ -12,7 +13,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super({usernameField: 'loginOrEmail'});
   }
 
-  async validate(loginOrEmail: string, password: string): Promise<User | null> {
+  async validate(loginOrEmail: string, password: string): Promise<UserDto | null> {
     const user = await this.userQueryRepository.findUserLoginOrEmail(loginOrEmail)
     if (!user) throw new UnauthorizedException();
     const encodingUser = await bcrypt.compare(password, user.accountData.passwordHash);

@@ -14,10 +14,10 @@ export class ReactionSqlRepository implements IReactionRepository{
 
  async updateReactionByParentId(newReaction: ReactionDbModel) {
      await this.dataSource.query(`
-    INSERT INTO Reaction ("ParentId", "UserId", "Status")
-        VALUES ($1, $2, $3)
+    INSERT INTO "Reactions" ("ParentId", "UserId", "Status","Id", "AddedAt")
+        VALUES ($1, $2, $3, $4, $5)
         ON CONFLICT ("ParentId", "UserId") DO UPDATE SET "Status" = EXCLUDED."Status";
-    `, [newReaction.parentId, newReaction.userId, newReaction.status])
+    `, [newReaction.parentId, newReaction.userId, newReaction.status, newReaction.id, newReaction.addedAt])
    return true
   }
 }

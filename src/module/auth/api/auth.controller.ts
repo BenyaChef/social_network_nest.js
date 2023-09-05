@@ -46,9 +46,6 @@ export class AuthController {
     @CurrentUser() userId: string
   ) {
 
-    const user = await this.userQueryRepository.getUserByID(userId)
-    if(user!.banInfo.isBanned) throw new UnauthorizedException();
-
     const result = await this.commandBus.execute(new LoginUserCommand(ip, userAgent, userId))
     if (!result) throw new UnauthorizedException();
 

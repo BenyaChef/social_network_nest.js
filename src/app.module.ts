@@ -55,7 +55,6 @@ import { ReactionRepository } from './module/reaction/infrastructure/reaction.re
 import { SessionQueryRepository } from './module/sessions/infrastructure/session.query.repository';
 import { SecurityController } from './module/security/api/security.controller';
 import { APP_GUARD } from '@nestjs/core';
-import { BloggerController } from './module/blogger/api/blogger.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BlogCreateUseCase } from './module/blog/application/blog-create.use-case';
 import { BlogDeleteUseCase } from './module/blog/application/blog-delete.use-case';
@@ -121,6 +120,9 @@ import { SqlCommentQueryRepository } from "./module/comment/infrastructure/sql-r
 import { SqlCommentRepository } from "./module/comment/infrastructure/sql-repository/sql.comment.repository";
 import { IReactionRepository } from "./module/reaction/infrastructure/interfaces/reaction.repository.interface";
 import { ReactionSqlRepository } from "./module/reaction/infrastructure/sql-repository/reaction.sql.repository";
+import { CommentUpdateReactionUseCase } from "./module/comment/application/comment.update-reaction.use-case";
+import { CommentUpdateUseCase } from "./module/comment/application/comment.update.use-case";
+import { CommentDeleteUseCase } from "./module/comment/application/comment.delete.use-case";
 
 const controllers = [
   AppController,
@@ -131,7 +133,6 @@ const controllers = [
   AuthController,
   CommentController,
   SecurityController,
-  BloggerController,
 ];
 
 const options: TypeOrmModuleOptions  = {
@@ -176,7 +177,10 @@ const useCase = [
   LogoutUseCase,
   TokensUpdateUseCase,
   DeleteAllSessionsExceptCurrentUserUseCase,
-  DeleteSessionByDeviceIdUseCase
+  DeleteSessionByDeviceIdUseCase,
+  CommentUpdateReactionUseCase,
+  CommentUpdateUseCase,
+  CommentDeleteUseCase
 ];
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];

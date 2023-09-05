@@ -25,20 +25,6 @@ export class Blog {
   @Prop({ required: true, type: Boolean })
   isMembership: boolean;
 
-  @Prop({ required: true, type: String })
-  ownerId: string;
-
-  @Prop({ required: true, type: String })
-  ownerLogin: string;
-
-  @Prop({ required: true, type: Boolean })
-  isBanned: boolean;
-
-  @Prop({ type: String, default: null})
-  banDate: string | null;
-
-  @Prop({ type: String, default: null})
-  bannedUsers: string[]
 
   // update(updateDto: UpdateBlogDto) {
   //   this.name = updateDto.name;
@@ -52,10 +38,7 @@ export class Blog {
     newBlog.name = createDto.name;
     newBlog.description = createDto.description;
     newBlog.websiteUrl = createDto.websiteUrl;
-    newBlog.ownerId = user.id;
-    newBlog.ownerLogin = user.accountData.login;
     newBlog.isMembership = false;
-    newBlog.isBanned = false
     newBlog.createdAt = new Date().toISOString();
     return newBlog;
   }

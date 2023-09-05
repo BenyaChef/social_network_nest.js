@@ -16,12 +16,17 @@ import { CurrentUser } from "../../../decorators/current-user.decorator";
 import { exceptionHandler } from "../../../exception/exception.handler";
 import { ReactionStatusDto } from "../dto/reaction.status.dto";
 import { ICommentQueryRepository } from "../infrastructure/interfaces/comment.query-repository.interface";
+import { CommandBus } from "@nestjs/cqrs";
+import { CommentUpdateReactionCommand } from "../application/comment.update-reaction.use-case";
+import { CommentUpdateCommand } from "../application/comment.update.use-case";
+import { CommentDeleteCommand } from "../application/comment.delete.use-case";
 
 @Controller('comments')
 export class CommentController {
   constructor(
     protected commentService: CommentService,
     protected commentQueryRepository: ICommentQueryRepository,
+    protected commandBus: CommandBus
   ) {}
 
   @UseGuards(NonBlockingAuthGuard)
@@ -43,7 +48,7 @@ export class CommentController {
     @CurrentUser() userId: string,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    const resultUpdate = await this.commentService.update(updateCommentDto.content, userId, commentId)
+    const resultUpdate = await this.commandBus.execute(new CommentUpdateCommand(updateCommentDto.content, userId, commentId))
     return exceptionHandler(resultUpdate)
   }
 
@@ -54,7 +59,7 @@ export class CommentController {
     @Param('commentId') commentId: string,
     @CurrentUser() userId: string
   ) {
-    const resultDelete = await this.commentService.deleteComment(userId, commentId)
+    const resultDelete = await this.commandBus.execute(new CommentDeleteCommand(userId, commentId))
     return exceptionHandler(resultDelete)
   }
 
@@ -66,7 +71,7 @@ export class CommentController {
     @CurrentUser() userId: string,
     @Body() reactionDto: ReactionStatusDto
   ) {
-    const result = await this.commentService.changeReactionForComment(commentId, userId, reactionDto.likeStatus)
+    const result = await this.commandBus.execute(new CommentUpdateReactionCommand(commentId, userId, reactionDto.likeStatus))
 
     return exceptionHandler(result)
   }

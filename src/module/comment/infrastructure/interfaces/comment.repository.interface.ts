@@ -7,7 +7,7 @@ export abstract class ICommentRepository {
 
   abstract update(comment: CommentDbModel): Promise<boolean>
 
-  abstract delete(commentId: string): Promise<boolean | null>
+  abstract delete(commentId: string): Promise<boolean>
 
   abstract updateBanStatus(userId: string, banStatus: boolean)
 }

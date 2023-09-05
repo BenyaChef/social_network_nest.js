@@ -7,7 +7,6 @@ import { IReactionRepository } from "../infrastructure/interfaces/reaction.repos
 export class ReactionService {
   constructor(protected reactionRepository: IReactionRepository) {
   }
-
   async updateReactionByParentId(parentId: string, status: ReactionStatusEnum,  userId: string): Promise<string> {
     const newReaction = {
       id: randomUUID(),

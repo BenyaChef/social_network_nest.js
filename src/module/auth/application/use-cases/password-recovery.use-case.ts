@@ -3,9 +3,9 @@ import { PasswordRecoveryDto } from "../../dto/password.recovery.dto";
 import { IUserRepository } from "../../../user/infrastructure/interfaces/user-repository.interface";
 import { IUserQueryRepository } from "../../../user/infrastructure/interfaces/user.query-repository.interface";
 import { MailAdapter } from "../../../email/mail.adapter";
-import { User } from "../../../user/schema/user.schema";
 import { ResultCode } from "../../../../enum/result-code.enum";
 import { randomUUID } from "crypto";
+import { UserDto } from "../../../user/dto/user.dto";
 
 export class PasswordRecoveryCommand {
   constructor(public recoveryDto: PasswordRecoveryDto) {
@@ -23,7 +23,7 @@ export class PasswordRecoveryUseCase
   ) {}
 
  async execute(command: PasswordRecoveryCommand): Promise<ResultCode> {
-   const user: User | null = await this.userQueryRepository.findUserByEmail(command.recoveryDto.email);
+   const user: UserDto | null = await this.userQueryRepository.findUserByEmail(command.recoveryDto.email);
    if (!user) return ResultCode.Success;
    const newRecoveryPassword = randomUUID()
    await this.userRepository.recoveryPassword(user.id, newRecoveryPassword)
