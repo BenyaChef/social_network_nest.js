@@ -9,7 +9,7 @@ export class EmailExistsValidation implements ValidatorConstraintInterface {
   constructor(protected userQueryRepository: IUserQueryRepository) {}
 
   async validate(email: string): Promise<boolean> {
-    const findBlog: UserDto | null = await this.userQueryRepository.findUserByEmail(email);
+    const findBlog: any | null = await this.userQueryRepository.findUserByEmail(email);
     if (findBlog) return false;
     return true;
   }

@@ -23,7 +23,7 @@ export class PasswordRecoveryUseCase
   ) {}
 
  async execute(command: PasswordRecoveryCommand): Promise<ResultCode> {
-   const user: UserDto | null = await this.userQueryRepository.findUserByEmail(command.recoveryDto.email);
+   const user: any | null = await this.userQueryRepository.findUserByEmail(command.recoveryDto.email);
    if (!user) return ResultCode.Success;
    const newRecoveryPassword = randomUUID()
    await this.userRepository.recoveryPassword(user.id, newRecoveryPassword)

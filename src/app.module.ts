@@ -123,6 +123,13 @@ import { ReactionSqlRepository } from "./module/reaction/infrastructure/sql-repo
 import { CommentUpdateReactionUseCase } from "./module/comment/application/comment.update-reaction.use-case";
 import { CommentUpdateUseCase } from "./module/comment/application/comment.update.use-case";
 import { CommentDeleteUseCase } from "./module/comment/application/comment.delete.use-case";
+import { UserEntity } from "./module/user/entities/user.entity";
+import { UserTypeormRepository } from "./module/user/infrastructure/typeorm-repository/user.typeorm.repository";
+import {
+  UserTypeormQueryRepository
+} from "./module/user/infrastructure/typeorm-repository/user.typeorm.query-repository";
+import { PasswordRecoveryInfo } from "./module/user/entities/user.password-recovery.entity";
+import { EmailConfirmationInfo } from "./module/user/entities/user.email-confirmation.entity";
 
 const controllers = [
   AppController,
@@ -141,10 +148,9 @@ const options: TypeOrmModuleOptions  = {
   port: 5432,
   username: 'postgres',
   password: 'sa',
-  database: 'SocialNetwork',
-  entities: [],
-  synchronize: false,
-  ssl: false
+  database: 'social_network',
+  autoLoadEntities: true,
+  synchronize: true,
 }
 
 const validators = [
@@ -209,8 +215,8 @@ const services = [
 
 const repositories = [
   { provide: ITestingRepository, useClass: SqlTestingRepository },
-  { provide: IUserQueryRepository, useClass: UserQueryRepositorySql },
-  { provide: IUserRepository, useClass: UserRepositorySql },
+  { provide: IUserQueryRepository, useClass: UserTypeormQueryRepository },
+  { provide: IUserRepository, useClass: UserTypeormRepository},
   { provide: ISessionRepository, useClass:SessionRepositorySql },
   { provide: ISessionQueryRepository, useClass: SessionQueryRepositorySql },
   { provide: IBlogQueryRepository, useClass: SqlBlogQueryRepository},
@@ -249,6 +255,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     }),
     MongooseModule.forFeature(mongooseModule),
     TypeOrmModule.forRoot(options),
+    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo])
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,

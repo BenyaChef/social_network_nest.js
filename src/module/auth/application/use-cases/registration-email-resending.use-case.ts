@@ -7,6 +7,7 @@ import { BadRequestException } from "@nestjs/common";
 import { User } from "../../../user/schema/user.schema";
 import { randomUUID } from "crypto";
 import { UserDto } from "../../../user/dto/user.dto";
+import { UserEntity } from "../../../user/entities/user.entity";
 
 export class RegistrationEmailResendingCommand {
   constructor(public resendingDto: RegistrationEmailResendingDto) {
@@ -19,7 +20,7 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
               private readonly userQueryRepository: IUserQueryRepository,
               private readonly mailAdapter: MailAdapter) {}
   async execute(command: RegistrationEmailResendingCommand): Promise<boolean> {
-    const user: UserDto | null = await this.userQueryRepository.findUserByEmail(command.resendingDto.email)
+    const user: any | null = await this.userQueryRepository.findUserByEmail(command.resendingDto.email)
     if(!user) throw new BadRequestException('emailIsNotExists')
     if(user.emailInfo.isConfirmed) throw new BadRequestException('emailAlreadyIsConfirm')
 

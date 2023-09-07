@@ -98,7 +98,7 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
     };
   }
 
-  async findUserByLogin(login: string): Promise<string | null> {
+  async findUserByLogin(login: string): Promise<any | null> {
     const result = await this.dataSource.query(
       `SELECT * 
         FROM public."Users" 
