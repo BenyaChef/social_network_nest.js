@@ -30,7 +30,7 @@ export class UserTypeormQueryRepository implements IUserQueryRepository {
     return Promise.resolve(null);
   }
 
-  async findUserByLogin(login: string): Promise<UserEntity| null> {
+  async findUserByLogin(login: string): Promise<UserEntity | null> {
     return  this.userRepo.findOneBy({ login: login });
   }
 

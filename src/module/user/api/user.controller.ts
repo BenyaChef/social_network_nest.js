@@ -168,6 +168,7 @@ export class UserController {
     }
 
 
+
     @Delete('users/:userId')
     @UseGuards(BasicAuth)
     @HttpCode(HttpStatus.NO_CONTENT)

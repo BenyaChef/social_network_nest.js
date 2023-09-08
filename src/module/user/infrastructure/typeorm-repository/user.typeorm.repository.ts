@@ -1,15 +1,16 @@
 import { IUserRepository } from '../interfaces/user-repository.interface';
 import { BanInfo, User } from '../../schema/user.schema';
-import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
+import { DataSource,  Repository } from "typeorm";
 import { UserEntity } from '../../entities/user.entity';
 import { randomUUID } from 'crypto';
-import { PasswordRecoveryInfo } from '../../entities/user.password-recovery.entity';
+
 import { EmailConfirmationInfo } from '../../entities/user.email-confirmation.entity';
 
 export class UserTypeormRepository implements IUserRepository {
   constructor(
     @InjectRepository(UserEntity) readonly userRepo: Repository<UserEntity>,
+    @InjectDataSource() readonly dataSource: DataSource
   ) {}
 
   assignNewPassword(userId: string, newPasswordHash: string) {}
@@ -22,16 +23,16 @@ export class UserTypeormRepository implements IUserRepository {
     user.email = 'asd';
     user.login = 'asd';
     user.passwordHash = 'asd';
-    const emailInfo = new EmailConfirmationInfo();
-    emailInfo.confirmationCode = randomUUID();
-    emailInfo.isConfirmed = false;
-    const resulCreate = await this.userRepo.manager.transaction<UserEntity>(
-      async (transactionalEntityManager: EntityManager): Promise<UserEntity> => {
-        await transactionalEntityManager.save(user);
-        await transactionalEntityManager.save(emailInfo);
-        return user
-      },
-    );
+
+    this.dataSource.getRepository<UserEntity>(UserEntity)
+    const resulCreate = await this.userRepo.createQueryBuilder().insert().into(UserEntity).values({
+      id: user.id,
+      login: user.login,
+      email: user.email,
+      passwordHash: user.passwordHash
+    })
+      .execute()
+
     return true;
   }
 

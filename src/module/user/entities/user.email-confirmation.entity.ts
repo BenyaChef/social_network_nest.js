@@ -1,10 +1,11 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 
 @Entity({name: 'email_confirmation_info'})
 export class EmailConfirmationInfo {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+
+  @PrimaryColumn({name: 'user_id', type: 'uuid'})
+  userId: string
 
   @Column({name: 'is_confirmed', type: 'boolean'})
   isConfirmed: boolean
@@ -12,7 +13,8 @@ export class EmailConfirmationInfo {
   @Column({name: 'confirmation_code', type: 'uuid', nullable: true})
   confirmationCode: string | null
 
-  @OneToOne(() => UserEntity, (user) => user.emailConfirmationInfo)
-  @JoinColumn()
+
+  @OneToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn({name: 'user_id'})
   user: UserEntity;
 }

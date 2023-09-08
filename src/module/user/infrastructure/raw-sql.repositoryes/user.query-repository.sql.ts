@@ -4,7 +4,6 @@ import { DataSource } from 'typeorm';
 import { IUserQueryRepository } from '../interfaces/user.query-repository.interface';
 import { UserViewModel } from '../../model/user.view.model';
 import { UserQueryPaginationDto } from '../../dto/user.query.pagination.dto';
-import { User } from '../../schema/user.schema';
 import { BanStatusEnum } from '../../../../enum/ban-status.enum';
 import { PaginationViewModel } from '../../../../helpers/pagination.view.mapper';
 import { UserDto } from '../../dto/user.dto';

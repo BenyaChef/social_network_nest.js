@@ -5,11 +5,14 @@ import { UserEntity } from "./user.entity";
 export class PasswordRecoveryInfo {
   @PrimaryGeneratedColumn('uuid')
   id: string
+
   @Column({name: 'recovery_code'})
   recoveryCode: string
+
   @Column({name: 'is_confirmed'})
   isConfirmed: boolean
-  @OneToOne(() => UserEntity, (user) => user.passwordRecoveryInfo)
+
+  @OneToOne(() => UserEntity, (user) => user.id)
   @JoinColumn()
   user: UserEntity;
 }
