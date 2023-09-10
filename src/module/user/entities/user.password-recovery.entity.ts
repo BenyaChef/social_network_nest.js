@@ -1,10 +1,10 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 
 @Entity({name: 'password_recovery_info'})
 export class PasswordRecoveryInfo {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+  @PrimaryColumn('uuid')
+  userId: string
 
   @Column({name: 'recovery_code'})
   recoveryCode: string
