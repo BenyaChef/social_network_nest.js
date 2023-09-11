@@ -16,7 +16,7 @@ export class UserRepositorySql implements IUserRepository {
     return user[0]
   }
 
-  async createUser(newUser: User): Promise<boolean> {
+  async createUser(newUser: any): Promise<boolean> {
     try {
       await this.dataSource.query(`BEGIN`);
       await this.dataSource.query(

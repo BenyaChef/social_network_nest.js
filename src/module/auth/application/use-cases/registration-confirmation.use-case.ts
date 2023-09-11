@@ -18,11 +18,11 @@ export class RegistrationConfirmationUseCase
   ) {}
 
   async execute(command: RegistrationConfirmationCommand): Promise<boolean> {
-    const user = await this.userQueryRepository.findUserByEmailRecoveryCode(
+    const userData = await this.userQueryRepository.findUserByEmailRecoveryCode(
       command.confirmationCode.code,
     );
-    if (!user) throw new BadRequestException('codeIsNotExists');
-    if (user.isConfirmed) throw new BadRequestException('codeAlreadyIsConfirm');
-    return this.userRepository.updateConfirmationStatus(user.id)
+    if (!userData) throw new BadRequestException('codeIsNotExists');
+    if (userData.isConfirmed) throw new BadRequestException('codeAlreadyIsConfirm');
+    return this.userRepository.updateConfirmationStatus(userData.id)
   }
 }

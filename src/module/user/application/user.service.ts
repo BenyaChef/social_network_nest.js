@@ -1,41 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create.user.dto';
 import bcrypt from 'bcrypt';
-import { User } from '../schema/user.schema';
 import { randomUUID } from 'crypto';
-import { IUserRepository } from "../infrastructure/interfaces/user-repository.interface";
+import { IUserRepository } from '../infrastructure/interfaces/user-repository.interface';
+import { UserEntity } from '../entities/user.entity';
+import { EmailConfirmationInfo } from '../entities/user.email-confirmation.entity';
+import { PasswordRecoveryInfo } from '../entities/user.password-recovery.entity';
+import { NewUserData } from '../dto/user.new-data.dto';
 
 @Injectable()
 export class UserService {
-  constructor(
-    protected userRepository: IUserRepository,
-  ) {}
+  constructor(protected userRepository: IUserRepository) {}
 
-  async createUser(createDto: CreateUserDto): Promise<User> {
+  async createUser(createDto: CreateUserDto): Promise<NewUserData> {
     const passwordHash = await this.generatorHash(createDto.password);
-    const newUser: User = {
-      id: randomUUID(),
-      accountData: {
-        login: createDto.login,
-        email: createDto.email,
-        createdAt: new Date().toISOString(),
-        passwordHash: passwordHash
-      },
-      emailInfo: {
-        isConfirmed: false,
-        confirmationCode: randomUUID()
-      },
-      passwordRecoveryInfo: {
-        isConfirmed: true,
-        recoveryCode: null
-      },
-      banInfo: {
-        isBanned: false,
-        banDate: null,
-        banReason: null
-      }
+    const newUser: UserEntity = new UserEntity();
+    newUser.id = randomUUID();
+    newUser.login = createDto.login;
+    newUser.email = createDto.email;
+    newUser.passwordHash = passwordHash;
+    newUser.isConfirmed = false;
+    newUser.createdAt = new Date().toISOString()
+
+    const userEmailInfo: EmailConfirmationInfo = new EmailConfirmationInfo();
+    userEmailInfo.user = newUser;
+    userEmailInfo.confirmationCode = randomUUID();
+
+    const passwordRecoveryInfo: PasswordRecoveryInfo =
+      new PasswordRecoveryInfo();
+    passwordRecoveryInfo.user = newUser;
+    passwordRecoveryInfo.isConfirmed = true;
+    passwordRecoveryInfo.recoveryCode = null;
+
+    return {
+      user: newUser,
+      emailInfo: userEmailInfo,
+      recoveryInfo: passwordRecoveryInfo,
     };
-    return newUser;
   }
 
   async assignNewPassword(newPassword: string, userId: string) {

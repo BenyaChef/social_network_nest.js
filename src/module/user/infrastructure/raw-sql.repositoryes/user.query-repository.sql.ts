@@ -12,7 +12,7 @@ import { UserDto } from '../../dto/user.dto';
 export class UserQueryRepositorySql implements IUserQueryRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  async getUserByID(userId: string): Promise<UserViewModel | null> {
+  async getUserByID(userId: string): Promise<any | null> {
     const result = await this.dataSource.query(
       `
       SELECT *
@@ -108,7 +108,7 @@ export class UserQueryRepositorySql implements IUserQueryRepository {
     return result[0].Login;
   }
 
-  async findUserLoginOrEmail(loginOrEmail: string): Promise<UserDto | null> {
+  async findUserLoginOrEmail(loginOrEmail: string): Promise<any | null> {
     const result = await this.dataSource.query(
       `SELECT * 
         FROM public."Users"

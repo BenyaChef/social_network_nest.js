@@ -7,12 +7,8 @@ export class EmailConfirmationInfo {
   @PrimaryColumn({name: 'user_id', type: 'uuid'})
   userId: string
 
-  @Column({name: 'is_confirmed', type: 'boolean'})
-  isConfirmed: boolean
-
   @Column({name: 'confirmation_code', type: 'uuid', nullable: true})
   confirmationCode: string | null
-
 
   @OneToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({name: 'user_id'})

@@ -18,8 +18,8 @@ export class RegistrationUserUseCase
               private readonly userRepository: IUserRepository) {}
 
  async execute(command: RegistrationUserCommand): Promise<boolean> {
-    const newUser = await this.userService.createUser(command.registrationDto)
-    this.mailAdapter.sendUserConfirmation(newUser.accountData.email, newUser.accountData.login, newUser.emailInfo.confirmationCode!)
-    return await this.userRepository.createUser(newUser)
+    const newUserData = await this.userService.createUser(command.registrationDto)
+    this.mailAdapter.sendUserConfirmation(newUserData.user.email, newUserData.user.login, newUserData.emailInfo.confirmationCode!)
+    return await this.userRepository.createUser(newUserData)
  }
 }

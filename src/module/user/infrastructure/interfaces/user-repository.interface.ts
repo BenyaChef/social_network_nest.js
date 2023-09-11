@@ -1,8 +1,9 @@
 import { BanInfo, User } from "../../schema/user.schema";
+import { NewUserData } from "../../dto/user.new-data.dto";
 
 export abstract class IUserRepository {
   abstract getUserById(userId: string): Promise<{id: string, login: string} | null>
-  abstract createUser(newUser: User): Promise<boolean>
+  abstract createUser(newUser: NewUserData): Promise<boolean>
   abstract deleteUser(userId: string): Promise<boolean>
   abstract updateEmailConfirmationCode(userId: string, newConfirmationCode: string)
   abstract updateConfirmationStatus(userId: string)

@@ -6,7 +6,7 @@ import { PaginationViewModel } from "../../../../helpers/pagination.view.mapper"
 import { UserEntity } from "../../entities/user.entity";
 
 export abstract class IUserQueryRepository {
-  abstract findUserByEmailRecoveryCode(code: string): Promise<{ id: string, isConfirmed: string, confirmationCode: string } | null>
+  abstract findUserByEmailRecoveryCode(code: string): Promise<{ id: string, isConfirmed: string } | null>
 
   abstract finUserByNewPasswordRecoveryCode(code: string)
 
@@ -14,7 +14,7 @@ export abstract class IUserQueryRepository {
 
   abstract findUserByEmail(email: string): Promise<UserEntity | null>
 
-  abstract findUserLoginOrEmail(loginOrEmail: string): Promise<UserDto | null>
+  abstract findUserLoginOrEmail(loginOrEmail: string): Promise<UserEntity | null>
 
   abstract getUserByID(userId: string): Promise<UserViewModel | null>
 

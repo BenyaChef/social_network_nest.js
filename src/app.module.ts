@@ -130,6 +130,13 @@ import {
 } from "./module/user/infrastructure/typeorm-repository/user.typeorm.query-repository";
 import { PasswordRecoveryInfo } from "./module/user/entities/user.password-recovery.entity";
 import { EmailConfirmationInfo } from "./module/user/entities/user.email-confirmation.entity";
+import {
+  SessionTypeormRepository
+} from "./module/sessions/infrastructure/typeorm-repositoryes/session.typeorm.repository";
+import { SessionUser } from "./module/sessions/entities/session.entity";
+import {
+  SessionTypeormQueryRepository
+} from "./module/sessions/infrastructure/typeorm-repositoryes/session.typeorm.query.repository";
 
 const controllers = [
   AppController,
@@ -217,8 +224,8 @@ const repositories = [
   { provide: ITestingRepository, useClass: SqlTestingRepository },
   { provide: IUserQueryRepository, useClass: UserTypeormQueryRepository },
   { provide: IUserRepository, useClass: UserTypeormRepository},
-  { provide: ISessionRepository, useClass:SessionRepositorySql },
-  { provide: ISessionQueryRepository, useClass: SessionQueryRepositorySql },
+  { provide: ISessionRepository, useClass: SessionTypeormRepository },
+  { provide: ISessionQueryRepository, useClass: SessionTypeormQueryRepository },
   { provide: IBlogQueryRepository, useClass: SqlBlogQueryRepository},
   { provide: IBlogRepository, useClass: SqlBlogRepository},
   { provide: IPostRepository, useClass: PostSqlRepository},
@@ -255,7 +262,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     }),
     MongooseModule.forFeature(mongooseModule),
     TypeOrmModule.forRoot(options),
-    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo])
+    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser])
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,

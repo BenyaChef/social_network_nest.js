@@ -14,9 +14,9 @@ export class UserCreateUseCase implements ICommandHandler<UserCreateCommand> {
 
   async execute(command: UserCreateCommand): Promise<string> {
     const newUser = await this.userService.createUser(command.createDto)
-    newUser.emailInfo.isConfirmed = true
+    newUser.user.isConfirmed = true
     newUser.emailInfo.confirmationCode = null
     await this.userRepository.createUser(newUser)
-    return newUser.id
+    return newUser.user.id
   }
 }

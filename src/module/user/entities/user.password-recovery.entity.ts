@@ -6,8 +6,8 @@ export class PasswordRecoveryInfo {
   @PrimaryColumn('uuid')
   userId: string
 
-  @Column({name: 'recovery_code'})
-  recoveryCode: string
+  @Column({name: 'recovery_code', type: 'character varying', nullable: true})
+  recoveryCode: string | null
 
   @Column({name: 'is_confirmed'})
   isConfirmed: boolean

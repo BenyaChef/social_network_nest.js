@@ -20,12 +20,12 @@ export class RegistrationEmailResendingUseCase implements ICommandHandler<Regist
               private readonly userQueryRepository: IUserQueryRepository,
               private readonly mailAdapter: MailAdapter) {}
   async execute(command: RegistrationEmailResendingCommand): Promise<boolean> {
-    const user: any | null = await this.userQueryRepository.findUserByEmail(command.resendingDto.email)
+    const user: UserEntity | null = await this.userQueryRepository.findUserByEmail(command.resendingDto.email)
     if(!user) throw new BadRequestException('emailIsNotExists')
-    if(user.emailInfo.isConfirmed) throw new BadRequestException('emailAlreadyIsConfirm')
+    if(user.isConfirmed) throw new BadRequestException('emailAlreadyIsConfirm')
 
     const newConfirmedCode = randomUUID();
-    this.mailAdapter.sendUserConfirmation(user.accountData.email, user.accountData.login, newConfirmedCode)
+    this.mailAdapter.sendUserConfirmation(user.email, user.login, newConfirmedCode)
     return this.userRepository.updateEmailConfirmationCode(user.id, newConfirmedCode)
   }
 }
