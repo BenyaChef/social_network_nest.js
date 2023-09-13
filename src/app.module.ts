@@ -137,6 +137,11 @@ import { SessionUser } from "./module/sessions/entities/session.entity";
 import {
   SessionTypeormQueryRepository
 } from "./module/sessions/infrastructure/typeorm-repositoryes/session.typeorm.query.repository";
+import { BlogEntity } from "./module/blog/entities/blog.entity";
+import { BlogTypeormRepository } from "./module/blog/infrastructure/typeorm-repositories/blog.typeorm.repository";
+import {
+  BlogTypeormQueryRepository
+} from "./module/blog/infrastructure/typeorm-repositories/blog.typeorm.query.repository";
 
 const controllers = [
   AppController,
@@ -157,7 +162,7 @@ const options: TypeOrmModuleOptions  = {
   password: 'sa',
   database: 'social_network',
   autoLoadEntities: true,
-  synchronize: true,
+  synchronize: true
 }
 
 const validators = [
@@ -226,8 +231,8 @@ const repositories = [
   { provide: IUserRepository, useClass: UserTypeormRepository},
   { provide: ISessionRepository, useClass: SessionTypeormRepository },
   { provide: ISessionQueryRepository, useClass: SessionTypeormQueryRepository },
-  { provide: IBlogQueryRepository, useClass: SqlBlogQueryRepository},
-  { provide: IBlogRepository, useClass: SqlBlogRepository},
+  { provide: IBlogQueryRepository, useClass: BlogTypeormQueryRepository},
+  { provide: IBlogRepository, useClass: BlogTypeormRepository},
   { provide: IPostRepository, useClass: PostSqlRepository},
   { provide: IPostQueryRepository, useClass: PostSqlQueryRepository},
   { provide: ICommentQueryRepository, useClass: SqlCommentQueryRepository},
@@ -262,7 +267,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     }),
     MongooseModule.forFeature(mongooseModule),
     TypeOrmModule.forRoot(options),
-    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser])
+    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity]),
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,

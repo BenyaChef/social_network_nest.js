@@ -1,4 +1,4 @@
-import { BanInfo, User } from "../../schema/user.schema";
+import { BanInfo } from "../../schema/user.schema";
 import { NewUserData } from "../../dto/user.new-data.dto";
 
 export abstract class IUserRepository {

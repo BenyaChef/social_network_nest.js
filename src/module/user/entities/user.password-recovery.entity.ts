@@ -12,7 +12,7 @@ export class PasswordRecoveryInfo {
   @Column({name: 'is_confirmed'})
   isConfirmed: boolean
 
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @OneToOne(() => UserEntity, (user) => user.id, {onDelete: 'CASCADE'})
   @JoinColumn()
   user: UserEntity;
 }

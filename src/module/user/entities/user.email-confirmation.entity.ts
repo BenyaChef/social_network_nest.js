@@ -10,7 +10,7 @@ export class EmailConfirmationInfo {
   @Column({name: 'confirmation_code', type: 'uuid', nullable: true})
   confirmationCode: string | null
 
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @OneToOne(() => UserEntity, (user) => user.id, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'user_id'})
   user: UserEntity;
 }

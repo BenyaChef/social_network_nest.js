@@ -6,6 +6,7 @@ import { MailAdapter } from "../../../email/mail.adapter";
 import { ResultCode } from "../../../../enum/result-code.enum";
 import { randomUUID } from "crypto";
 import { UserDto } from "../../../user/dto/user.dto";
+import { UserEntity } from "../../../user/entities/user.entity";
 
 export class PasswordRecoveryCommand {
   constructor(public recoveryDto: PasswordRecoveryDto) {
@@ -23,11 +24,11 @@ export class PasswordRecoveryUseCase
   ) {}
 
  async execute(command: PasswordRecoveryCommand): Promise<ResultCode> {
-   const user: any | null = await this.userQueryRepository.findUserByEmail(command.recoveryDto.email);
+   const user: UserEntity | null = await this.userQueryRepository.findUserByEmail(command.recoveryDto.email);
    if (!user) return ResultCode.Success;
    const newRecoveryPassword = randomUUID()
    await this.userRepository.recoveryPassword(user.id, newRecoveryPassword)
-   await this.mailAdapter.sendUserRecoveryPassword(user.accountData.email, user.accountData.login, newRecoveryPassword);
+   await this.mailAdapter.sendUserRecoveryPassword(user.email, user.login, newRecoveryPassword);
    return ResultCode.Success
  }
 }

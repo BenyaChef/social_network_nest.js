@@ -11,7 +11,6 @@ import {
 import { AuthRefreshJwtGuard } from "../../../guards/auth-refresh.jwt.guard";
 import { CurrentUser } from "../../../decorators/current-user.decorator";
 import { RefreshToken } from "../../../decorators/refresh-token.decorator";
-import { SessionService } from "../../sessions/application/session.service";
 import { exceptionHandler } from "../../../exception/exception.handler";
 import { ISessionQueryRepository } from "../../sessions/infrastructure/interfaces/session.query-repository.interface";
 import { DeviceViewModel } from "../../sessions/model/device.view.model";
@@ -35,6 +34,7 @@ export class SecurityController {
   @HttpCode(HttpStatus.OK)
   async getAllSessionsCurrentUser(@CurrentUser() userId: string): Promise<DeviceViewModel> {
     const findResult = await this.sessionsQueryRepository.getAllDeviceCurrentUser(userId)
+    console.log(findResult);
     return findResult
   }
 

@@ -16,7 +16,7 @@ export class UserEntity {
   @Column({name: 'is_confirmed', type: 'boolean'})
   isConfirmed: boolean
 
-  @Column({name: 'created_at', nullable: false})
+  @Column({name: 'createdat', nullable: false})
   createdAt: string
 
   @Column({ name: 'password_hash', nullable: false })

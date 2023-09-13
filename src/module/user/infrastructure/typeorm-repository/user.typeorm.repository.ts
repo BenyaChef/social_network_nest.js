@@ -6,6 +6,7 @@ import { UserEntity } from '../../entities/user.entity';
 import { EmailConfirmationInfo } from '../../entities/user.email-confirmation.entity';
 import { NewUserData } from '../../dto/user.new-data.dto';
 import { PasswordRecoveryInfo } from '../../entities/user.password-recovery.entity';
+import { log } from "handlebars";
 
 export class UserTypeormRepository implements IUserRepository {
   constructor(
@@ -13,7 +14,9 @@ export class UserTypeormRepository implements IUserRepository {
     @InjectDataSource() readonly dataSource: DataSource,
   ) {}
 
-  assignNewPassword(userId: string, newPasswordHash: string) {}
+ async assignNewPassword(userId: string, newPasswordHash: string) {
+    return this.userRepo.update(userId, {passwordHash: newPasswordHash})
+  }
 
   banOrUnbanUser(userId: string, updateBanInfoDto: BanInfo) {}
 
@@ -31,8 +34,10 @@ export class UserTypeormRepository implements IUserRepository {
     }
   }
 
-  deleteUser(userId: string): Promise<boolean> {
-    return Promise.resolve(false);
+  async deleteUser(userId: string): Promise<boolean> {
+    const deleteResult = await this.userRepo.delete({id: userId})
+    if(!deleteResult.affected) return false
+    return deleteResult.affected > 0
   }
 
   async getUserById(
@@ -41,7 +46,14 @@ export class UserTypeormRepository implements IUserRepository {
     return await this.userRepo.findOneBy({ id: userId });
   }
 
-  recoveryPassword(userId: string, newRecoveryPassword: string) {}
+  async recoveryPassword(userId: string, newRecoveryPassword: string) {
+    return this.dataSource
+      .createQueryBuilder(PasswordRecoveryInfo, 'pr')
+      .update()
+      .set({ recoveryCode: newRecoveryPassword })
+      .where(`pr.userId = :userId`, { userId })
+      .execute()
+  }
 
   async updateConfirmationStatus(userId: string) {
     try {
@@ -73,11 +85,10 @@ export class UserTypeormRepository implements IUserRepository {
     const updateResult = await this.dataSource
       .createQueryBuilder()
       .update(EmailConfirmationInfo)
-      .set({confirmationCode: newConfirmationCode})
-      .where('userId = :userId', {userId})
-      .execute()
-    if(!updateResult.affected) return null
+      .set({ confirmationCode: newConfirmationCode })
+      .where('userId = :userId', { userId })
+      .execute();
+    if (!updateResult.affected) return null;
     return updateResult.affected > 0;
-
   }
 }

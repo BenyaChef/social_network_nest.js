@@ -13,34 +13,58 @@ export class SessionTypeormRepository implements ISessionRepository {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  createSession(newSession: Session) {
+  async createSession(newSession: Session) {
     return this.sessionRepository.save(newSession);
   }
 
-  deleteAllUserSessionExceptCurrent(
+  async deleteAllUserSessionExceptCurrent(
     userId: string,
     deviceId: string,
   ): Promise<boolean> {
-    return Promise.resolve(false);
+    const deleteResult = await this.sessionRepository
+      .createQueryBuilder()
+      .delete()
+      .from(SessionUser)
+      .where('userId = :userId AND deviceId != :deviceId', { userId, deviceId })
+      .execute();
+    return deleteResult.affected! > 0;
   }
 
   deleteSessionBanUser(userId: string) {}
 
-  deleteSessionByDeviceIdAndUserId(
+  async deleteSessionByDeviceIdAndUserId(
     deviceId: string,
     userId: string,
   ): Promise<boolean> {
-    return Promise.resolve(false);
+    const deleteResult = await this.sessionRepository
+      .createQueryBuilder()
+      .delete()
+      .where(`userId = :userId AND deviceId = :deviceId`,
+        { userId, deviceId })
+      .execute()
+    return deleteResult.affected! > 0
   }
 
-  getSessionByDeviceId(deviceId: string) {}
+  async getSessionByDeviceId(deviceId: string) {
+    return this.sessionRepository.findOneBy({ deviceId: deviceId });
+  }
 
-  logout(
+  async logout(
     lastActiveDate: string,
     userId: string,
     deviceId: string,
   ): Promise<boolean> {
-    return Promise.resolve(false);
+    const logoutResult = await this.sessionRepository
+      .createQueryBuilder()
+      .delete()
+      .where(
+        `lastActiveDate = :lastActiveDate 
+              AND userId = :userId 
+              AND deviceId = :deviceId`,
+        { lastActiveDate, userId, deviceId },
+      )
+      .execute();
+    return logoutResult.affected! > 0;
   }
 
   updateLastActiveDate(
@@ -50,9 +74,9 @@ export class SessionTypeormRepository implements ISessionRepository {
   ) {
     return this.sessionRepository
       .createQueryBuilder()
-      .where('userId = :userId AND deviceId = :deviceId', {userId, deviceId})
+      .where('userId = :userId AND deviceId = :deviceId', { userId, deviceId })
       .update()
-      .set({lastActiveDate: newLastActiveDate})
-      .execute()
+      .set({ lastActiveDate: newLastActiveDate })
+      .execute();
   }
 }

@@ -8,7 +8,17 @@ import { SessionUser } from '../../entities/session.entity';
 export class SessionTypeormQueryRepository implements ISessionQueryRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  getAllDeviceCurrentUser(userId: string) {}
+  async getAllDeviceCurrentUser(userId: string) {
+    return this.dataSource
+      .createQueryBuilder(SessionUser, 'su')
+      .select([`su.ip as "ip"`,
+        `su.title as "title"`,
+        `su.lastActiveDate as "lastActiveDate"`,
+        `su.deviceId as "deviceId"`])
+      .where('su.userId = :userId', { userId })
+      .getRawMany()
+
+  }
 
   getDeviceByDateUserIdAndDeviceId(
     lastActiveDate: string,
@@ -18,11 +28,14 @@ export class SessionTypeormQueryRepository implements ISessionQueryRepository {
     return this.dataSource
       .getRepository(SessionUser)
       .createQueryBuilder('su')
-      .where('su.lastActiveDate = :lastActiveDate AND su.userId = :userId AND su.deviceId = :deviceId', {
-        lastActiveDate,
-        userId,
-        deviceId,
-      })
-      .getOne()
+      .where(
+        'su.lastActiveDate = :lastActiveDate AND su.userId = :userId AND su.deviceId = :deviceId',
+        {
+          lastActiveDate,
+          userId,
+          deviceId,
+        },
+      )
+      .getOne();
   }
 }
