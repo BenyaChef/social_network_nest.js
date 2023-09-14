@@ -44,7 +44,7 @@ export class CommentCreateUseCase
         code: ResultCode.NotFound,
       };
 
-    const blog = await this.blogRepository.getBlogById(post.blogId)
+    const blog = await this.blogRepository.getBlogById(post.blog.id)
     if(!blog) return {
       data: null,
       code: ResultCode.NotFound,

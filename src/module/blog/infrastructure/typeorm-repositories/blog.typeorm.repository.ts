@@ -33,9 +33,17 @@ export class BlogTypeormRepository implements IBlogRepository {
     return deleteResult.affected > 0;
   }
 
-  getBlogById(blogId: string): Promise<Blog | null> {
+  getBlogById(blogId: string): Promise<BlogEntity | null> {
     return this.blogRepository.findOneBy({ id: blogId });
   }
 
-  update(updateDto: UpdateBlogDto, blogId: string) {}
+  async update(updateDto: UpdateBlogDto, blogId: string) {
+    const updateResult = await this.blogRepository.update(blogId, {
+      name: updateDto.name,
+      description: updateDto.description,
+      websiteUrl: updateDto.websiteUrl,
+    });
+    if(!updateResult.affected) return null
+    return updateResult.affected > 0
+  }
 }

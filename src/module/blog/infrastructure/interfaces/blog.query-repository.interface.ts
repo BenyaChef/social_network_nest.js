@@ -4,6 +4,7 @@ import { BlogViewModel } from '../../model/blog.view.model';
 import { BlogSaViewModel } from '../../model/blog-sa.view.model';
 
 export abstract class IBlogQueryRepository {
+
   abstract getAllBlogsForCurrentUser(
     query: BlogQueryPaginationDto,
     userId: string,

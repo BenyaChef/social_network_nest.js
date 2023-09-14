@@ -10,7 +10,7 @@ import { ReactionStatusEnum } from '../../../../enum/reaction.status.enum';
 export class PostSqlRepository implements IPostRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  async createPost(newPost: Post): Promise<string> {
+  async createPost(newPost: any): Promise<string> {
     return this.dataSource.query(
       `
       INSERT INTO public."Posts"(
@@ -38,7 +38,7 @@ export class PostSqlRepository implements IPostRepository {
     return deleteResult[1] > 0;
   }
 
-  async getPostById(postId: string): Promise<Post | null> {
+  async getPostById(postId: string): Promise<any | null> {
     const post = await this.dataSource.query(
       `
     SELECT *

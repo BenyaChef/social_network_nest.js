@@ -61,12 +61,11 @@ export class UserTypeormQueryRepository implements IUserQueryRepository {
   async getAllUsers(
     query: UserQueryPaginationDto,
   ): Promise<PaginationViewModel<UserViewModel[]>> {
+
     const offset = (query.pageNumber - 1) * query.pageSize;
     const sortDirectionFilter = query.sortDirection === -1 ? 'DESC' : 'ASC';
-    const loginFilter =
-      query.searchLoginTerm !== null ? `%${query.searchLoginTerm}%` : `%`;
-    const emailFilter =
-      query.searchEmailTerm !== null ? `%${query.searchEmailTerm}%` : `%`;
+    const loginFilter = query.searchLoginTerm !== null ? `%${query.searchLoginTerm}%` : `%`;
+    const emailFilter = query.searchEmailTerm !== null ? `%${query.searchEmailTerm}%` : `%`;
 
     const queryBuilder = await this.dataSource
       .createQueryBuilder(UserEntity, 'u')

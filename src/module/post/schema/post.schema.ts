@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
-import { UpdatePostDto } from "../dto/update.post.dto";
 import { BlogDocument } from "../../blog/schema/blog.schema";
 import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
 import { randomUUID } from "crypto";

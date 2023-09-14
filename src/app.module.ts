@@ -142,6 +142,11 @@ import { BlogTypeormRepository } from "./module/blog/infrastructure/typeorm-repo
 import {
   BlogTypeormQueryRepository
 } from "./module/blog/infrastructure/typeorm-repositories/blog.typeorm.query.repository";
+import { PostTypeormRepository } from "./module/post/infrastructure/typeorm-repository/post.typeorm.repository";
+import {
+  PostTypeormQueryRepository
+} from "./module/post/infrastructure/typeorm-repository/post.typeorm.query.repository";
+import { PostEntity } from "./module/post/entities/post.entity";
 
 const controllers = [
   AppController,
@@ -233,8 +238,8 @@ const repositories = [
   { provide: ISessionQueryRepository, useClass: SessionTypeormQueryRepository },
   { provide: IBlogQueryRepository, useClass: BlogTypeormQueryRepository},
   { provide: IBlogRepository, useClass: BlogTypeormRepository},
-  { provide: IPostRepository, useClass: PostSqlRepository},
-  { provide: IPostQueryRepository, useClass: PostSqlQueryRepository},
+  { provide: IPostRepository, useClass: PostTypeormRepository},
+  { provide: IPostQueryRepository, useClass: PostTypeormQueryRepository},
   { provide: ICommentQueryRepository, useClass: SqlCommentQueryRepository},
   { provide: ICommentRepository, useClass: SqlCommentRepository},
   { provide: IReactionRepository, useClass: ReactionSqlRepository},
@@ -267,7 +272,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     }),
     MongooseModule.forFeature(mongooseModule),
     TypeOrmModule.forRoot(options),
-    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity]),
+    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity]),
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
