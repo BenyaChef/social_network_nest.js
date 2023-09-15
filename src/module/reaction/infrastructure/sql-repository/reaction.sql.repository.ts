@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { IReactionRepository } from "../interfaces/reaction.repository.interface";
 import { ReactionDbModel } from "../../model/reaction.db.model";
+import { ReactionsComments } from "../../entities/reactions.entity";
 
 @Injectable()
 export class ReactionSqlRepository implements IReactionRepository{
@@ -19,5 +20,12 @@ export class ReactionSqlRepository implements IReactionRepository{
         ON CONFLICT ("ParentId", "UserId") DO UPDATE SET "Status" = EXCLUDED."Status";
     `, [newReaction.parentId, newReaction.userId, newReaction.status, newReaction.id, newReaction.addedAt])
    return true
+  }
+
+  updateReactionByCommentId(newReaction: ReactionsComments) {
+
+  }
+
+  updateReactionByPostId(newReaction: ReactionDbModel) {
   }
 }

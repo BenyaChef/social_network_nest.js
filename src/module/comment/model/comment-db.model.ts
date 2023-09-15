@@ -3,5 +3,5 @@ export class CommentDbModel {
   postId: string
   content: string
   userId: string
-  createdAt: string
+  createdAt: Date
 }

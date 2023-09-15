@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import { BlogBanUsers } from '../../schema/blog.ban-users.schema';
 import { Blog } from '../../schema/blog.schema';
 import { UpdateBlogDto } from '../../dto/update.blog.dto';
+import { BlogEntity } from "../../entities/blog.entity";
 
 @Injectable()
 export class SqlBlogRepository implements IBlogRepository {
@@ -74,7 +75,7 @@ export class SqlBlogRepository implements IBlogRepository {
     );
   }
 
-  async create(newBlog: Blog) {
+  async create(newBlog: BlogEntity) {
     return this.dataSource.query(
       `
     INSERT INTO public."Blogs"(

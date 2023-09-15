@@ -1,10 +1,14 @@
-import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+} from "typeorm";
 import { PostEntity } from "../../post/entities/post.entity";
+import { ParentEntity } from "../../auth/entities/parent.entity";
 
 @Entity({name: 'blogs'})
-export class BlogEntity {
-  @PrimaryColumn('uuid')
-  id: string
+export class BlogEntity extends ParentEntity {
 
   @Column({type: 'character varying', nullable: false})
   name: string
@@ -14,9 +18,6 @@ export class BlogEntity {
 
   @Column({type: 'character varying', name: 'website_url'})
   websiteUrl: string
-
-  @Column({type: 'character varying', nullable: false, name: 'createdat'})
-  createdAt: string
 
   @Column({type: 'boolean', nullable: false, name: 'is_membership'})
   isMembership: boolean

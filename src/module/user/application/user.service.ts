@@ -15,12 +15,10 @@ export class UserService {
   async createUser(createDto: CreateUserDto): Promise<NewUserData> {
     const passwordHash = await this.generatorHash(createDto.password);
     const newUser: UserEntity = new UserEntity();
-    newUser.id = randomUUID();
     newUser.login = createDto.login;
     newUser.email = createDto.email;
     newUser.passwordHash = passwordHash;
     newUser.isConfirmed = false;
-    newUser.createdAt = new Date().toISOString()
 
     const userEmailInfo: EmailConfirmationInfo = new EmailConfirmationInfo();
     userEmailInfo.user = newUser;

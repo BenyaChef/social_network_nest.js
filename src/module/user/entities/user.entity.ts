@@ -1,11 +1,12 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { EmailConfirmationInfo } from "./user.email-confirmation.entity";
+import { Column, Entity, OneToMany } from "typeorm";
+
+import { ParentEntity } from "../../auth/entities/parent.entity";
+import { CommentEntity } from "../../comment/entities/comment.entity";
+import { ReactionsComments } from "../../reaction/entities/reactions.entity";
 
 
 @Entity({ name: 'users' })
-export class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+export class UserEntity extends ParentEntity {
 
   @Column({nullable: false})
   email: string;
@@ -16,13 +17,12 @@ export class UserEntity {
   @Column({name: 'is_confirmed', type: 'boolean'})
   isConfirmed: boolean
 
-  @Column({name: 'createdat', nullable: false})
-  createdAt: string
-
   @Column({ name: 'password_hash', nullable: false })
   passwordHash: string;
 
-  @OneToOne(() => EmailConfirmationInfo, (emailInfo) => emailInfo.user)
-  @JoinColumn()
-  emailInfo: EmailConfirmationInfo
+  @OneToMany(() => CommentEntity, (comments) => comments.user, {onDelete: "CASCADE"})
+  comments: CommentEntity[]
+
+  @OneToMany(() => ReactionsComments, (reactions) => reactions.user, {onDelete: "CASCADE"})
+  reactions: ReactionsComments[]
 }

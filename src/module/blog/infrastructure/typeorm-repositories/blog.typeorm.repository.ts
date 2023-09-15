@@ -3,7 +3,6 @@ import { IBlogRepository } from '../interfaces/blog-repository.interface';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { BlogBanUsers } from '../../schema/blog.ban-users.schema';
-import { Blog } from '../../schema/blog.schema';
 import { UpdateBlogDto } from '../../dto/update.blog.dto';
 import { BlogEntity } from '../../entities/blog.entity';
 
@@ -23,7 +22,7 @@ export class BlogTypeormRepository implements IBlogRepository {
 
   bindOwnerId(blogId: string, userId: string) {}
 
-  async create(newBlog: Blog) {
+  async create(newBlog: BlogEntity) {
     return this.blogRepository.save(newBlog);
   }
 
@@ -33,7 +32,7 @@ export class BlogTypeormRepository implements IBlogRepository {
     return deleteResult.affected > 0;
   }
 
-  getBlogById(blogId: string): Promise<BlogEntity | null> {
+  async getBlogById(blogId: string): Promise<BlogEntity | null> {
     return this.blogRepository.findOneBy({ id: blogId });
   }
 
@@ -43,7 +42,7 @@ export class BlogTypeormRepository implements IBlogRepository {
       description: updateDto.description,
       websiteUrl: updateDto.websiteUrl,
     });
-    if(!updateResult.affected) return null
-    return updateResult.affected > 0
+    if (!updateResult.affected) return null;
+    return updateResult.affected > 0;
   }
 }

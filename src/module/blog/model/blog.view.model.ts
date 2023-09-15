@@ -5,7 +5,7 @@ export class BlogViewModel {
   name: string;
   description: string;
   websiteUrl: string;
-  createdAt: string;
+  createdAt: Date;
   isMembership: boolean;
 
   constructor(blogModel: BlogDocument) {
@@ -13,7 +13,7 @@ export class BlogViewModel {
     this.name = blogModel.name;
     this.description = blogModel.description;
     this.websiteUrl = blogModel.websiteUrl;
-    this.createdAt = blogModel.createdAt;
+    // this.createdAt = blogModel.createdAt;
     this.isMembership = blogModel.isMembership;
   }
 }

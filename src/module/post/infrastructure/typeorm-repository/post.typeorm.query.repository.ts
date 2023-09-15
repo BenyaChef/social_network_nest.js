@@ -5,8 +5,9 @@ import { DataSource, Repository } from 'typeorm';
 import { PostQueryPaginationDto } from '../../dto/post.query.pagination.dto';
 import { PaginationViewModel } from '../../../../helpers/pagination.view.mapper';
 import { PostViewModel } from '../../model/post.view.model';
-import { PostColumnsAliases, PostEntity } from "../../entities/post.entity";
 import { ReactionStatusEnum } from '../../../../enum/reaction.status.enum';
+import { PostEntity } from "../../entities/post.entity";
+import { ColumnsAliases } from "../../../../enum/columns-alias.enum";
 
 @Injectable()
 export class PostTypeormQueryRepository implements IPostQueryRepository {
@@ -22,32 +23,39 @@ export class PostTypeormQueryRepository implements IPostQueryRepository {
   ): Promise<PaginationViewModel<PostViewModel[]>> {
     const offset = (query.pageNumber - 1) * query.pageSize;
     const sortDirectionFilter = query.sortDirection === -1 ? 'DESC' : 'ASC';
-    console.log(query.sortBy);
     const queryBuilder = this.dataSource
       .createQueryBuilder(PostEntity, 'p')
-      // .leftJoinAndSelect('p.blog', 'b')
-      .orderBy(`p.${PostColumnsAliases[query.sortBy]}`, sortDirectionFilter)
-      .skip(offset)
-      .take(query.pageSize)
+      .leftJoinAndSelect('p.blog', 'b')
+      .select([
+        'p.id',
+        'p.title',
+        'p.shortDescription',
+        'p.content',
+        'p.blogId',
+        'b.name',
+        'p.createdAt',
+      ])
 
-    const [posts, totalCount] = await Promise.all([
-      await queryBuilder.getRawMany(),
-      await queryBuilder.getCount(),
-    ]);
+    const [posts, totalCount] = await queryBuilder
+      .orderBy(`${ColumnsAliases[query.sortBy]}`, sortDirectionFilter)
+      .offset(offset)
+      .limit(query.pageSize)
+      .getManyAndCount()
 
+    console.log(posts);
     return new PaginationViewModel<PostViewModel[]>(
       totalCount,
       query.pageNumber,
       query.pageSize,
       posts.map((p) => {
         return {
-          id: p.p_id,
-          title: p.p_title,
-          shortDescription: p.p_shortdescription,
-          content: p.p_content,
-          blogId: p.p_blogId,
-          blogName: p.p_blogname,
-          createdAt: p.p_createdat,
+          id: p.id,
+          title: p.title,
+          shortDescription: p.shortDescription,
+          content: p.content,
+          blogId: p.blogId,
+          blogName: p.blog.name,
+          createdAt: p.createdAt,
           extendedLikesInfo: {
             likesCount: 0,
             dislikesCount: 0,
@@ -68,27 +76,29 @@ export class PostTypeormQueryRepository implements IPostQueryRepository {
     const sortDirectionFilter = query.sortDirection === -1 ? 'DESC' : 'ASC';
     const queryBuilder = await this.dataSource
       .createQueryBuilder(PostEntity, 'p')
-      // .leftJoinAndSelect('p.blog', 'b')
-      .andWhere('p.blogId = :blogId', { blogId })
-      .orderBy(`p.${query.sortBy}`, sortDirectionFilter)
+      .leftJoinAndSelect('p.blog', 'b')
+      .where('p.blogId = :blogId', { blogId })
 
-    const [posts, totalCount] = await Promise.all([
-      await queryBuilder.skip(offset).take(query.pageSize).getRawMany(),
-      await queryBuilder.getCount(),
-    ]);
+    const [posts, totalCount] = await queryBuilder
+      .orderBy(`${ColumnsAliases[query.sortBy]}`, sortDirectionFilter)
+      .offset(offset)
+      .limit(query.pageSize)
+      .getManyAndCount()
+
+
     return new PaginationViewModel<PostViewModel[]>(
       totalCount,
       query.pageNumber,
       query.pageSize,
       posts.map((p) => {
         return {
-          id: p.p_id,
-          title: p.p_title,
-          shortDescription: p.p_shortdescription,
-          content: p.p_content,
-          blogId: p.p_blogId,
-          blogName: p.p_blogname,
-          createdAt: p.p_createdat,
+          id: p.id,
+          title: p.title,
+          shortDescription: p.shortDescription,
+          content: p.content,
+          blogId: p.blogId,
+          blogName: p.blog.name,
+          createdAt: p.createdAt,
           extendedLikesInfo: {
             likesCount: 0,
             dislikesCount: 0,
@@ -107,17 +117,27 @@ export class PostTypeormQueryRepository implements IPostQueryRepository {
     const findPost = await this.dataSource
       .createQueryBuilder(PostEntity, 'p')
       .leftJoinAndSelect('p.blog', 'b')
-      .select()
+      .select([
+        'p.id',
+        'p.title',
+        'p.shortDescription',
+        'p.content',
+        'p.blogId',
+        'b.name',
+        'p.createdAt',
+      ])
       .where('p.id = :postId', { postId })
       .getOne();
+
     if (!findPost) return null;
+
     return {
       id: findPost.id,
       title: findPost.title,
       shortDescription: findPost.shortDescription,
       content: findPost.content,
-      blogId: findPost.blog.id,
-      blogName: findPost.blogName,
+      blogId: findPost.blogId,
+      blogName: findPost.blog.name,
       createdAt: findPost.createdAt,
       extendedLikesInfo: {
         likesCount: 0,

@@ -4,7 +4,7 @@ import { UserEntity } from "./user.entity";
 @Entity({name: 'email_confirmation_info'})
 export class EmailConfirmationInfo {
 
-  @PrimaryColumn({name: 'user_id', type: 'uuid'})
+  @PrimaryColumn({name: 'user_id'})
   userId: string
 
   @Column({name: 'confirmation_code', type: 'uuid', nullable: true})

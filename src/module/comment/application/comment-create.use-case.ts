@@ -6,8 +6,7 @@ import { IPostRepository } from "../../post/infrastructure/interfaces/post.repos
 import { IUserRepository } from "../../user/infrastructure/interfaces/user-repository.interface";
 import { IBlogRepository } from "../../blog/infrastructure/interfaces/blog-repository.interface";
 import { ICommentRepository } from "../infrastructure/interfaces/comment.repository.interface";
-import { CommentDbModel } from "../model/comment-db.model";
-import { randomUUID } from "crypto";
+import { CommentEntity } from "../entities/comment.entity";
 
 export class CommentCreateCommand {
   constructor(
@@ -44,20 +43,17 @@ export class CommentCreateUseCase
         code: ResultCode.NotFound,
       };
 
-    const blog = await this.blogRepository.getBlogById(post.blog.id)
-    if(!blog) return {
-      data: null,
-      code: ResultCode.NotFound,
-    };
+    // const blog = await this.blogRepository.getBlogById(post.blog.id)
+    // if(!blog) return {
+    //   data: null,
+    //   code: ResultCode.NotFound,
+    // };
 
+    const newComment: CommentEntity = new CommentEntity()
+    newComment.content = command.createDto.content
+    newComment.userId = command.userId
+    newComment.postId = command.postId
 
-    const newComment: CommentDbModel = {
-      id: randomUUID(),
-      postId: post.id,
-      userId: user.id,
-      content: command.createDto.content,
-      createdAt: new Date().toISOString()
-    }
     await this.commentRepository.create(newComment);
     return {
       data: newComment.id,

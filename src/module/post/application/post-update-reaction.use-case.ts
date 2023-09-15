@@ -27,8 +27,8 @@ export class PostUpdateReactionUseCase
    const user = await this.userRepository.getUserById(command.userId)
    if(!user) return ResultCode.NotFound
 
-   const resultUpdateReaction: string = await this.reactionService.updateReactionByParentId(command.postId, command.reactions, user.id)
-   if(!resultUpdateReaction) return ResultCode.NotFound
+   // const resultUpdateReaction: string = await this.reactionService.updateReactionByParentId(command.postId, command.reactions, user.id)
+   // if(!resultUpdateReaction) return ResultCode.NotFound
    return ResultCode.Success
  }
 }

@@ -1,34 +1,29 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { BlogEntity } from "../../blog/entities/blog.entity";
+import { ParentEntity } from "../../auth/entities/parent.entity";
+import { CommentEntity } from "../../comment/entities/comment.entity";
 
 @Entity({name: 'posts'})
-export class PostEntity {
-  @PrimaryColumn('uuid')
-  id: string
+export class PostEntity extends ParentEntity {
 
   @Column({nullable: false})
   title: string;
 
-  @Column({name: 'shortdescription'})
+  @Column({name: 'short_description'})
   shortDescription: string;
 
   @Column()
   content: string;
 
-  @Column({name: 'blogname'})
-  blogName: string
-
   @ManyToOne(()=> BlogEntity, (blog) => blog.id, {onDelete: "CASCADE", nullable: false})
-  @JoinColumn()
+  @JoinColumn({name: 'blog_id'})
   blog: BlogEntity;
-  // @Column()
-  // blog_id: string
 
-  @Column({name: 'created_at'})
-  createdAt: string;
+  @Column({name: 'blog_id'})
+  blogId: string
+
+  @OneToMany(() => CommentEntity, (comments) => comments.id, {onDelete: "CASCADE"})
+  @JoinColumn()
+  comments: CommentEntity[]
 }
 
-export enum PostColumnsAliases {
-  CreatedAt = 'created_at',
-  blogName = 'blog_name'
-}

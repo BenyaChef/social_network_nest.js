@@ -15,6 +15,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     private readonly tokenService: TokenService,
   ) {}
   async execute(command: LoginUserCommand): Promise<{ accessToken, refreshToken }> {
+
     const deviceId = randomUUID()
     const { accessToken, refreshToken } = await this.tokenService.createJwt(command.userId, deviceId )
     await this.sessionService.createSession(command.ip, command.userAgent, command.userId, refreshToken)

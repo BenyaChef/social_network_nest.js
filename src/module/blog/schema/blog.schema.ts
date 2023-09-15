@@ -20,7 +20,7 @@ export class Blog {
   websiteUrl: string;
 
   @Prop({ required: true, type: String })
-    createdAt: string;
+  createdAt: string;
 
   @Prop({ required: true, type: Boolean })
   isMembership: boolean;

@@ -7,7 +7,6 @@ import {
   Put,
   UseGuards
 } from "@nestjs/common";
-import { CommentService } from '../application/comment.service';
 import { CurrentUserId } from '../../../decorators/current-user-id.decorator';
 import { NonBlockingAuthGuard } from '../../../guards/non-blocking.auth.guard';
 import { AuthAccessJwtGuard } from '../../../guards/auth-access.jwt.guard';
@@ -24,7 +23,6 @@ import { CommentDeleteCommand } from "../application/comment.delete.use-case";
 @Controller('comments')
 export class CommentController {
   constructor(
-    protected commentService: CommentService,
     protected commentQueryRepository: ICommentQueryRepository,
     protected commandBus: CommandBus
   ) {}

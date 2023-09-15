@@ -147,6 +147,17 @@ import {
   PostTypeormQueryRepository
 } from "./module/post/infrastructure/typeorm-repository/post.typeorm.query.repository";
 import { PostEntity } from "./module/post/entities/post.entity";
+import {
+  CommentTypeormQueryRepository
+} from "./module/comment/infrastructure/typeorm-repository/comment.typeorm.query.repository";
+import {
+  CommentTypeormRepository
+} from "./module/comment/infrastructure/typeorm-repository/comment.typeorm.repository";
+import {
+  ReactionsTypeormRepository
+} from "./module/reaction/infrastructure/typeorm-repository/reactions.typeorm.repository";
+import { CommentEntity } from "./module/comment/entities/comment.entity";
+import { ReactionsComments } from "./module/reaction/entities/reactions.entity";
 
 const controllers = [
   AppController,
@@ -240,9 +251,9 @@ const repositories = [
   { provide: IBlogRepository, useClass: BlogTypeormRepository},
   { provide: IPostRepository, useClass: PostTypeormRepository},
   { provide: IPostQueryRepository, useClass: PostTypeormQueryRepository},
-  { provide: ICommentQueryRepository, useClass: SqlCommentQueryRepository},
-  { provide: ICommentRepository, useClass: SqlCommentRepository},
-  { provide: IReactionRepository, useClass: ReactionSqlRepository},
+  { provide: ICommentQueryRepository, useClass: CommentTypeormQueryRepository},
+  { provide: ICommentRepository, useClass: CommentTypeormRepository},
+  { provide: IReactionRepository, useClass: ReactionsTypeormRepository},
 ]
 
 const mongooseModule = [
@@ -272,7 +283,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     }),
     MongooseModule.forFeature(mongooseModule),
     TypeOrmModule.forRoot(options),
-    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity]),
+    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity, CommentEntity, ReactionsComments]),
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,

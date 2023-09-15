@@ -120,15 +120,9 @@ export class UserController {
       @Body() createDto: PostCreateDto,
       @Param('blogId') blogId: string,
     ){
-        const resultCreatePost: string | ResultCode = await this.commandBus.execute(new PostCreateCommand(blogId, createDto));
-        if (typeof resultCreatePost !== 'string') {
-            return exceptionHandler(resultCreatePost);
-        }
-        const newPost = await this.postQueryRepository.getPostById(
-          resultCreatePost,
-        );
-        if (!newPost) throw new NotFoundException();
-        return newPost;
+        const postId: string | null = await this.commandBus.execute(new PostCreateCommand(blogId, createDto));
+        if(!postId) return
+        return this.postQueryRepository.getPostById(postId)
     }
 
     @UseGuards(BasicAuth)

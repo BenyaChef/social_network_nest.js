@@ -7,7 +7,7 @@ export class PostViewModel {
   content: string;
   blogId: string;
   blogName: string;
-  createdAt: string;
+  createdAt: Date;
   extendedLikesInfo: any
   constructor(postModel: PostDocument) {
     this.id = postModel.id;
@@ -16,7 +16,7 @@ export class PostViewModel {
     this.content = postModel.content;
     this.blogId = postModel.blogId;
     this.blogName = postModel.blogName;
-    this.createdAt = postModel.createdAt;
+    // this.createdAt = postModel.createdAt;
     this.extendedLikesInfo = {
       likesCount: postModel.extendedLikesInfo.likesCount,
       dislikesCount: postModel.extendedLikesInfo.dislikesCount,
