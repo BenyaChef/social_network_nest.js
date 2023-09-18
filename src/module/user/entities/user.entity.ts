@@ -2,7 +2,7 @@ import { Column, Entity, OneToMany } from "typeorm";
 
 import { ParentEntity } from "../../auth/entities/parent.entity";
 import { CommentEntity } from "../../comment/entities/comment.entity";
-import { ReactionsComments } from "../../reaction/entities/reactions.entity";
+import { ReactionsComments } from "../../reaction/entities/reactions-comments.entity";
 
 
 @Entity({ name: 'users' })

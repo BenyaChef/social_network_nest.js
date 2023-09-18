@@ -8,7 +8,7 @@ export class ReactionRepository {
   constructor(@InjectModel(Reaction.name) private reactionModel: Model<ReactionDocument>) {
   }
 
-  async updateReactionByParentId(newReaction: Reaction) {
+  async updateReaction(newReaction: Reaction) {
 
     return this.reactionModel.updateOne(
       { parentId: newReaction.parentId, userId: newReaction.userId },

@@ -61,7 +61,7 @@ export class SqlCommentRepository implements ICommentRepository {
   async getCommentById(
     commentId: string,
     userId?: string,
-  ): Promise<CommentDbModel | null> {
+  ): Promise<any | null> {
     const findComment = await this.dataSource.query(`
     SELECT "Id", "PostId", "Content", "UserId", "CreatedAt"
     FROM public."Comments"

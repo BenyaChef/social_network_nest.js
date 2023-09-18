@@ -157,7 +157,9 @@ import {
   ReactionsTypeormRepository
 } from "./module/reaction/infrastructure/typeorm-repository/reactions.typeorm.repository";
 import { CommentEntity } from "./module/comment/entities/comment.entity";
-import { ReactionsComments } from "./module/reaction/entities/reactions.entity";
+import { ReactionsComments } from "./module/reaction/entities/reactions-comments.entity";
+import { ReactionsPosts } from "./module/reaction/entities/reactions-posts.entity";
+import { ParentEntity } from "./module/auth/entities/parent.entity";
 
 const controllers = [
   AppController,
@@ -283,7 +285,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     }),
     MongooseModule.forFeature(mongooseModule),
     TypeOrmModule.forRoot(options),
-    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity, CommentEntity, ReactionsComments]),
+    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity, CommentEntity, ReactionsComments, ReactionsPosts]),
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,

@@ -9,6 +9,7 @@ import { UserEntity } from '../../entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { EmailConfirmationInfo } from '../../entities/user.email-confirmation.entity';
 import { PasswordRecoveryInfo } from '../../entities/user.password-recovery.entity';
+import { ColumnsAliases } from "../../../../enum/columns-alias.enum";
 
 @Injectable()
 export class UserTypeormQueryRepository implements IUserQueryRepository {
@@ -70,7 +71,7 @@ export class UserTypeormQueryRepository implements IUserQueryRepository {
     const queryBuilder = await this.dataSource
       .createQueryBuilder(UserEntity, 'u')
       .where('u.Login ILIKE :loginFilter OR u.Email ILIKE :emailFilter', { loginFilter, emailFilter })
-      .orderBy(`u.${query.sortBy}`, sortDirectionFilter)
+      .orderBy(`u.${ColumnsAliases[query.sortBy]}`, sortDirectionFilter)
 
     const totalCount = await queryBuilder.getCount();
     const users = await queryBuilder
@@ -84,7 +85,7 @@ export class UserTypeormQueryRepository implements IUserQueryRepository {
       query.pageSize,
       users.map(u => {
         return {
-          id: u.id,
+          id: u.id.toString(),
           login: u.login,
           email: u.email,
           createdAt: u.createdAt
@@ -97,7 +98,7 @@ export class UserTypeormQueryRepository implements IUserQueryRepository {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) return null;
     return {
-      id: user.id,
+      id: user.id.toString(),
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,

@@ -1,8 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ReactionStatusEnum } from "../../../enum/reaction.status.enum";
-import { randomUUID } from "crypto";
 import { IReactionRepository } from "../infrastructure/interfaces/reaction.repository.interface";
-import { ReactionsComments } from "../entities/reactions.entity";
 
 @Injectable()
 export class ReactionService {

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Session } from '../schema/session.schema';
 import { TokenService } from '../../auth/application/jwt.service';
 import { ISessionRepository } from '../infrastructure/interfaces/session.repository.interface';
-import { randomUUID } from 'crypto';
 import { SessionUser } from '../entities/session.entity';
 
 @Injectable()

@@ -16,4 +16,6 @@ export abstract class ICommentQueryRepository {
   abstract getCommentById(
     commentId: string,
     userId?: string | null): Promise<CommentViewModel | null>
+
+  abstract getCommentReactions(userId: string, commentId: string)
 }

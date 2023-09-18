@@ -33,7 +33,7 @@ export class CommentController {
     @Param('commentId') commentId: string,
     @CurrentUserId() userId: string,
   ) {
-    const comment = await this.commentQueryRepository.getCommentById(commentId, userId,);
+    const comment = await this.commentQueryRepository.getCommentById(commentId, userId);
     if (!comment) throw new NotFoundException();
     return comment;
   }

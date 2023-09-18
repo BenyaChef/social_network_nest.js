@@ -1,8 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogBanDto } from '../dto/blog.ban.dto';
-import { UserRepository } from '../../user/infrastructure/user.repository';
-import { BlogBanUsers } from '../schema/blog.ban-users.schema';
-import { BlogRepository } from '../infrastructure/blog.repository';
 import { ResultCode } from '../../../enum/result-code.enum';
 import { IUserRepository } from "../../user/infrastructure/interfaces/user-repository.interface";
 import { IBlogRepository } from "../infrastructure/interfaces/blog-repository.interface";

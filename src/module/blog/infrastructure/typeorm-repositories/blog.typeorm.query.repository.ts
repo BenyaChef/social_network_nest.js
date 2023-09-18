@@ -36,8 +36,8 @@ export class BlogTypeormQueryRepository implements IBlogQueryRepository {
       .addOrderBy(`b.${query.sortBy}`, sortDirectionFilter);
 
     const [blogs, totalCount] = await queryBuilder
-      .skip(offset)
-      .take(query.pageSize)
+      .offset(offset)
+      .limit(query.pageSize)
       .getManyAndCount();
 
     return new PaginationViewModel<BlogViewModel[]>(

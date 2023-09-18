@@ -1,12 +1,12 @@
-import { ReactionDbModel } from "../../model/reaction.db.model";
-import { ReactionsComments } from "../../entities/reactions.entity";
+
+import { ReactionsComments } from "../../entities/reactions-comments.entity";
+import { ReactionsPosts } from "../../entities/reactions-posts.entity";
 ;
 
 export abstract class IReactionRepository {
 
-  abstract updateReactionByCommentId(newReaction: ReactionsComments)
-
-  abstract updateReactionByPostId(newReaction: ReactionDbModel)
+  abstract updateReaction(newReaction: ReactionsComments | ReactionsPosts)
 
   abstract updateBanStatus(userId: string, banStatus: boolean)
+
 }

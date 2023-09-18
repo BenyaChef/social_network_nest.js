@@ -105,7 +105,6 @@ export class PostSqlQueryRepository implements IPostQueryRepository {
       [userId ,blogId, offset, pageSize],
     );
 
-    console.log(posts);
     const totalCount = await this.dataSource.query(
       `
     SELECT COUNT(*)

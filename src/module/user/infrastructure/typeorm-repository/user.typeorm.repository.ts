@@ -6,7 +6,6 @@ import { UserEntity } from '../../entities/user.entity';
 import { EmailConfirmationInfo } from '../../entities/user.email-confirmation.entity';
 import { NewUserData } from '../../dto/user.new-data.dto';
 import { PasswordRecoveryInfo } from '../../entities/user.password-recovery.entity';
-import { log } from "handlebars";
 
 export class UserTypeormRepository implements IUserRepository {
   constructor(

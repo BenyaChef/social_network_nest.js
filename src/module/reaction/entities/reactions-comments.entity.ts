@@ -9,8 +9,8 @@ export class ReactionsComments extends ParentEntity {
   @Column({name: 'user_id', unique: true})
   userId: string
 
-  @Column({name: 'comment_id', unique: true})
-  commentId: string
+  @Column({name: 'parent_id', unique: true})
+  parentId: string
 
   @Column({name: 'reaction_status'})
   reactionStatus: ReactionStatusEnum
@@ -20,6 +20,6 @@ export class ReactionsComments extends ParentEntity {
   user: UserEntity
 
   @ManyToOne(() => CommentEntity, (comment) => comment.id, {onDelete: "CASCADE"})
-  @JoinColumn({name: 'comment_id'})
+  @JoinColumn({name: 'parent_id'})
   comment: CommentEntity
 }

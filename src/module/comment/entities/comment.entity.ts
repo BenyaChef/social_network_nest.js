@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { ParentEntity } from "../../auth/entities/parent.entity";
 import { PostEntity } from "../../post/entities/post.entity";
 import { UserEntity } from "../../user/entities/user.entity";
-import { ReactionsComments } from "../../reaction/entities/reactions.entity";
+import { ReactionsComments } from "../../reaction/entities/reactions-comments.entity";
 
 
 @Entity({ name: 'comments' })
@@ -24,7 +24,7 @@ export class CommentEntity extends ParentEntity {
   @JoinColumn({name: 'user_id'})
   user: UserEntity
 
-  // @OneToMany(() => ReactionsComments, (reactions) => reactions.comment, {onDelete: "CASCADE"})
-  // @JoinColumn({name: 'id'})
-  // reactions: ReactionsComments[]
+  @OneToMany(() => ReactionsComments, (reactions) => reactions.comment, {onDelete: "CASCADE"})
+  @JoinColumn()
+  reactions: ReactionsComments[]
 }

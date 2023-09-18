@@ -37,12 +37,11 @@ export class PostTypeormQueryRepository implements IPostQueryRepository {
       ])
 
     const [posts, totalCount] = await queryBuilder
-      .orderBy(`${ColumnsAliases[query.sortBy]}`, sortDirectionFilter)
+      .orderBy(`p.${ColumnsAliases[query.sortBy]}`, sortDirectionFilter)
       .offset(offset)
       .limit(query.pageSize)
       .getManyAndCount()
 
-    console.log(posts);
     return new PaginationViewModel<PostViewModel[]>(
       totalCount,
       query.pageNumber,
@@ -80,7 +79,7 @@ export class PostTypeormQueryRepository implements IPostQueryRepository {
       .where('p.blogId = :blogId', { blogId })
 
     const [posts, totalCount] = await queryBuilder
-      .orderBy(`${ColumnsAliases[query.sortBy]}`, sortDirectionFilter)
+      .orderBy(`p.${ColumnsAliases[query.sortBy]}`, sortDirectionFilter)
       .offset(offset)
       .limit(query.pageSize)
       .getManyAndCount()
