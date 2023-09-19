@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import { Post } from '../../schema/post.schema';
 import { UpdatePostDto } from '../../dto/update.post.dto';
 import { ReactionStatusEnum } from '../../../../enum/reaction.status.enum';
+import { ReactionsPosts } from "../../../reaction/entities/reactions-posts.entity";
 
 @Injectable()
 export class PostSqlRepository implements IPostRepository {
@@ -29,11 +30,13 @@ export class PostSqlRepository implements IPostRepository {
   }
 
   async deletePost(postId: string): Promise<boolean> {
-    const deleteResult = await this.dataSource.query(`
+    const deleteResult = await this.dataSource.query(
+      `
     DELETE 
     FROM public."Posts"
       WHERE "Id" = $1;
-    `,[postId]
+    `,
+      [postId],
     );
     return deleteResult[1] > 0;
   }
@@ -75,11 +78,14 @@ export class PostSqlRepository implements IPostRepository {
             "Content" = $3
         WHERE "Id" = $4;
     `,
-      [
-        updateDto.title,
-        updateDto.shortDescription,
-        updateDto.content,
-        postId]
+      [updateDto.title, updateDto.shortDescription, updateDto.content, postId],
     );
+  }
+
+  getPostReactions(
+    userId: string,
+    postId: string,
+  ): Promise<ReactionsPosts | null> {
+    return Promise.resolve(null);
   }
 }

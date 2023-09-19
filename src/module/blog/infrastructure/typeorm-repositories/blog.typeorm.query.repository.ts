@@ -7,6 +7,7 @@ import { PaginationViewModel } from '../../../../helpers/pagination.view.mapper'
 import { BlogSaViewModel } from '../../model/blog-sa.view.model';
 import { BlogViewModel } from '../../model/blog.view.model';
 import { BlogEntity } from '../../entities/blog.entity';
+import { ColumnsAliases } from "../../../../enum/columns-alias.enum";
 
 @Injectable()
 export class BlogTypeormQueryRepository implements IBlogQueryRepository {
@@ -33,8 +34,9 @@ export class BlogTypeormQueryRepository implements IBlogQueryRepository {
     const queryBuilder = await this.dataSource
       .createQueryBuilder(BlogEntity, 'b')
       .where('b.name ILIKE :nameFilter', { nameFilter })
-      .addOrderBy(`b.${query.sortBy}`, sortDirectionFilter);
+      .addOrderBy(`b.${ColumnsAliases[query.sortBy]}`, sortDirectionFilter);
 
+    console.log(query.sortBy);
     const [blogs, totalCount] = await queryBuilder
       .offset(offset)
       .limit(query.pageSize)

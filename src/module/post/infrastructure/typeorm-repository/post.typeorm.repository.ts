@@ -4,6 +4,7 @@ import { UpdatePostDto } from '../../dto/update.post.dto';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PostEntity } from '../../entities/post.entity';
+import { ReactionsPosts } from "../../../reaction/entities/reactions-posts.entity";
 
 @Injectable()
 export class PostTypeormRepository implements IPostRepository {
@@ -35,5 +36,9 @@ export class PostTypeormRepository implements IPostRepository {
     });
     if (!updateResult.affected) return null;
     return updateResult.affected > 0;
+  }
+
+  getPostReactions(userId: string, postId: string): Promise<ReactionsPosts | null> {
+    return this.dataSource.manager.findOneBy(ReactionsPosts, {userId: userId, parentId: postId})
   }
 }

@@ -6,10 +6,10 @@ import { PostEntity } from "../../post/entities/post.entity";
 
 @Entity({name: 'reactions_posts'})
 export class ReactionsPosts extends ParentEntity {
-  @Column({name: 'user_id', unique: true})
+  @Column({name: 'user_id'})
   userId: string
 
-  @Column({name: 'parent_id', unique: true})
+  @Column({name: 'parent_id'})
   parentId: string
 
   @Column({name: 'reaction_status'})

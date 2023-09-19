@@ -28,7 +28,7 @@ export class PostEntity extends ParentEntity {
   comments: CommentEntity[]
 
   @OneToMany(( )=> ReactionsPosts, (reactions) => reactions.id, {onDelete: "CASCADE"})
-  @JoinColumn()
+  @JoinColumn({name: 'reactions'})
   reactions:  ReactionsPosts[]
 }
 

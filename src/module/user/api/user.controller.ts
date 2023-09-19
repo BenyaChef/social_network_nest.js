@@ -19,16 +19,10 @@ import { BasicAuth } from "../../../guards/basic.auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { UserCreateCommand } from "../application/user-create.use-case";
 import { UserDeleteCommand } from "../application/user-delete.use-case";
-import { UserBanDto } from "../dto/user-ban.dto";
 import { exceptionHandler } from "../../../exception/exception.handler";
-import { UserBanCommand } from "../application/user-ban.use-case";
 import { BlogQueryPaginationDto } from "../../blog/dto/blog.query.pagination.dto";
-import { UserBindCommand } from "../application/user-bind.use-case";
-import { SaBlogBanDto } from "../dto/sa.blog-ban.dto";
-import { SaBlogBanCommand } from "../application/sa.blog-ban.use-case";
 import { IUserQueryRepository } from "../infrastructure/interfaces/user.query-repository.interface";
 import { IBlogQueryRepository } from "../../blog/infrastructure/interfaces/blog.query-repository.interface";
-import { AuthAccessJwtGuard } from "../../../guards/auth-access.jwt.guard";
 import { CurrentUser } from "../../../decorators/current-user.decorator";
 import { PaginationViewModel } from "../../../helpers/pagination.view.mapper";
 import { BlogViewModel } from "../../blog/model/blog.view.model";
@@ -39,7 +33,6 @@ import { BlogUpdateCommand } from "../../blog/application/blog-update.use-case";
 import { BlogDeleteCommand } from "../../blog/application/blog-delete.use-case";
 import { PostQueryPaginationDto } from "../../post/dto/post.query.pagination.dto";
 import { PostCreateDto } from "../../post/dto/create.post.dto";
-import { ResultCode } from "../../../enum/result-code.enum";
 import { PostCreateCommand } from "../../post/application/post-create.use-case";
 import { UpdatePostDto } from "../../post/dto/update.post.dto";
 import { PostUpdateCommand } from "../../post/application/post-update.use-case";
@@ -121,7 +114,7 @@ export class UserController {
       @Param('blogId') blogId: string,
     ){
         const postId: string | null = await this.commandBus.execute(new PostCreateCommand(blogId, createDto));
-        if(!postId) return
+        if(!postId) throw new NotFoundException()
         return this.postQueryRepository.getPostById(postId)
     }
 

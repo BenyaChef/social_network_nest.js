@@ -60,6 +60,7 @@ export class CommentTypeormQueryRepository implements ICommentQueryRepository {
             .andWhere(`rc.userId = :userId`, { userId }),
         `my_status`,
       )
+      .where(`c.id = :commentId`, {commentId})
       .leftJoinAndSelect('c.user', 'u')
       .getRawMany();
 
@@ -141,10 +142,10 @@ export class CommentTypeormQueryRepository implements ICommentQueryRepository {
   private async commentMapper(comments: any[]): Promise<CommentViewModel[]> {
     return comments.map((c) => {
       return {
-        id: c.c_id,
+        id: c.c_id.toString(),
         content: c.c_content,
         commentatorInfo: {
-          userId: c.u_id,
+          userId: c.u_id.toString(),
           userLogin: c.u_login,
         },
         createdAt: c.c_created_at,
