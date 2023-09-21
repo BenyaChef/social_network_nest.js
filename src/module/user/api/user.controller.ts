@@ -118,6 +118,8 @@ export class UserController {
         return this.postQueryRepository.getPostById(postId)
     }
 
+
+
     @UseGuards(BasicAuth)
     @Put('blogs/:blogId/posts/:postId')
     @HttpCode(HttpStatus.NO_CONTENT)
