@@ -1,5 +1,4 @@
-
-import { IsString, MaxLength } from "class-validator";
+import { IsString, MaxLength } from 'class-validator';
 import { Trim } from '../../../decorators/trim.decorator';
 
 export class PostCreateDto {

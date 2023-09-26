@@ -14,7 +14,6 @@ import { PostController } from './module/post/api/post.controller';
 import { PostQueryRepository } from './module/post/infrastructure/post.query.repository';
 import { PostRepository } from './module/post/infrastructure/post.repository';
 import { TestingService } from './module/testing/application/testing.service';
-import { TestingRepository } from './module/testing/infrastructure/testing.repository';
 import { TestingController } from './module/testing/api/testing.controller';
 import { User, UserSchema } from './module/user/schema/user.schema';
 import { UserController } from './module/user/api/user.controller';
@@ -24,7 +23,7 @@ import { UserRepository } from './module/user/infrastructure/user.repository';
 import { BlogExistsValidation } from './validators/blog.exists.validator';
 import { TrimValidator } from './validators/trim.validator';
 import { AuthController } from './module/auth/api/auth.controller';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import {
   Session,
   SessionSchema,
@@ -159,7 +158,7 @@ import {
 import { CommentEntity } from "./module/comment/entities/comment.entity";
 import { ReactionsComments } from "./module/reaction/entities/reactions-comments.entity";
 import { ReactionsPosts } from "./module/reaction/entities/reactions-posts.entity";
-import { ParentEntity } from "./module/auth/entities/parent.entity";
+import { QuizController } from "./module/quiz/api/quiz.controller";
 
 const controllers = [
   AppController,
@@ -170,6 +169,7 @@ const controllers = [
   AuthController,
   CommentController,
   SecurityController,
+  QuizController
 ];
 
 const options: TypeOrmModuleOptions  = {
@@ -269,7 +269,7 @@ const mongooseModule = [
 ];
 
 const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
-
+const entities = [UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity, CommentEntity, ReactionsComments, ReactionsPosts]
 @Module({
   imports: [
     CqrsModule,
@@ -285,7 +285,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
     }),
     MongooseModule.forFeature(mongooseModule),
     TypeOrmModule.forRoot(options),
-    TypeOrmModule.forFeature([UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity, CommentEntity, ReactionsComments, ReactionsPosts]),
+    TypeOrmModule.forFeature(entities),
     // ThrottlerModule.forRoot(),
   ],
   controllers: controllers,
