@@ -4,5 +4,7 @@ export enum ColumnsAliases {
   Name = 'name',
   ShortDescription = 'short_description',
   BlogId = 'blog_id',
-  Title = 'title'
+  Title = 'title',
+  Body = 'body',
+  UpdatedAt = 'updated_at'
 }

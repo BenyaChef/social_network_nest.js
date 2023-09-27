@@ -19,7 +19,7 @@ export class PostTypeormQueryRepository implements IPostQueryRepository {
   async getAllPosts(query: PostQueryPaginationDto, userId: string | null,): Promise<PaginationViewModel<PostViewModel[]>> {
     const offset = (query.pageNumber - 1) * query.pageSize;
     const sortDirectionFilter = query.sortDirection === -1 ? 'DESC' : 'ASC';
-    console.log(query.sortBy);
+
     const posts = await this.dataSource
       .createQueryBuilder(PostEntity, 'p')
       .addSelect((qb) => qb

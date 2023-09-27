@@ -36,7 +36,6 @@ export class BlogTypeormQueryRepository implements IBlogQueryRepository {
       .where('b.name ILIKE :nameFilter', { nameFilter })
       .addOrderBy(`b.${ColumnsAliases[query.sortBy]}`, sortDirectionFilter);
 
-    console.log(query.sortBy);
     const [blogs, totalCount] = await queryBuilder
       .offset(offset)
       .limit(query.pageSize)

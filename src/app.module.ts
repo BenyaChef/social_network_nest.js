@@ -159,6 +159,18 @@ import { CommentEntity } from "./module/comment/entities/comment.entity";
 import { ReactionsComments } from "./module/reaction/entities/reactions-comments.entity";
 import { ReactionsPosts } from "./module/reaction/entities/reactions-posts.entity";
 import { QuizController } from "./module/quiz/api/quiz.controller";
+import { QuestionEntity } from "./module/quiz/entities/question.entity";
+import { IQuizRepository } from "./module/quiz/infrastructure/interface/quiz.repository.interface";
+import { QuizRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.repository";
+import { QuestionCreateUseCase } from "./module/quiz/application/question-create.use-case";
+import { IQuizQueryRepository } from "./module/quiz/infrastructure/interface/quiz.query-repository.interface";
+import { QuizQueryRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.query.repository";
+import { QuestionUpdateUseCase } from "./module/quiz/application/question-update.use-case";
+import {
+  QuestionUpdatePublishedStatusUseCase
+} from "./module/quiz/application/question-update.published-status.use-case";
+import { QuestionDeleteUseCase } from "./module/quiz/application/question-delete.use-case";
+import * as process from "process";
 
 const controllers = [
   AppController,
@@ -174,11 +186,11 @@ const controllers = [
 
 const options: TypeOrmModuleOptions  = {
   type: 'postgres',
-  host: 'localhost',
+  host: process.env.POSTGRESQL_HOST,
   port: 5432,
-  username: 'postgres',
-  password: 'sa',
-  database: 'social_network',
+  username: process.env.POSTGRESQL_NAME || 'postgres',
+  password: process.env.POSTGRESQL_PASS || 'sa',
+  database: process.env.POSTGRESQL_DB || 'social_network',
   autoLoadEntities: true,
   synchronize: true
 }
@@ -216,7 +228,12 @@ const useCase = [
   DeleteSessionByDeviceIdUseCase,
   CommentUpdateReactionUseCase,
   CommentUpdateUseCase,
-  CommentDeleteUseCase
+  CommentDeleteUseCase,
+  QuestionCreateUseCase,
+  QuestionUpdateUseCase,
+  QuestionUpdatePublishedStatusUseCase,
+  QuestionDeleteUseCase
+
 ];
 
 const strategy = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
@@ -256,6 +273,8 @@ const repositories = [
   { provide: ICommentQueryRepository, useClass: CommentTypeormQueryRepository},
   { provide: ICommentRepository, useClass: CommentTypeormRepository},
   { provide: IReactionRepository, useClass: ReactionsTypeormRepository},
+  { provide: IQuizRepository, useClass: QuizRepository},
+  { provide: IQuizQueryRepository, useClass: QuizQueryRepository}
 ]
 
 const mongooseModule = [
@@ -269,7 +288,11 @@ const mongooseModule = [
 ];
 
 const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
-const entities = [UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo, SessionUser, BlogEntity, PostEntity, CommentEntity, ReactionsComments, ReactionsPosts]
+const entities = [
+  UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo,
+  SessionUser, BlogEntity, PostEntity,
+  CommentEntity, ReactionsComments, ReactionsPosts, QuestionEntity]
+
 @Module({
   imports: [
     CqrsModule,
