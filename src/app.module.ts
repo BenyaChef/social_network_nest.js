@@ -143,14 +143,20 @@ const controllers = [
 
 const options: TypeOrmModuleOptions  = {
   type: 'postgres',
-  url: process.env.POSTGRESQL_HOST || 'postgresql://postgres:sa@localhost:5432/social_network',
+  url: process.env.POSTGRESQL_HOST || 'postgres://BenyaChef:uz9LBTdVMDW5@ep-lucky-sun-90762571.eu-central-1.aws.neon.tech/neondb',
   // host: process.env.POSTGRESQL_HOST,
   // port: 5432,
   // username: process.env.POSTGRESQL_NAME || 'postgres',
   // password: process.env.POSTGRESQL_PASS || 'sa',
   // database: process.env.POSTGRESQL_DB || 'social_network',
   autoLoadEntities: true,
-  synchronize: true
+  synchronize: true,
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+      sslmode: "require"
+    }
+  }
 }
 
 const validators = [
