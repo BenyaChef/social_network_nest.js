@@ -23,6 +23,7 @@ export class QuestionUpdatePublishedStatusUseCase
     if(questions.correctAnswers.length === 0) return null
 
     questions.published = command.statusUpdateDto.published;
+    questions.updatedAt = new Date().toISOString()
 
     return this.quizRepository.save(questions);
   }
