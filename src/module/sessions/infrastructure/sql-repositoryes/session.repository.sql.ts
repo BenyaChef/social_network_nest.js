@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ISessionRepository } from '../interfaces/session.repository.interface';
-import { Session } from '../../schema/session.schema';
+import { SessionUser } from "../../entities/session.entity";
 
 @Injectable()
 export class SessionRepositorySql implements ISessionRepository {
   constructor(private readonly dataSource: DataSource) {}
 
-  async createSession(newSession: Session) {
+  async createSession(newSession: SessionUser) {
     await this.dataSource.query(
       `INSERT INTO public."Sessions"(
 "Id", "Ip", "Title", "UserId", "DeviceId", "LastActiveDate"

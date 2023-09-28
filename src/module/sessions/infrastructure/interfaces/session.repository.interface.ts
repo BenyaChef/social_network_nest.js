@@ -1,10 +1,11 @@
-import { Session } from "../../schema/session.schema";
+import { SessionUser } from "../../entities/session.entity";
+
 
 export abstract class ISessionRepository {
 
   abstract getSessionByDeviceId(deviceId: string)
 
-  abstract createSession(newSession: Session)
+  abstract createSession(newSession: SessionUser)
 
   abstract logout(lastActiveDate: string, userId: string, deviceId: string): Promise<boolean>
 

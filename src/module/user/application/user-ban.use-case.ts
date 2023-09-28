@@ -1,12 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserBanDto } from '../dto/user-ban.dto';
-import { UserRepository } from '../infrastructure/user.repository';
-import { CommentRepository } from "../../comment/infrastructure/comment.repository";
-import { SessionRepository } from "../../sessions/infrastructure/session.repository";
-import { ReactionRepository } from "../../reaction/infrastructure/reaction.repository";
 import { ResultCode } from "../../../enum/result-code.enum";
 import { IUserRepository } from "../infrastructure/interfaces/user-repository.interface";
 import { ISessionRepository } from "../../sessions/infrastructure/interfaces/session.repository.interface";
+import { ICommentRepository } from "../../comment/infrastructure/interfaces/comment.repository.interface";
+import { IReactionRepository } from "../../reaction/infrastructure/interfaces/reaction.repository.interface";
 
 export class UserBanCommand {
   constructor(public userId: string, public banDto: UserBanDto) {}
@@ -16,9 +14,9 @@ export class UserBanCommand {
 export class UserBanUseCase implements ICommandHandler<UserBanCommand> {
   constructor(
     private readonly userRepository: IUserRepository,
-    private readonly commentRepository: CommentRepository,
+    private readonly commentRepository: ICommentRepository,
     private readonly sessionRepository: ISessionRepository,
-    private readonly reactionRepository: ReactionRepository,
+    private readonly reactionRepository: IReactionRepository,
   ) {}
 
   async execute(command: UserBanCommand): Promise<ResultCode> {

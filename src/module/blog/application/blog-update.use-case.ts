@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateBlogDto } from '../dto/update.blog.dto';
-import { BlogRepository } from '../infrastructure/blog.repository';
 import { ResultCode } from '../../../enum/result-code.enum';
 import { IBlogRepository } from "../infrastructure/interfaces/blog-repository.interface";
 

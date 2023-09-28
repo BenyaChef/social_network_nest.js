@@ -1,6 +1,5 @@
 import { ISessionRepository } from '../interfaces/session.repository.interface';
 import { Injectable } from '@nestjs/common';
-import { Session } from '../../schema/session.schema';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { SessionUser } from '../../entities/session.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -13,7 +12,7 @@ export class SessionTypeormRepository implements ISessionRepository {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async createSession(newSession: Session) {
+  async createSession(newSession: SessionUser) {
     return this.sessionRepository.save(newSession);
   }
 

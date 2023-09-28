@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { IPostRepository } from '../interfaces/post.repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Post } from '../../schema/post.schema';
 import { UpdatePostDto } from '../../dto/update.post.dto';
 import { ReactionStatusEnum } from '../../../../enum/reaction.status.enum';
 import { ReactionsPosts } from "../../../reaction/entities/reactions-posts.entity";

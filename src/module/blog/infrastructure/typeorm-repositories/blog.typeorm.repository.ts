@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { IBlogRepository } from '../interfaces/blog-repository.interface';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { BlogBanUsers } from '../../schema/blog.ban-users.schema';
 import { UpdateBlogDto } from '../../dto/update.blog.dto';
 import { BlogEntity } from '../../entities/blog.entity';
 
@@ -18,7 +17,7 @@ export class BlogTypeormRepository implements IBlogRepository {
     return Promise.resolve(false);
   }
 
-  banUnbanUser(banInfo: BlogBanUsers) {}
+  banUnbanUser(banInfo: any) {}
 
   bindOwnerId(blogId: string, userId: string) {}
 

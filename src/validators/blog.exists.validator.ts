@@ -1,11 +1,12 @@
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { Injectable } from "@nestjs/common";
-import { BlogRepository } from "../module/blog/infrastructure/blog.repository";
+import { IBlogRepository } from "../module/blog/infrastructure/interfaces/blog-repository.interface";
+
 
 @ValidatorConstraint({ name: 'BlogExistsValidation', async: true })
 @Injectable()
 export class BlogExistsValidation implements ValidatorConstraintInterface {
-  constructor(protected blogRepository: BlogRepository) {}
+  constructor(protected blogRepository: IBlogRepository) {}
 
   async validate(blogId: string): Promise<boolean> {
     const findBlog = await this.blogRepository.getBlogById(blogId);

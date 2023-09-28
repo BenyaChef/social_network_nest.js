@@ -1,14 +1,14 @@
-import { BlogDocument } from "../schema/blog.schema";
+import { BlogEntity } from "../entities/blog.entity";
 
 export class BlogSaViewModel {
   id: string;
   name: string;
   description: string;
   websiteUrl: string;
-  createdAt: string;
+  createdAt: Date;
   isMembership: boolean;
 
-  constructor(blog: BlogDocument) {
+  constructor(blog: BlogEntity) {
     this.id = blog.id
     this.name = blog.name;
     this.description = blog.description;

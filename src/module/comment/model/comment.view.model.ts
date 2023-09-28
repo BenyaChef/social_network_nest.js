@@ -1,4 +1,4 @@
-import { CommentDocument, LikesInfo } from '../schema/comment.schema';
+
 
 export class CommentViewModel {
   id: string;
@@ -8,8 +8,8 @@ export class CommentViewModel {
     userLogin: string;
   };
   createdAt: string;
-  likesInfo: LikesInfo;
-  constructor(comment: CommentDocument, likesInfoCount: LikesInfo) {
+  likesInfo: any;
+  constructor(comment: any, likesInfoCount: any) {
     this.id = comment.id;
     this.content = comment.content;
     this.commentatorInfo = {

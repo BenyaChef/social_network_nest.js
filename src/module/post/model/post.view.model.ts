@@ -1,4 +1,4 @@
-import { PostDocument } from '../schema/post.schema';
+
 
 export class PostViewModel {
   id: string;
@@ -9,7 +9,7 @@ export class PostViewModel {
   blogName: string;
   createdAt: Date;
   extendedLikesInfo: any
-  constructor(postModel: PostDocument) {
+  constructor(postModel: any) {
     this.id = postModel.id;
     this.title = postModel.title;
     this.shortDescription = postModel.shortDescription;

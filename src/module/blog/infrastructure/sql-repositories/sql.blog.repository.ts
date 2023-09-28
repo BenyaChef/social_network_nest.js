@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { IBlogRepository } from '../interfaces/blog-repository.interface';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { BlogBanUsers } from '../../schema/blog.ban-users.schema';
-import { Blog } from '../../schema/blog.schema';
 import { UpdateBlogDto } from '../../dto/update.blog.dto';
 import { BlogEntity } from "../../entities/blog.entity";
 
@@ -23,7 +21,7 @@ export class SqlBlogRepository implements IBlogRepository {
     );
   }
 
-  async banUnbanUser(banInfo: BlogBanUsers) {
+  async banUnbanUser(banInfo: any) {
     const findBanUser = await this.dataSource.query(
       `
     SELECT *
@@ -104,7 +102,7 @@ VALUES ($1, $2, $3, $4, $5, $6)`,
     return deleteResult[1] > 0;
   }
 
-  async getBlogById(blogId: string): Promise<Blog | null> {
+  async getBlogById(blogId: string): Promise<any | null> {
     const blog = await this.dataSource.query(
       `
     SELECT *

@@ -1,6 +1,5 @@
 
 import { UpdateBlogDto } from '../../dto/update.blog.dto';
-import { BlogBanUsers } from '../../schema/blog.ban-users.schema';
 import { BlogEntity } from "../../entities/blog.entity";
 
 export abstract class IBlogRepository {
@@ -10,5 +9,5 @@ export abstract class IBlogRepository {
   abstract banUnbanBlog(banDto: boolean, blogId: string): Promise<boolean>
   abstract delete(blogId: string): Promise<boolean>
   abstract bindOwnerId(blogId: string, userId: string)
-  abstract banUnbanUser(banInfo: BlogBanUsers)
+  abstract banUnbanUser(banInfo: any)
 }
