@@ -15,6 +15,7 @@ export default () => {
   const POSTGRESQL_DB = process.env.POSTGRESQL_DB
 
   return {
+
     // MONGO_URI,
     SECRET_KEY,
     SMTP_SERVER,
