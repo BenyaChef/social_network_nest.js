@@ -230,13 +230,13 @@ const entities = [
 
 @Module({
   imports: [
-    CqrsModule,
-    PassportModule,
-    MailModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
     }),
+    CqrsModule,
+    PassportModule,
+    MailModule,
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature(entities),
     // ThrottlerModule.forRoot(),

@@ -6,7 +6,7 @@ import {  HttpExceptionFilter } from "./exception/exception.filter";
 import { customExceptionFactory } from "./exception/exception.factory";
 import { useContainer } from "class-validator";
 
-export async function bootstrap() {
+async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     // const adapterHost = app.get(HttpAdapterHost);
 
@@ -22,4 +22,4 @@ export async function bootstrap() {
     useContainer(app.select(AppModule), {fallbackOnErrors: true})
     await app.listen(3003);
 }
-bootstrap();
+bootstrap()
