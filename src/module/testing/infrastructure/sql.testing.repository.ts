@@ -8,7 +8,7 @@ export class SqlTestingRepository implements ITestingRepository {
   constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async deleteAllData(): Promise<boolean | null> {
-    await this.dataSource.query(`SELECT truncate_tables('postgres');`);
+    await this.dataSource.query(`SELECT truncate_tables('BenyaChef');`);
       return true;
   }
 }
