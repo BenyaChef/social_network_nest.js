@@ -200,6 +200,7 @@ export class UserController {
     return resultUpdate
   }
 
+
   @Put('quiz/questions/:questionId/publish')
   @UseGuards(BasicAuth)
   @HttpCode(HttpStatus.NO_CONTENT)
