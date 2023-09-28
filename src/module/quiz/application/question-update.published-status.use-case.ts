@@ -20,7 +20,6 @@ export class QuestionUpdatePublishedStatusUseCase
   ): Promise<boolean | null> {
     const questions = await this.quizRepository.getQuestion(command.questionId);
     if (!questions) return null;
-    if(questions.correctAnswers.length === 0) return null
 
     questions.published = command.statusUpdateDto.published;
     questions.updatedAt = new Date().toISOString()
