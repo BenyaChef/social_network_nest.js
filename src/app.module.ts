@@ -143,7 +143,7 @@ const controllers = [
 
 const options: TypeOrmModuleOptions  = {
   type: 'postgres',
-  url: process.env.POSTGRESQL_HOST || 'postgres://BenyaChef:uz9LBTdVMDW5@ep-lucky-sun-90762571.eu-central-1.aws.neon.tech/neondb',
+  url: process.env.POSTGRESQL_URI || 'postgres://BenyaChef:uz9LBTdVMDW5@ep-lucky-sun-90762571.eu-central-1.aws.neon.tech/neondb',
   // host: process.env.POSTGRESQL_HOST,
   // port: 5432,
   // username: process.env.POSTGRESQL_NAME || 'postgres',
