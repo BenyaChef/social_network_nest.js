@@ -143,7 +143,7 @@ const controllers = [
 
 const options: TypeOrmModuleOptions  = {
   type: 'postgres',
-  url: 'postgresql://postgres:sa@localhost:5432/social_network',
+  url: process.env.POSTGRESQL_HOST || 'postgresql://postgres:sa@localhost:5432/social_network',
   // host: process.env.POSTGRESQL_HOST,
   // port: 5432,
   // username: process.env.POSTGRESQL_NAME || 'postgres',
