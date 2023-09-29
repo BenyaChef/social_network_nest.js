@@ -4,5 +4,5 @@ export class QuestionViewDto {
   correctAnswers: string[]
   published: boolean
   createdAt: Date
-  updatedAt: string
+  updatedAt: Date
 }

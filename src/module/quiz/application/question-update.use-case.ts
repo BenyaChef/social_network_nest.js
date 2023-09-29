@@ -20,7 +20,7 @@ export class QuestionUpdateUseCase
 
     questions.body = command.updateDto.body
     questions.correctAnswers = command.updateDto.correctAnswers
-    questions.updatedAt = new Date().toISOString()
+    questions.updatedAt = new Date()
 
     return this.quizRepository.save(questions)
 

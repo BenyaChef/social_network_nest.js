@@ -128,6 +128,7 @@ import {
 } from "./module/quiz/application/question-update.published-status.use-case";
 import { QuestionDeleteUseCase } from "./module/quiz/application/question-delete.use-case";
 import * as process from "process";
+import { AnswerEntity } from "./module/quiz/entities/answer.entity";
 
 const controllers = [
   AppController,
@@ -233,7 +234,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
 const entities = [
   UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo,
   SessionUser, BlogEntity, PostEntity,
-  CommentEntity, ReactionsComments, ReactionsPosts, QuestionEntity]
+  CommentEntity, ReactionsComments, ReactionsPosts, QuestionEntity, AnswerEntity]
 
 @Module({
   imports: [
