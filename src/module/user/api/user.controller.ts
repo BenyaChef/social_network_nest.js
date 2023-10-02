@@ -39,15 +39,15 @@ import { PostUpdateCommand } from '../../post/application/post-update.use-case';
 import { PostDeleteCommand } from '../../post/application/post-delete.use-case';
 import { IBlogRepository } from '../../blog/infrastructure/interfaces/blog-repository.interface';
 import { IPostQueryRepository } from '../../post/infrastructure/interfaces/post.query-repository.interface';
-import { QuestionCreateDto } from '../../quiz/dto/question.create.dto';
-import { QuestionUpdateDto } from '../../quiz/dto/question.update.dto';
-import { PublishStatusUpdateDto } from "../../quiz/dto/question.publish-status.update.dto";
-import { QuestionCreateCommand } from "../../quiz/application/question-create.use-case";
-import { IQuizQueryRepository } from "../../quiz/infrastructure/interface/quiz.query-repository.interface";
-import { QuestionQueryDto } from "../../quiz/dto/question.query.dto";
-import { QuestionUpdateCommand } from "../../quiz/application/question-update.use-case";
-import { QuestionUpdatePublishedStatusCommand } from "../../quiz/application/question-update.published-status.use-case";
-import { QuestionDeleteCommand } from "../../quiz/application/question-delete.use-case";
+import { QuestionCreateDto } from '../../quiz/dto/questions-dto/question.create.dto';
+import { QuestionUpdateDto } from '../../quiz/dto/questions-dto/question.update.dto';
+import { PublishStatusUpdateDto } from "../../quiz/dto/questions-dto/question.publish-status.update.dto";
+import { QuestionCreateCommand } from "../../quiz/application/qustions.use-case/question-create.use-case";
+import { IQuestionQueryRepository } from "../../quiz/infrastructure/interface/question.query-repository.interface";
+import { QuestionQueryDto } from "../../quiz/dto/questions-dto/question.query.dto";
+import { QuestionUpdateCommand } from "../../quiz/application/qustions.use-case/question-update.use-case";
+import { QuestionUpdatePublishedStatusCommand } from "../../quiz/application/qustions.use-case/question-update.published-status.use-case";
+import { QuestionDeleteCommand } from "../../quiz/application/qustions.use-case/question-delete.use-case";
 
 @Controller('sa')
 export class UserController {
@@ -57,7 +57,7 @@ export class UserController {
     protected postQueryRepository: IPostQueryRepository,
     protected commandBus: CommandBus,
     protected userQueryRepository: IUserQueryRepository,
-    protected quizQueryRepository: IQuizQueryRepository
+    protected quizQueryRepository: IQuestionQueryRepository
   ) {}
 
   @UseGuards(BasicAuth)

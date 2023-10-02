@@ -1,9 +1,9 @@
 import { IsEnum, IsNumber, IsOptional } from "class-validator";
 import { Transform } from "class-transformer";
-import { checkSortBy, checkSortDirection, toNumber } from "../../../helpers/check.value";
-import { FieldsEnum } from "../../../enum/fields.enum";
-import { SortDirectionEnum } from "../../../enum/sort.direction.enum";
-import { PublishedStatusEnum } from "../../../enum/published-status.enum";
+import { checkSortBy, checkSortDirection, toNumber } from "../../../../helpers/check.value";
+import { FieldsEnum } from "../../../../enum/fields.enum";
+import { SortDirectionEnum } from "../../../../enum/sort.direction.enum";
+import { PublishedStatusEnum } from "../../../../enum/published-status.enum";
 
 
 export class QuestionQueryDto {

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { IQuizRepository } from '../infrastructure/interface/quiz.repository.interface';
-import { PublishStatusUpdateDto } from '../dto/question.publish-status.update.dto';
+import { IQuestionRepository } from '../../infrastructure/interface/question.repository.interface';
+import { PublishStatusUpdateDto } from '../../dto/questions-dto/question.publish-status.update.dto';
 
 export class QuestionUpdatePublishedStatusCommand {
   constructor(
@@ -13,7 +13,7 @@ export class QuestionUpdatePublishedStatusCommand {
 export class QuestionUpdatePublishedStatusUseCase
   implements ICommandHandler<QuestionUpdatePublishedStatusCommand>
 {
-  constructor(private quizRepository: IQuizRepository) {}
+  constructor(private quizRepository: IQuestionRepository) {}
 
   async execute(
     command: QuestionUpdatePublishedStatusCommand,

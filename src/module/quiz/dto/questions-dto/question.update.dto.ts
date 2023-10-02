@@ -1,4 +1,4 @@
-import { Trim } from "../../../decorators/trim.decorator";
+import { Trim } from "../../../../decorators/trim.decorator";
 import { ArrayNotEmpty, IsArray, IsNotEmpty, IsString, Length } from "class-validator";
 import { Transform } from "class-transformer";
 

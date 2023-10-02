@@ -117,18 +117,24 @@ import { ReactionsComments } from "./module/reaction/entities/reactions-comments
 import { ReactionsPosts } from "./module/reaction/entities/reactions-posts.entity";
 import { QuizController } from "./module/quiz/api/quiz.controller";
 import { QuestionEntity } from "./module/quiz/entities/question.entity";
-import { IQuizRepository } from "./module/quiz/infrastructure/interface/quiz.repository.interface";
-import { QuizRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.repository";
-import { QuestionCreateUseCase } from "./module/quiz/application/question-create.use-case";
-import { IQuizQueryRepository } from "./module/quiz/infrastructure/interface/quiz.query-repository.interface";
-import { QuizQueryRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.query.repository";
-import { QuestionUpdateUseCase } from "./module/quiz/application/question-update.use-case";
+import { IQuestionRepository } from "./module/quiz/infrastructure/interface/question.repository.interface";
+import { QuestionRepository } from "./module/quiz/infrastructure/typeorm-repository/question.repository";
+import { QuestionCreateUseCase } from "./module/quiz/application/qustions.use-case/question-create.use-case";
+import { IQuestionQueryRepository } from "./module/quiz/infrastructure/interface/question.query-repository.interface";
+import { QuestionQueryRepository } from "./module/quiz/infrastructure/typeorm-repository/question.query.repository";
+import { QuestionUpdateUseCase } from "./module/quiz/application/qustions.use-case/question-update.use-case";
 import {
   QuestionUpdatePublishedStatusUseCase
-} from "./module/quiz/application/question-update.published-status.use-case";
-import { QuestionDeleteUseCase } from "./module/quiz/application/question-delete.use-case";
+} from "./module/quiz/application/qustions.use-case/question-update.published-status.use-case";
+import { QuestionDeleteUseCase } from "./module/quiz/application/qustions.use-case/question-delete.use-case";
 import * as process from "process";
 import { AnswerEntity } from "./module/quiz/entities/answer.entity";
+import { GameEntity } from "./module/quiz/entities/game.entity";
+import { CreatePairUseCase } from "./module/quiz/application/game.use-case/create-pair.use-case";
+import { IQuizRepository } from "./module/quiz/infrastructure/interface/quiz.repository.interface";
+import { QuizRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.repository";
+import { IQuizQueryRepository } from "./module/quiz/infrastructure/interface/quiz.query-repository.interface";
+import { QuizQueryRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.query.repository";
 
 const controllers = [
   AppController,
@@ -197,7 +203,8 @@ const useCase = [
   QuestionCreateUseCase,
   QuestionUpdateUseCase,
   QuestionUpdatePublishedStatusUseCase,
-  QuestionDeleteUseCase
+  QuestionDeleteUseCase,
+  CreatePairUseCase
 
 ];
 
@@ -226,6 +233,8 @@ const repositories = [
   { provide: ICommentQueryRepository, useClass: CommentTypeormQueryRepository},
   { provide: ICommentRepository, useClass: CommentTypeormRepository},
   { provide: IReactionRepository, useClass: ReactionsTypeormRepository},
+  { provide: IQuestionRepository, useClass: QuestionRepository},
+  { provide: IQuestionQueryRepository, useClass: QuestionQueryRepository},
   { provide: IQuizRepository, useClass: QuizRepository},
   { provide: IQuizQueryRepository, useClass: QuizQueryRepository}
 ]
@@ -234,7 +243,7 @@ const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
 const entities = [
   UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo,
   SessionUser, BlogEntity, PostEntity,
-  CommentEntity, ReactionsComments, ReactionsPosts, QuestionEntity, AnswerEntity]
+  CommentEntity, ReactionsComments, ReactionsPosts, QuestionEntity, AnswerEntity, GameEntity]
 
 @Module({
   imports: [

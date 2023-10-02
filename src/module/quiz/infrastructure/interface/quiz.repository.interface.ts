@@ -1,8 +1,6 @@
-import { QuestionEntity } from "../../entities/question.entity";
+import { GameEntity } from "../../entities/game.entity";
 
 export abstract class IQuizRepository {
-  abstract save(question: QuestionEntity)
-  abstract getQuestion(questionId: string): Promise<QuestionEntity | null>
-  abstract delete(questionId: string): Promise<boolean>
-  // abstract updateQuestion(updateDto: QuestionUpdateDto, questionId: string)
+  abstract createPair(newGame: GameEntity)
+  abstract joinPair(userId: string)
 }

@@ -1,7 +1,6 @@
-import { QuestionViewDto } from "../../dto/question.view.dto";
-import { QuestionQueryDto } from "../../dto/question.query.dto";
+import { GameEntity } from "../../entities/game.entity";
 
 export abstract class IQuizQueryRepository {
-  abstract getQuestionById(questionId: string): Promise<QuestionViewDto | null>
-  abstract getAllQuestions(query: QuestionQueryDto)
+  abstract getGameById(gameId: string)
+  abstract getGameByUserId(userId: string): Promise<GameEntity | null>
 }
