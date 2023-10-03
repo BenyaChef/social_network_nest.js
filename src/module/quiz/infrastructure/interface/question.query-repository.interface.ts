@@ -5,6 +5,7 @@ import { PublishedStatusEnum } from "../../../../enum/published-status.enum";
 export abstract class IQuestionQueryRepository {
   abstract getQuestionById(questionId: string): Promise<QuestionViewDto | null>
   abstract getAllQuestions(query: QuestionQueryDto)
+  abstract getQuestionsForGame(questions: string[])
   abstract getRandomFiveQuestions()
 
 }

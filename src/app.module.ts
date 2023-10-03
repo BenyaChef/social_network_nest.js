@@ -135,6 +135,7 @@ import { IQuizRepository } from "./module/quiz/infrastructure/interface/quiz.rep
 import { QuizRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.repository";
 import { IQuizQueryRepository } from "./module/quiz/infrastructure/interface/quiz.query-repository.interface";
 import { QuizQueryRepository } from "./module/quiz/infrastructure/typeorm-repository/quiz.query.repository";
+import { AnswerUseCase } from "./module/quiz/application/game.use-case/answer.use-case";
 
 const controllers = [
   AppController,
@@ -204,7 +205,8 @@ const useCase = [
   QuestionUpdateUseCase,
   QuestionUpdatePublishedStatusUseCase,
   QuestionDeleteUseCase,
-  CreatePairUseCase
+  CreatePairUseCase,
+  AnswerUseCase
 
 ];
 

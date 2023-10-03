@@ -67,11 +67,18 @@ export class QuestionQueryRepository implements IQuestionQueryRepository {
   }
 
   async getRandomFiveQuestions() {
-    return this.dataSource
+    const questions = await this.dataSource
       .createQueryBuilder(QuestionEntity, 'qa')
+      .select('qa.id')
+      .where('qa.published = true')
       .orderBy(`random()`)
       .limit(5)
       .getMany();
+    return questions.map(o => o.id)
+  }
+
+ async getQuestionsForGame(questions: string[]) {
+    return this.dataSource.createQueryBuilder(QuestionEntity, 'qe').select()
   }
 
   private publishedStatusCheck(value: PublishedStatusEnum) {
@@ -90,4 +97,6 @@ export class QuestionQueryRepository implements IQuestionQueryRepository {
       }
     }
   }
+
+
 }

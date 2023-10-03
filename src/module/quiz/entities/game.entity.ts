@@ -6,6 +6,7 @@ import { GameStatus } from "../../../enum/game-status.enum";
 
 @Entity({ name: 'games' })
 export class GameEntity extends ParentEntity {
+
   @Column({ name: 'first_player_id', type: 'uuid', nullable: false })
   firstPlayerId: string;
 
@@ -21,11 +22,11 @@ export class GameEntity extends ParentEntity {
   @Column({type: 'jsonb', nullable: true})
   questions: string[] | null
 
-  @Column({name: 'answers_first_player', type: 'jsonb', nullable: true})
-  answersFirstPlayer: string[] | null
+  @Column({name: 'answers_first_player', type: 'jsonb'})
+  answersFirstPlayer: string[]
 
   @Column({name: 'answers_second_player', type: 'jsonb', nullable: true})
-  answersSecondPlayer: string[] | null
+  answersSecondPlayer: string[]
 
   @Column({type: 'enum', enum: GameStatus ,default: GameStatus.PendingSecondPlayer})
   status: GameStatus

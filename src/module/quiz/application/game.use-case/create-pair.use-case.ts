@@ -5,6 +5,7 @@ import { GameEntity } from '../../entities/game.entity';
 import { GameStatus } from '../../../../enum/game-status.enum';
 import { IQuestionQueryRepository } from '../../infrastructure/interface/question.query-repository.interface';
 
+
 export class CreatePairCommand {
   constructor(public userId: string) {}
 }
@@ -17,8 +18,12 @@ export class CreatePairUseCase implements ICommandHandler<CreatePairCommand> {
     private questionsQueryRepository: IQuestionQueryRepository,
   ) {}
 
-  async execute(command: CreatePairCommand): Promise<string> {
-    const game: GameEntity | null = await this.quizQueryRepository.getGameByUserId(GameStatus.PendingSecondPlayer);
+  async execute(command: CreatePairCommand): Promise<string | null> {
+
+    const userInPair = await this.quizQueryRepository.getGameByUserId(command.userId)
+    if (userInPair) return null
+
+    const game: GameEntity | null = await this.quizQueryRepository.getPendingGame();
     if (!game) {
       const newGame = new GameEntity()
       newGame.firstPlayerId = command.userId;
@@ -26,26 +31,23 @@ export class CreatePairUseCase implements ICommandHandler<CreatePairCommand> {
       newGame.secondPlayerScore = 0;
       newGame.status = GameStatus.PendingSecondPlayer;
       newGame.secondPlayerId = null;
-      newGame.answersFirstPlayer = null;
-      newGame.answersSecondPlayer = null;
+      newGame.answersFirstPlayer = [];
+      newGame.answersSecondPlayer = [];
       newGame.finishGameDate = null;
       newGame.startGameDate = null;
       newGame.questions = null;
 
-      await this.quizRepository.createPair(newGame);
+      await this.quizRepository.save(newGame);
       return newGame.id;
     }
 
-    if (game.status === GameStatus.PendingSecondPlayer) {
-      const questions =
-        await this.questionsQueryRepository.getRandomFiveQuestions();
-      game.secondPlayerId = command.userId;
-      game.startGameDate = new Date();
-      game.status = GameStatus.Active;
-      game.questions = questions;
-      await this.quizRepository.createPair(game);
-      return game.id;
-    }
+    const questions = await this.questionsQueryRepository.getRandomFiveQuestions();
+    game.secondPlayerId = command.userId;
+    game.startGameDate = new Date();
+    game.status = GameStatus.Active;
+    game.questions = questions
+
+    await this.quizRepository.save(game);
     return game.id;
   }
 }

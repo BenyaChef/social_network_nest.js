@@ -1,6 +1,8 @@
 import { GameEntity } from "../../entities/game.entity";
+import { AnswerEntity } from "../../entities/answer.entity";
 
 export abstract class IQuizRepository {
-  abstract createPair(newGame: GameEntity)
-  abstract joinPair(userId: string)
+  abstract save(newGame: GameEntity)
+  abstract getPairByUserId(userId: string)
+  abstract saveAnswer(answer: AnswerEntity)
 }
