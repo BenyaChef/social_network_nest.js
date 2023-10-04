@@ -167,6 +167,7 @@ const options: TypeOrmModuleOptions  = {
   }
 }
 
+
 const validators = [
   BlogExistsValidation,
   TrimValidator,
