@@ -161,7 +161,7 @@ const options: TypeOrmModuleOptions  = {
   // synchronize: true,
   extra: {
     ssl: {
-      rejectUnauthorized: false,
+      rejectUnauthorized: true,
       sslmode: "require"
     }
   }
