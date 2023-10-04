@@ -157,11 +157,11 @@ const options: TypeOrmModuleOptions  = {
   // username: process.env.POSTGRESQL_NAME || 'postgres',
   // password: process.env.POSTGRESQL_PASS || 'sa',
   // database: process.env.POSTGRESQL_DB || 'social_network',
-  // autoLoadEntities: true,
-  // synchronize: true,
+  autoLoadEntities: true,
+  synchronize: true,
   extra: {
     ssl: {
-      rejectUnauthorized: true,
+      rejectUnauthorized: false,
       sslmode: "require"
     }
   }
