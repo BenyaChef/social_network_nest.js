@@ -5,6 +5,7 @@ import { AnswerEntity } from '../../entities/answer.entity';
 import { AnswerStatus } from '../../../../enum/answer-status.enum';
 import { IQuizQueryRepository } from "../../infrastructure/interface/quiz.query-repository.interface";
 import { IQuestionQueryRepository } from "../../infrastructure/interface/question.query-repository.interface";
+import { randomUUID } from "crypto";
 
 export class AnswerCommand {
   constructor(public answer: string, public userId: string) {}
@@ -23,12 +24,13 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
     if(game.answersSecondPlayer!.length > 4 && game.answersFirstPlayer!.length > 4) return null
 
-    const questions = await this.questionQueryRepository.getQuestionsForGame(game.questions)
+    // const questions = await this.questionQueryRepository.getQuestionsForGame(game.questions)
 
     const newAnswer = new AnswerEntity()
     newAnswer.gameId = game.id
     newAnswer.userId = command.userId
     newAnswer.answerStatus = AnswerStatus.Correct
+    newAnswer.questionId = randomUUID()
     await this.quizRepository.saveAnswer(newAnswer)
 
     if(game.firstPlayerId === command.userId) {

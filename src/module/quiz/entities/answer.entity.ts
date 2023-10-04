@@ -11,24 +11,24 @@ export class AnswerEntity extends ParentEntity {
   @Column({name: 'answer_status', type: 'varchar'})
   answerStatus: AnswerStatus
 
-  @Column({name: 'user_id'})
+  @Column({name: 'user_id', unique: false})
   userId: string
 
-  @Column({name: 'question_id'})
+  @Column({name: 'question_id', unique: false})
   questionId: string
 
-  @Column({name: 'game_id'})
+  @Column({name: 'game_id', unique: false})
   gameId: string
 
-  @OneToOne(() => QuestionEntity, (question) => question.id)
-  @JoinColumn({name: 'question_id'})
-  question: QuestionEntity
+  // @ManyToOne(() => QuestionEntity, (question) => question.id, {onDelete: "CASCADE", onUpdate: "CASCADE"})
+  // @JoinColumn({name: 'question_id'})
+  // question: QuestionEntity
 
-  @OneToOne(() => UserEntity, (player) => player.id)
+  @ManyToOne(() => UserEntity, (user) => user.id, {onDelete: "CASCADE"})
   @JoinColumn({name: 'user_id'})
   player: UserEntity
 
-  @ManyToOne(() => GameEntity, (game) => game.id)
+  @ManyToOne(() => GameEntity, (game) => game.id, {onDelete: "CASCADE"})
   @JoinColumn({name: 'game_id'})
   game: GameEntity
 }
