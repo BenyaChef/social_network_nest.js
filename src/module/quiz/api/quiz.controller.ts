@@ -29,6 +29,7 @@ export class QuizController {
   @Post('pairs/connection')
   async connectOrCreateGame(@CurrentUser() userId: string) {
     console.log(userId);
+
     const resultJoin = await this.commandBus.execute(new CreatePairCommand(userId))
     if(!resultJoin) throw new ForbiddenException()
     return this.quizQueryRepository.getGameById(resultJoin)
