@@ -24,8 +24,9 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
 
     if(game.answersSecondPlayer!.length > 4 && game.answersFirstPlayer!.length > 4) return null
 
-    // const questions = await this.questionQueryRepository.getQuestionsForGame(game.questions)
+    const questions = await this.questionQueryRepository.getQuestionsForGame(game.questions!)
 
+    console.log(questions);
     const newAnswer = new AnswerEntity()
     newAnswer.gameId = game.id
     newAnswer.userId = command.userId

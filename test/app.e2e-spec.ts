@@ -1,24 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { INestApplication } from "@nestjs/common";
+import { getAppAndClearDb } from "./options/app.test";
+import { SuperAgentTest } from "supertest";
+import { createAndLoginUsers } from "./functions/create.and.login.users";
 
-describe('AppController (e2e)', () => {
+describe('User (e2e_test)', () => {
   let app: INestApplication;
+  let agent: SuperAgentTest
+  let tokens: string[]
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+  beforeAll(async () => {
+    const data = await getAppAndClearDb()
+    app = data.app
+    agent = data.agent
   });
 
-  // it('/ (GET)', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/')
-  //     .expect(200)
-  //     .expect('Hello World!');
-  // });
+  describe('Create users and questions', () => {
+
+    it('should created and login user', async () => {
+      tokens = await createAndLoginUsers(3, agent)
+    });
+    it('should create five questions', async () => {
+
+    })
+  })
+
+  afterAll(async () => {
+    await app.close();
+  });
 });

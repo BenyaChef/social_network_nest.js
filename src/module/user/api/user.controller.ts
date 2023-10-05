@@ -48,6 +48,7 @@ import { QuestionQueryDto } from "../../quiz/dto/questions-dto/question.query.dt
 import { QuestionUpdateCommand } from "../../quiz/application/qustions.use-case/question-update.use-case";
 import { QuestionUpdatePublishedStatusCommand } from "../../quiz/application/qustions.use-case/question-update.published-status.use-case";
 import { QuestionDeleteCommand } from "../../quiz/application/qustions.use-case/question-delete.use-case";
+import { et } from "date-fns/locale";
 
 @Controller('sa')
 export class UserController {
@@ -161,7 +162,8 @@ export class UserController {
     const newUserId: string = await this.commandBus.execute(
       new UserCreateCommand(createDto),
     );
-    return this.userQueryRepository.getUserByID(newUserId);
+    const user =  this.userQueryRepository.getUserByID(newUserId);
+    return user
   }
 
   @Delete('users/:userId')

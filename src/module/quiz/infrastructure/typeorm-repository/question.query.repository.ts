@@ -77,8 +77,8 @@ export class QuestionQueryRepository implements IQuestionQueryRepository {
     return questions.map(o => o.id)
   }
 
- async getQuestionsForGame(questions: string[]) {
-    return this.dataSource.createQueryBuilder(QuestionEntity, 'qe').select()
+ async getQuestionsForGame(questionsId: string[]): Promise<QuestionEntity[]> {
+    return this.dataSource.createQueryBuilder(QuestionEntity, 'qe').select('qe.correctAnswers').where('id in (:...questionsId)', { questionsId }).getMany()
   }
 
   private publishedStatusCheck(value: PublishedStatusEnum) {
