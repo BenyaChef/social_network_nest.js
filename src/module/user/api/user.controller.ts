@@ -211,7 +211,6 @@ export class UserController {
     @Param('questionId') questionId: string,
   ) {
     const resultUpdate = await this.commandBus.execute(new QuestionUpdatePublishedStatusCommand(questionId, updatePublishDto))
-    console.log(resultUpdate);
     if(!resultUpdate) throw new NotFoundException()
     return resultUpdate
   }

@@ -31,8 +31,6 @@ export class CreatePairUseCase implements ICommandHandler<CreatePairCommand> {
       newGame.secondPlayerScore = 0;
       newGame.status = GameStatus.PendingSecondPlayer;
       newGame.secondPlayerId = null;
-      newGame.answersFirstPlayer = [];
-      newGame.answersSecondPlayer = [];
       newGame.finishGameDate = null;
       newGame.startGameDate = null;
       newGame.questions = null;

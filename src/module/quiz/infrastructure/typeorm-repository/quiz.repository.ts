@@ -23,7 +23,8 @@ export class QuizRepository implements IQuizRepository {
 
   getPairByUserId(userId: string): Promise<GameEntity | null> {
     return this.gameRepository
-      .createQueryBuilder()
+      .createQueryBuilder('g')
+      .leftJoinAndSelect('g.answers', 'a')
       .where(
         'first_player_id = :userId or second_player_id = :userId and status = :active',
         { userId, active: 'Active' },

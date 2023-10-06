@@ -1,6 +1,6 @@
-import { TypeOrmModule } from "@nestjs/typeorm";
+
 import { Test } from "@nestjs/testing";
-import { AppModule, options } from "../../src/app.module";
+import { AppModule } from "../../src/app.module";
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import supertest, { SuperAgentTest } from "supertest";
 import { useContainer } from "class-validator";

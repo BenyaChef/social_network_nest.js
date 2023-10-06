@@ -1,4 +1,5 @@
 import { SuperAgentTest } from "supertest";
+import { HttpStatus } from "@nestjs/common";
 
 export const createAndLoginUsers = async (quantityUsers: number, agent: SuperAgentTest) => {
   const tokens: any = [];
@@ -15,7 +16,7 @@ export const createAndLoginUsers = async (quantityUsers: number, agent: SuperAge
       .post('/sa/users')
       .auth('admin', 'qwerty')
       .send(user)
-      .expect(201);
+      .expect(HttpStatus.CREATED);
 
 
     const response = await agent
@@ -25,7 +26,7 @@ export const createAndLoginUsers = async (quantityUsers: number, agent: SuperAge
         password: user.password,
       })
       .set('User-agent', `Chrome${i*33}`)
-      .expect(200);
+      .expect(HttpStatus.OK);
 
     tokens.push(response.body.accessToken);
   }

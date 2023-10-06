@@ -74,11 +74,23 @@ export class QuestionQueryRepository implements IQuestionQueryRepository {
       .orderBy(`random()`)
       .limit(5)
       .getMany();
-    return questions.map(o => o.id)
+    return questions.map((o) => o.id);
   }
 
- async getQuestionsForGame(questionsId: string[]): Promise<QuestionEntity[]> {
-    return this.dataSource.createQueryBuilder(QuestionEntity, 'qe').select('qe.correctAnswers').where('id in (:...questionsId)', { questionsId }).getMany()
+  async getQuestionsForGame(questionsId: string[]): Promise<any> {
+    const questionEntities = await this.dataSource
+      .createQueryBuilder(QuestionEntity, 'qe')
+      .select(['qe.correctAnswers', 'qe.id'])
+      .where('id in (:...questionsId)', { questionsId })
+      .orderBy('qe.id', 'ASC')
+      .getMany();
+
+    return questionEntities.map((q) => {
+      return {
+        id: q.id,
+        correctAnswers: q.correctAnswers
+      }
+    });
   }
 
   private publishedStatusCheck(value: PublishedStatusEnum) {
@@ -97,6 +109,4 @@ export class QuestionQueryRepository implements IQuestionQueryRepository {
       }
     }
   }
-
-
 }
