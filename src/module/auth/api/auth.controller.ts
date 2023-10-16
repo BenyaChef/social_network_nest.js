@@ -56,6 +56,7 @@ export class AuthController {
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
   async registration(@Body() registrationDto: RegistrationDto) {
+
     return this.commandBus.execute(new RegistrationUserCommand(registrationDto))
   }
 
