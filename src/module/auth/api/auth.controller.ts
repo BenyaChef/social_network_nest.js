@@ -45,7 +45,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @CurrentUser() userId: string
   ) {
-
     const result = await this.commandBus.execute(new LoginUserCommand(ip, userAgent, userId))
     if (!result) throw new UnauthorizedException();
 
