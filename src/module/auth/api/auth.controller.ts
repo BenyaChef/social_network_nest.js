@@ -71,7 +71,6 @@ export class AuthController {
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmationRegistration(@Body() confirmationCodeDto: ConfirmationCodeDto) {
-
     return this.commandBus.execute(new RegistrationConfirmationCommand(confirmationCodeDto))
   }
 
