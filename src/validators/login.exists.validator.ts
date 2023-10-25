@@ -1,7 +1,5 @@
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 import { Injectable } from "@nestjs/common";
-import { UserQueryRepository } from "../module/user/infrastructure/user.query.repository";
-import { UserDocument } from "../module/user/schema/user.schema";
 import { IUserQueryRepository } from "../module/user/infrastructure/interfaces/user.query-repository.interface";
 import { UserEntity } from "../module/user/entities/user.entity";
 
@@ -17,7 +15,6 @@ export class LoginExistsValidation implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments): string {
-
     return 'This login already exists';
   }
 }

@@ -243,6 +243,7 @@ const repositories = [
 ]
 
 const guard = [{ provide: APP_GUARD, useClass: ThrottlerGuard }];
+
 const entities = [
   UserEntity, PasswordRecoveryInfo, EmailConfirmationInfo,
   SessionUser, BlogEntity, PostEntity,
